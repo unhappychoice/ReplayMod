@@ -1,235 +1,128 @@
-import com.replaymod.gradle.preprocess.PreprocessTask
-
 buildscript {
-    def mcVersion
-    def (major, minor, patch) = project.name.tokenize('-')[0].tokenize('.')
-    mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
-    def fabric = mcVersion >= 11400 && !project.name.endsWith("-forge")
+    def (major, minor, patch) = '1.16.4-forge'.tokenize('-')[0].tokenize('.')
+    def mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
+    def fabric = false
+
     project.ext.mcVersion = mcVersion
     project.ext.fabric = fabric
 
     repositories {
         mavenLocal()
-        maven {
-            url = "https://plugins.gradle.org/m2/"
-        }
         mavenCentral()
-        maven {
-            name = "fabric"
-            url = "https://maven.fabricmc.net/"
-        }
-        if (!fabric) {
-            maven {
-                name = "forge"
-                url = "https://files.minecraftforge.net/maven"
-            }
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-        maven { url 'https://jitpack.io' }
+        maven { url = "https://plugins.gradle.org/m2/" }
+        maven { url = "https://files.minecraftforge.net/maven" }
+        maven { url='https://repo.spongepowered.org/repository/maven-public/' }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url = "https://maven.tterrag.com/" }
+        maven { url = 'https://jitpack.io' }
     }
 
     dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
-        if (fabric) {
-            classpath 'fabric-loom:fabric-loom.gradle.plugin:0.6-SNAPSHOT'
-        } else if (mcVersion >= 11400) {
-            classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
-        } else if (mcVersion >= 10800) {
-            classpath('com.github.ReplayMod:ForgeGradle:' + (
-                    mcVersion >= 11200 ? 'b64de9c' : // FG 2.3
-                    mcVersion >= 10904 ? '5bb7a53' : // FG 2.2
-                                         'fc1eabc'   // FG 2.1
-            ) + ':all')
-        } else {
-            classpath 'com.github.ReplayMod:ForgeGradle:5fca6853:all' // FG 1.2
-        }
     }
-}
-
-def FG4 = !fabric && mcVersion >= 11400
-def FABRIC = fabric
-
-def jGuiVersion = project.name
-if (['1.10.2', '1.11', '1.11.2'].contains(jGuiVersion)) jGuiVersion = '1.9.4'
-if (['1.12.1', '1.12.2'].contains(jGuiVersion)) jGuiVersion = '1.12'
-if (['1.16.4-forge'].contains(jGuiVersion)) jGuiVersion = '1.16.4-forge'
-def jGui = project.evaluationDependsOn(":jGui:$jGuiVersion")
-
-apply plugin: 'com.github.johnrengelman.shadow'
-
-if (mcVersion >= 10800) {
-    if (FABRIC) {
-        apply plugin: 'fabric-loom'
-    } else if (FG4) {
-        apply plugin: 'net.minecraftforge.gradle'
-    } else {
-        apply plugin: 'net.minecraftforge.gradle.forge'
-    }
-} else {
-    apply plugin: 'forge'
-}
-
-if (!FABRIC) {
-    ext {
-        mixinSrg = new File(project.buildDir, 'tmp/mixins/mixins.srg')
-        mixinRefMap = new File(project.buildDir, 'tmp/mixins/mixins.replaymod.refmap.json')
-    }
-
-    compileJava {
-        options.compilerArgs += [
-                "-AoutSrgFile=${project.mixinSrg.canonicalPath}",
-                "-AoutRefMapFile=${project.mixinRefMap.canonicalPath}",
-                "-AreobfSrgFile=${project.file('build/mcp-srg.srg').canonicalPath}"
-        ]
-    }
-}
-
-apply plugin: 'com.replaymod.preprocess'
-
-preprocess {
-    vars.put("MC", project.mcVersion)
-    vars.put("FABRIC", project.fabric ? 1 : 0)
-
-    keywords.set([
-            ".java": PreprocessTask.DEFAULT_KEYWORDS,
-            ".json": PreprocessTask.DEFAULT_KEYWORDS,
-            ".mcmeta": PreprocessTask.DEFAULT_KEYWORDS,
-            ".cfg": PreprocessTask.CFG_KEYWORDS,
-            ".vert": PreprocessTask.DEFAULT_KEYWORDS,
-            ".frag": PreprocessTask.DEFAULT_KEYWORDS,
-    ])
-
-    patternAnnotation.set("com.replaymod.gradle.remap.Pattern")
 }
 
 def mcVersionStr = "${(int)(mcVersion/10000)}.${(int)(mcVersion/100)%100}" + (mcVersion%100==0 ? '' : ".${mcVersion%100}")
+// def jGui = project.evaluationDependsOn(":jGui:1.16.4-forge")
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
 
-if (mcVersion >= 11400) {
-    sourceSets {
-        api
-    }
+ext {
+    mixinSrg = new File(project.buildDir, 'tmp/mixins/mixins.srg')
+    mixinRefMap = new File(project.buildDir, 'tmp/mixins/mixins.replaymod.refmap.json')
 }
+
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+    options.compilerArgs += [
+            "-AoutSrgFile=${project.mixinSrg.canonicalPath}",
+            "-AoutRefMapFile=${project.mixinRefMap.canonicalPath}",
+            "-AreobfSrgFile=${project.file('build/mcp-srg.srg').canonicalPath}"
+    ]
+}
+
+mixin {
+    add sourceSets.main, "mixins.replaymod.refmap.json"
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 version = project.name + '-' + rootProject.version
 group= "com.replaymod"
 archivesBaseName = "replaymod"
 
-if (FABRIC) {
-    minecraft {
-        refmapName = 'mixins.replaymod.refmap.json'
-        runConfigs.all {
-            ideConfigGenerated = true
+sourceSets {
+    main
+    api
+    integrationTest {
+        compileClasspath += main.runtimeClasspath + main.output
+        java {
+            srcDir file('src/integration-test/java')
         }
-    }
-} else {
-    if (FG4) {
-        minecraft {
-            runs {
-                client {
-                    workingDirectory project.file('run')
-                    property 'forge.logging.markers', 'REGISTRIES'
-                    property 'forge.logging.console.level', 'debug'
-                    arg "-mixin.config=replaymod.mixins.json"
-                    mods {
-                        replaymod {
-                            source sourceSets.main
-                        }
-                    }
-                }
-
-                server {
-                    workingDirectory project.file('run')
-                    property 'forge.logging.markers', 'REGISTRIES'
-                    property 'forge.logging.console.level', 'debug'
-                    arg "-mixin.config=replaymod.mixins.json"
-                    mods {
-                        replaymod {
-                            source sourceSets.main
-                        }
-                    }
-                }
-
-                data {
-                    workingDirectory project.file('run')
-                    property 'forge.logging.markers', 'REGISTRIES'
-                    property 'forge.logging.console.level', 'debug'
-                    arg "-mixin.config=replaymod.mixins.json"
-                    args '--mod', 'replaymod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-                    mods {
-                        replaymod {
-                            source sourceSets.main
-                        }
-                    }
-                }
-            }
-
-            mappings channel: "snapshot", version: "20210309-1.16.4"
-        }
-    } else {
-        minecraft {
-            if (mcVersion >= 10800) {
-                coreMod = 'com.replaymod.core.LoadingPlugin'
-            }
-            runDir = "../../run"
-
-            version = [
-                    11202: '1.12.2-14.23.0.2486',
-                    11201: '1.12.1-14.22.0.2444',
-                    11200: '1.12-14.21.1.2387',
-                    11102: '1.11.2-13.20.0.2216',
-                    11100: '1.11-13.19.1.2188',
-                    11002: '1.10.2-12.18.2.2099',
-                    10904: '1.9.4-12.17.0.1976',
-                    10809: '1.8.9-11.15.1.1722',
-                    10800: '1.8-11.14.4.1563',
-                    10710: '1.7.10-10.13.4.1558-1.7.10',
-            ][mcVersion]
-
-            mappings = [
-                    11202: "snapshot_20170615",
-                    11201: "snapshot_20170615",
-                    11200: "snapshot_20170615",
-                    11102: "snapshot_20161220",
-                    11100: "snapshot_20161111",
-                    11002: "snapshot_20160518",
-                    10904: "snapshot_20160518",
-                    10809: "stable_22",
-                    10800: "snapshot_nodoc_20141130",
-                    10710: "stable_12",
-            ][mcVersion]
-        }
+        resources.srcDir file('src/integration-test/resources')
     }
 }
 
-afterEvaluate {
-    if (mcVersion >= 11400) {
-        // No longer required in 1.13+ because all version info is in the toml file
-    } else {
-        // Note cannot use minecraft.replace because that has already been forwarded to the task by FG by now
-        tasks.sourceMainJava.replace '@MOD_VERSION@', project.version
-        // Includes intentional whitespace to stop Forge from declaring the mod to be compatible with
-        // a newer srg-compatible MC version (that may be using a different protocol version)
-        tasks.sourceMainJava.replace '@MC_VERSION@', "[ $mcVersionStr ]"
+minecraft {
+    runs {
+        client {
+            workingDirectory rootProject.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'fml.earlyprogresswindow', 'false'
+            property 'mixin.env.disableRefMap', 'true'
+
+            arg '-mixin.config=mixins.replaymod.json'
+
+            mods {
+                replaymod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory rootProject.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.disableRefMap', 'true'
+            arg '-mixin.config=mixins.replaymod.json'
+
+            mods {
+                replaymod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory rootProject.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            jvmArgs ['-Dfml.earlyprogresswindow=false']
+            args '--mod', 'replaymod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
+            mods {
+                replaymod {
+                    source sourceSets.main
+                }
+            }
+        }
     }
+
+    mappings channel: 'snapshot', version: '20210309-1.16.4'
 }
 
 repositories {
     mavenLocal()
-    maven {
-        name = "SpongePowered Repo"
-        url = "https://repo.spongepowered.org/maven/"
-    }
-    maven {
-        name = "fabric"
-        url = "https://maven.fabricmc.net/"
-    }
+    maven { url "https://repo.spongepowered.org/maven/" }
     maven {
         url 'https://maven.terraformersmc.com/releases/'
         content {
@@ -253,153 +146,47 @@ configurations {
     compile.extendsFrom shadow
 }
 
-def shadeExclusions = {
-    // Cannot just add these to the shade configuration because they'd be inherited by the compile configuration then
-    exclude group: 'com.google.guava', module: 'guava-jdk5'
-    exclude group: 'com.google.guava', module: 'guava' // provided by MC
-    exclude group: 'com.google.code.gson', module: 'gson' // provided by MC
-}
-
 dependencies {
-    if (FABRIC) {
-        minecraft 'com.mojang:minecraft:' + [
-                11404: '1.14.4',
-                11502: '1.15.2',
-                11601: '1.16.1',
-                11603: '1.16.3',
-                11604: '1.16.4',
-        ][mcVersion]
-        mappings 'net.fabricmc:yarn:' + [
-                11404: '1.14.4+build.16',
-                11502: '1.15.2+build.14',
-                11601: '1.16.1+build.17:v2',
-                11603: '1.16.3+build.1:v2',
-                11604: '1.16.4+build.6:v2',
-        ][mcVersion]
-        modCompile 'net.fabricmc:fabric-loader:' + [
-                11404: '0.7.8+build.189',
-                11502: '0.7.8+build.189',
-                11601: '0.8.8+build.202',
-                11603: '0.9.1+build.205',
-                11604: '0.10.6+build.214',
-        ][mcVersion]
-        def fabricApiVersion = [
-                11404: '0.4.3+build.247-1.14',
-                11502: '0.5.1+build.294-1.15',
-                11601: '0.14.0+build.371-1.16',
-                11603: '0.17.1+build.394-1.16',
-                11604: '0.25.1+build.416-1.16',
-        ][mcVersion]
-        def fabricApiModules = [
-                "api-base",
-                "networking-v0",
-                "keybindings-v0",
-                "resource-loader-v0",
-        ]
-        if (mcVersion >= 11600) {
-            fabricApiModules.add("key-binding-api-v1")
-        }
-        fabricApiModules.each { module ->
-            modCompile fabricApi.module("fabric-$module", fabricApiVersion)
-            include fabricApi.module("fabric-$module", fabricApiVersion)
+    def mixinVersion = '0.8.2'
+    def shadeExclusions = {
+        // Cannot just add these to the shade configuration because they'd be inherited by the compile configuration then
+        exclude group: 'com.google.guava', module: 'guava-jdk5'
+        exclude group: 'com.google.guava', module: 'guava' // provided by MC
+        exclude group: 'com.google.code.gson', module: 'gson' // provided by MC
+    }
+
+    minecraft 'net.minecraftforge:forge:1.16.4-35.1.37'
+
+    annotationProcessor "org.spongepowered:mixin:$mixinVersion"
+    compileOnly "org.spongepowered:mixin:$mixinVersion"
+    shade("org.spongepowered:mixin:$mixinVersion") { transitive = false } // deps should all be bundled with MC
+
+    // Mixin needs these (and depends on them but for some reason that's not enough. FG, did you do that?)
+    annotationProcessor 'com.google.code.gson:gson:2.2.4'
+    annotationProcessor 'com.google.guava:guava:21.0'
+    annotationProcessor 'org.ow2.asm:asm-tree:6.2'
+    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.0-beta9'
+
+    for (suffix in ['', ':natives-linux', ':natives-windows', ':natives-macos']) {
+        shadow('org.lwjgl:lwjgl-tinyexr:3.2.2' + suffix) {
+            exclude group: 'org.lwjgl', module: 'lwjgl' // comes with MC
         }
     }
 
-    if (FG4) {
-        minecraft 'net.minecraftforge:forge:' + [
-                11604: '1.16.4-35.1.37',
-        ][mcVersion]
-    }
-
-    if (!FABRIC) {
-        // Mixin 0.8 is no longer compatible with MC 1.11.2 or older
-        def mixinVersion = mcVersion >= 11200 ? '0.8.2' : '0.7.11-SNAPSHOT'
-        annotationProcessor "org.spongepowered:mixin:$mixinVersion"
-        compileOnly "org.spongepowered:mixin:$mixinVersion"
-        shade("org.spongepowered:mixin:$mixinVersion") {
-            transitive = false // deps should all be bundled with MC
-        }
-
-        // Mixin needs these (and depends on them but for some reason that's not enough. FG, did you do that?)
-        annotationProcessor 'com.google.code.gson:gson:2.2.4'
-        annotationProcessor 'com.google.guava:guava:21.0'
-        annotationProcessor 'org.ow2.asm:asm-tree:6.2'
-        annotationProcessor 'org.apache.logging.log4j:log4j-core:2.0-beta9'
-    }
     shadow 'com.googlecode.mp4parser:isoparser:1.1.7'
     shadow 'org.apache.commons:commons-exec:1.3'
     shadow 'com.google.apis:google-api-services-youtube:v3-rev178-1.22.0', shadeExclusions
     shadow 'com.google.api-client:google-api-client-gson:1.20.0', shadeExclusions
     shadow 'com.google.api-client:google-api-client-java6:1.20.0', shadeExclusions
     shadow 'com.google.oauth-client:google-oauth-client-jetty:1.20.0'
-
-    if (mcVersion >= 11400) { // need lwjgl 3
-        for (suffix in ['', ':natives-linux', ':natives-windows', ':natives-macos']) {
-            shadow('org.lwjgl:lwjgl-tinyexr:3.2.2' + suffix) {
-                exclude group: 'org.lwjgl', module: 'lwjgl' // comes with MC
-            }
-        }
-    }
-
     shadow 'com.github.javagl.JglTF:jgltf-model:3af6de4'
-
-    if (FABRIC) {
-        shadow 'org.apache.maven:maven-artifact:3.6.1'
-    }
-
     shadow 'org.aspectj:aspectjrt:1.8.2'
-
     shadow 'com.github.ReplayMod.JavaBlend:2.79.0:a0696f8'
-
-    shadow "com.github.ReplayMod:ReplayStudio:a1f82a7", shadeExclusions
-
-    implementation(jGui){
-        transitive = false // FG 1.2 puts all MC deps into the compile configuration and we don't want to shade those
-    }
+    shadow "com.github.ReplayMod:ReplayStudio:a1f82a7"
     shadow 'com.github.ReplayMod:lwjgl-utils:27dcd66'
 
-    if (FABRIC) {
-        if (mcVersion >= 11602) {
-            modCompile 'com.terraformersmc:modmenu:1.16.8'
-        } else if (mcVersion >= 11600) {
-            modCompile 'io.github.prospector:modmenu:1.14.0+build.24'
-        } else {
-            modCompile 'io.github.prospector.modmenu:ModMenu:1.6.2-92'
-        }
-    }
-
+    // implementation(jGui){ transitive = false } // FG 1.2 puts all MC deps into the compile configuration and we don't want to shade those
     testCompile 'junit:junit:4.11'
-}
-
-if (mcVersion <= 10710) {
-    // FG 1.2 adds all MC deps to the compile configuration which we don't want
-    afterEvaluate {
-        // Remove them from the compile and runtime configurations
-        configurations.compile.extendsFrom -= [configurations.minecraft, configurations.minecraftDeps]
-        configurations.runtime.extendsFrom -= [configurations.forgeGradleStartClass]
-        // And add them to the source sets instead
-        sourceSets.main.with {
-            compileClasspath += configurations.minecraft + configurations.minecraftDeps
-            runtimeClasspath += configurations.minecraft + configurations.minecraftDeps + configurations.forgeGradleStartClass
-        }
-        // Also need to reconfigure the reobf task, so it can properly re-obfuscates inherited members
-        tasks.reobf.obfOutput.all { artifact ->
-            artifact.getFile() // force resolve
-            artifact.classpath += configurations.minecraft + configurations.minecraftDeps
-        }
-    }
-
-    // Test sources aren't preprocessed and I can't be bothered to fix that
-    tasks.compileTestJava.onlyIf { false }
-}
-
-if (FABRIC) {
-    tasks.remapJar {
-        addNestedDependencies.set(true)
-        afterEvaluate { // FIXME why does loom overwrite this if we set it immediately?
-            archiveClassifier.set('obf')
-        }
-    }
 }
 
 File configureRelocationOutput = new File(project.buildDir, 'configureRelocation')
@@ -416,7 +203,7 @@ task configureRelocation() {
                     def pkg = file.path.substring(0, file.path.lastIndexOf('/')) + '/'
                     if (pkg.startsWith('com/')) {
                         if (pkg.startsWith('com/google/')) {
-                            if (!pkg.startsWith('com/google/common')) {
+                            if (!pkg.startsWith('com/google/common') && !pkg.startsWith('com/google/gson')) {
                                 pkgs << pkg.substring(0, pkg.indexOf('/', 'com/google/'.length()))
                             }
                         } else if (!pkg.startsWith('com/replaymod')) {
@@ -469,49 +256,36 @@ tasks.whenTaskAdded { task ->
 }
 
 task jarCustom(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
-    from { (FABRIC ? tasks.remapJar : tasks.jar).archiveFile.get() }
-    dependsOn { FABRIC ? tasks.remapJar : (mcVersion >= 10800 ? tasks.reobfJar : tasks.reobf) }
+    classifier 'shadow'
+    from { new File(project.buildDir, 'reobfJar/output.jar') }
 
-    from({ zipTree((FABRIC ? jGui.tasks.remapJar : jGui.tasks.jar).archiveFile.get()) }) {
-        filesMatching('mixins.jgui.json') {
-            filter { it.replace('de.johni0702', 'com.replaymod.lib.de.johni0702') }
-        }
-        filesMatching('mixins.jgui.refmap.json') {
-            filter { it.replace('de/johni0702', 'com/replaymod/lib/de/johni0702') }
-        }
-    }
-    dependsOn { FABRIC ? jGui.tasks.remapJar : (mcVersion >= 10800 ? jGui.tasks.reobfJar : jGui.tasks.reobf) }
-    relocate 'de.johni0702', 'com.replaymod.lib.de.johni0702'
+    dependsOn { tasks.configureRelocation }
+    dependsOn { tasks.reobfJar }
 
     manifest.inheritFrom tasks.jar.manifest
 
-    from project.configurations.shade
     configurations = [project.configurations.shadow]
-    exclude 'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'assets/*', 'module-info.class'
+    // from { project.configurations.shade }
 
-    dependsOn tasks.configureRelocation
-    inputs.file(configureRelocationOutput)
-    doFirst {
-        configureRelocationOutput.readLines().each { pkg ->
-            def pkgName = pkg.replace('/', '.')
-            relocate pkgName, 'com.replaymod.lib.' + pkgName
-        }
-    }
+    inputs.file configureRelocationOutput
 
     // No need to shadow netty, MC provides it
     // (actually, pre-1.12 ships a netty which is too old, so we need to shade it there anyway)
-    if (mcVersion >= 11200) {
-        relocate 'com.github.steveice10.netty', 'io.netty'
-        exclude 'com/github/steveice10/netty/**'
-    }
+    relocate 'com.github.steveice10.netty', 'io.netty'
 
-    if (mcVersion >= 11400) {
-        // MC ships this
-        exclude 'it/unimi/dsi/fastutil/**'
-    }
+    exclude 'com/github/steveice10/netty/**'
+    exclude 'it/unimi/dsi/fastutil/**'
+    exclude 'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'module-info.class'
 
     minimize {
         exclude(dependency('.*spongepowered:mixin:.*'))
+    }
+
+    doFirst {
+        new File(project.buildDir, 'configureRelocation').readLines().each { pkg ->
+            def pkgName = pkg.replace('/', '.')
+            relocate pkgName, 'com.replaymod.lib.' + pkgName
+        }
     }
 }
 tasks.assemble.dependsOn tasks.jarCustom
@@ -519,15 +293,12 @@ tasks.assemble.dependsOn tasks.jarCustom
 jar {
     classifier = 'raw'
 
-    if (!FABRIC) {
-        from files(project.mixinRefMap.canonicalPath)
-        manifest {
-            attributes 'TweakClass': 'com.replaymod.core.tweaker.ReplayModTweaker',
-                    'TweakOrder': '0',
-                    'FMLCorePluginContainsFMLMod': 'true',
-                    'FMLCorePlugin': 'com.replaymod.core.LoadingPlugin',
-                    'FMLAT': 'replaymod_at.cfg'
-        }
+    from files(project.mixinRefMap.canonicalPath)
+    manifest {
+        attributes 'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLAT': 'replaymod_at.cfg',
+                'MixinConfigs': 'mixins.replaymod.json'
     }
 }
 
@@ -548,115 +319,30 @@ processResources {
     }
 
     // exclude mod meta for non-applicable loader
-    if (FABRIC) {
-        exclude 'mcmod.info'
-    } else {
-        exclude 'fabric.mod.json'
-    }
+    exclude 'fabric.mod.json'
 }
 
-sourceSets {
-    integrationTest {
-        compileClasspath += main.runtimeClasspath + main.output
-        java {
-            srcDir file('src/integration-test/java')
-        }
-        resources.srcDir file('src/integration-test/resources')
-    }
-}
-
-if (FABRIC) {
-    // not required, fabric manages those by itself just fine
-} else if (FG4) {
-    task copySrg(dependsOn: 'createMcpToSrg') {
-        doLast {
-            def tsrg = file(project.tasks.createMcpToSrg.output).readLines()
-            def srg = []
-            def cls = ''
-            for (def line : tsrg) {
-                if (line[0] != '\t') {
-                    srg.add('CL: ' + line)
-                    cls = line.split(' ')[0]
+task copySrg(dependsOn: 'createMcpToSrg') {
+    doLast {
+        def tsrg = file(project.tasks.createMcpToSrg.output).readLines()
+        def srg = []
+        def cls = ''
+        for (def line : tsrg) {
+            if (line[0] != '\t') {
+                srg.add('CL: ' + line)
+                cls = line.split(' ')[0]
+            } else {
+                def parts = line.substring(1).split(' ')
+                if (line.contains('(')) {
+                    srg.add('MD: ' + cls + '/' + parts[0] + ' ' + parts[1] + ' ' + cls + '/' + parts[2] + ' ' + parts[1])
                 } else {
-                    def parts = line.substring(1).split(' ')
-                    if (line.contains('(')) {
-                        srg.add('MD: ' + cls + '/' + parts[0] + ' ' + parts[1] + ' ' + cls + '/' + parts[2] + ' ' + parts[1])
-                    } else {
-                        srg.add('FD: ' + cls + '/' + parts[0] + ' ' + cls + '/' + parts[1])
-                    }
+                    srg.add('FD: ' + cls + '/' + parts[0] + ' ' + cls + '/' + parts[1])
                 }
             }
-            new File(project.buildDir, 'mcp-srg.srg').write(srg.join('\n'))
         }
-    }
-    compileJava.dependsOn copySrg
-} else {
-    task copySrg(type: Copy, dependsOn: 'genSrgs') {
-        from {project.tasks.genSrgs.mcpToSrg}
-        into 'build'
-    }
-    compileJava.dependsOn copySrg
-}
-
-if (!FABRIC && !FG4) {
-    if (mcVersion <= 10710) {
-        reobf.addExtraSrgFile project.mixinSrg
-    } else {
-        reobfJar.addSecondarySrgFile project.mixinSrg
+        new File(project.buildDir, 'mcp-srg.srg').write(srg.join('\n'))
     }
 }
-
-/* FIXME
-// Mixin uses multiple HashMaps to generate the refmap.
-// HashMaps are unordered collections and as such do not produce deterministic output.
-// To fix that, we simply sort the refmap json file.
-import groovy.json.JsonSlurper
-import groovy.json.JsonOutput
-compileJava.doLast {
-    File refmapFile = mcVersion >= 10800 ? compileJava.ext.refMapFile : project.mixinRefMap
-    if (refmapFile.exists()) {
-        def ordered
-        ordered = {
-            if (it instanceof Map) {
-                def sorted = new TreeMap(it)
-                sorted.replaceAll { k, v -> ordered(v) }
-                sorted
-            } else if (it instanceof List) {
-                it.replaceAll { v -> ordered(v) }
-            } else {
-                it
-            }
-        }
-        def json = JsonOutput.toJson(ordered(new JsonSlurper().parse(refmapFile)))
-        refmapFile.withWriter { it.write json }
-    }
-}
-*/
-
-if (!FG4 && !FABRIC) { // FIXME
-task runIntegrationTest(type: JavaExec, dependsOn: ["makeStart", "jar"]) {
-    main = 'GradleStart'
-    standardOutput = System.out
-    errorOutput = System.err
-    workingDir file(minecraft.runDir)
-
-    def testDir = new File(minecraft.runDir, "integration-test")
-    doFirst {
-        testDir.deleteDir()
-        testDir.mkdirs()
-    }
-
-    doLast {
-        testDir.deleteDir()
-    }
-
-    afterEvaluate {
-        def runClient = tasks.getByName("runClient")
-        runIntegrationTest.jvmArgs = runClient.jvmArgs + "-Dfml.noGrab=true"
-        runIntegrationTest.args = runClient.args + "--gameDir" + testDir.canonicalPath
-        runIntegrationTest.classpath runClient.classpath + sourceSets.integrationTest.output
-    }
-}
-}
+compileJava.dependsOn copySrg
 
 defaultTasks 'build'
