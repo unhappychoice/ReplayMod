@@ -2,7 +2,7 @@ package com.replaymod.mixin;
 
 import com.replaymod.render.hooks.EntityRendererHandler;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 //#if MC>=11500
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.renderer.WorldRenderer;
 //#else
 //$$ import net.minecraft.client.render.GameRenderer;
 //#endif
@@ -25,10 +25,10 @@ import net.minecraft.client.render.WorldRenderer;
 //$$ @Mixin(GameRenderer.class)
 //#endif
 public abstract class Mixin_ChromaKeyForceSky {
-    @Shadow @Final private MinecraftClient client;
+    @Shadow @Final private Minecraft mc;
 
     //#if MC>=11500
-    @ModifyConstant(method = "render", constant = @Constant(intValue = 4))
+    @ModifyConstant(method = "updateCameraAndRender", constant = @Constant(intValue = 4))
     //#else
     //#if MC>=11400
     //$$ @ModifyConstant(method = "renderCenter", constant = @Constant(intValue = 4))
@@ -37,7 +37,7 @@ public abstract class Mixin_ChromaKeyForceSky {
     //#endif
     //#endif
     private int forceSkyWhenChromaKeying(int value) {
-        EntityRendererHandler handler = ((EntityRendererHandler.IEntityRenderer) this.client.gameRenderer).replayModRender_getHandler();
+        EntityRendererHandler handler = ((EntityRendererHandler.IEntityRenderer) this.mc.gameRenderer).replayModRender_getHandler();
         if (handler != null) {
             ReadableColor color = handler.getSettings().getChromaKeyingColor();
             if (color != null) {

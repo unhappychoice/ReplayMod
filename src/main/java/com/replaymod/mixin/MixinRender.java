@@ -2,7 +2,7 @@ package com.replaymod.mixin;
 
 import com.replaymod.extras.ReplayModExtras;
 import com.replaymod.extras.playeroverview.PlayerOverview;
-import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -39,7 +39,7 @@ public abstract class MixinRender {
         ReplayModExtras.instance.get(PlayerOverview.class).ifPresent(playerOverview -> {
             if (entity instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) entity;
-                if (playerOverview.isHidden(player.getUuid())) {
+                if (playerOverview.isHidden(player.getUniqueID())) {
                     ci.setReturnValue(false);
                 }
             }

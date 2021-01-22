@@ -9,7 +9,7 @@ import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.gui.element.GuiButton;
 import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.gui.versions.callbacks.InitScreenCallback;
-import net.minecraft.util.crash.CrashReport;
+import net.minecraft.crash.CrashReport;
 
 import java.io.IOException;
 
@@ -34,7 +34,7 @@ public class GuiHandler extends EventRegistrations {
                     }
                 }.open();
             } catch (IOException e) {
-                Utils.error(ReplayModEditor.LOGGER, replayViewer, CrashReport.create(e, "Opening replay editor"), () -> {});
+                Utils.error(ReplayModEditor.LOGGER, replayViewer, CrashReport.makeCrashReport(e, "Opening replay editor"), () -> {});
             }
         }).setSize(73, 20).setI18nLabel("replaymod.gui.edit").setDisabled());
     }

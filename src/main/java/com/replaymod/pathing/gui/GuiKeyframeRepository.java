@@ -35,7 +35,7 @@ import com.replaymod.gui.utils.Consumer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import net.minecraft.util.crash.CrashReport;
+import net.minecraft.crash.CrashReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -109,7 +109,7 @@ public class GuiKeyframeRepository extends GuiScreen implements Closeable, Typea
     public final GuiButton loadButton = new GuiButton().onClick(new Runnable() {
         @Override
         public void run() {
-            getMinecraft().openScreen(null);
+            getMinecraft().displayGuiScreen(null);
             try {
                 Timeline timeline = timelines.get(selectedEntries.iterator().next().name);
                 for (Path path : timeline.getPaths()) {
@@ -185,7 +185,7 @@ public class GuiKeyframeRepository extends GuiScreen implements Closeable, Typea
                 setClipboardString(serialization.serialize(toBeSerialized));
             } catch (Throwable t) {
                 t.printStackTrace();
-                CrashReport report = CrashReport.create(t, "Copying timeline(s)");
+                CrashReport report = CrashReport.makeCrashReport(t, "Copying timeline(s)");
                 Utils.error(LOGGER, GuiKeyframeRepository.this, report, () -> {});
             }
         }

@@ -25,8 +25,8 @@ import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import com.replaymod.gui.versions.Image;
 import com.replaymod.gui.versions.MCVer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.Identifier;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -38,8 +38,8 @@ import org.apache.logging.log4j.Logger;
 //#endif
 
 //#if MC>=10800
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.client.network.play.NetworkPlayerInfo;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 //#else
 //$$ import net.minecraft.client.Minecraft;
 //$$ import net.minecraft.client.entity.AbstractClientPlayer;
@@ -180,23 +180,23 @@ public class Utils {
         }
     }
 
-    public static Identifier getResourceLocationForPlayerUUID(UUID uuid) {
+    public static ResourceLocation getResourceLocationForPlayerUUID(UUID uuid) {
         //#if MC>=10800
-        PlayerListEntry info = getMinecraft().getNetworkHandler().getPlayerListEntry(uuid);
-        Identifier skinLocation;
+        NetworkPlayerInfo info = getMinecraft().getConnection().getPlayerInfo(uuid);
+        ResourceLocation skinLocation;
 
         //#if FABRIC>=1
-        if (info != null && info.hasSkinTexture()) {
-            skinLocation = info.getSkinTexture();
-        } else {
-            skinLocation = DefaultSkinHelper.getTexture(uuid);
-        }
-        //#else
-        //$$ if (info != null && info.hasLocationSkin()) {
-        //$$    skinLocation = info.getLocationSkin();
+        //$$ if (info != null && info.hasSkinTexture()) {
+        //$$     skinLocation = info.getSkinTexture();
         //$$ } else {
-        //$$    skinLocation = DefaultPlayerSkin.getDefaultSkin(uuid);
+        //$$     skinLocation = DefaultSkinHelper.getTexture(uuid);
         //$$ }
+        //#else
+        if (info != null && info.hasLocationSkin()) {
+           skinLocation = info.getLocationSkin();
+        } else {
+           skinLocation = DefaultPlayerSkin.getDefaultSkin(uuid);
+        }
         //#endif
         return skinLocation;
         //#else
@@ -232,7 +232,7 @@ public class Utils {
 
     public static GuiInfoPopup error(Logger logger, GuiContainer container, CrashReport crashReport, Runnable onClose) {
         // Convert crash report to string
-        String crashReportStr = crashReport.asString();
+        String crashReportStr = crashReport.getCompleteReport();
 
         // Log via logger
         logger.error(crashReportStr);
@@ -240,10 +240,10 @@ public class Utils {
         // Try to save the crash report
         if (crashReport.getFile() == null) {
             try {
-                File folder = new File(getMinecraft().runDirectory, "crash-reports");
+                File folder = new File(getMinecraft().gameDir, "crash-reports");
                 File file = new File(folder, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
                 logger.debug("Saving crash report to file: {}", file);
-                crashReport.writeToFile(file);
+                crashReport.saveToFile(file);
             } catch (Throwable t) {
                 logger.error("Saving crash report file:", t);
             }

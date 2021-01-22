@@ -26,23 +26,23 @@ package com.replaymod.gui.utils;
 
 import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 //#if MC>=11400
-import net.minecraft.client.util.Window;
+import net.minecraft.client.MainWindow;
 //#else
 //$$ import net.minecraft.client.gui.ScaledResolution;
 //$$ import org.lwjgl.input.Mouse;
 //#endif
 
 public class MouseUtils {
-    private static final MinecraftClient mc = com.replaymod.gui.versions.MCVer.getMinecraft();
+    private static final Minecraft mc = com.replaymod.gui.versions.MCVer.getMinecraft();
 
     public static Point getMousePos() {
         //#if MC>=11400
-        int mouseX = (int) mc.mouse.getX();
-        int mouseY = (int) mc.mouse.getY();
-        Window mainWindow = com.replaymod.gui.versions.MCVer.newScaledResolution(mc);
+        int mouseX = (int) mc.mouseHelper.getMouseX();
+        int mouseY = (int) mc.mouseHelper.getMouseY();
+        MainWindow mainWindow = com.replaymod.gui.versions.MCVer.newScaledResolution(mc);
         mouseX = (int) Math.round((double) mouseX * mainWindow.getScaledWidth() / mainWindow.getWidth());
         mouseY = (int) Math.round((double) mouseY * mainWindow.getScaledHeight() / mainWindow.getHeight());
         //#else
@@ -59,7 +59,7 @@ public class MouseUtils {
 
     public static Point getScaledDimensions() {
         //#if MC>=11400
-        Window
+        MainWindow
         //#else
         //$$ ScaledResolution
         //#endif

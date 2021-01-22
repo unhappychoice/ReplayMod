@@ -1,8 +1,8 @@
 package com.replaymod.gui.utils;
 
 //#if FABRIC<1
-//$$ import com.replaymod.gui.versions.forge.EventsAdapter;
-//$$ import net.minecraftforge.common.MinecraftForge;
+import com.replaymod.gui.versions.forge.EventsAdapter;
+import net.minecraftforge.common.MinecraftForge;
 //#endif
 
 //#if MC<10809
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class EventRegistrations {
     //#if FABRIC<1
-    //$$ static { new EventsAdapter().register(); }
+    static { new EventsAdapter().register(); }
     //#endif
 
     private List<EventRegistration<?>> registrations = new ArrayList<>();
@@ -30,7 +30,7 @@ public class EventRegistrations {
 
     public void register() {
         //#if FABRIC<1
-        //$$ MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(this);
         //#endif
         //#if MC<10809
         //$$ FMLCommonHandler.instance().bus().register(this);
@@ -42,7 +42,7 @@ public class EventRegistrations {
 
     public void unregister() {
         //#if FABRIC<1
-        //$$ MinecraftForge.EVENT_BUS.unregister(this);
+        MinecraftForge.EVENT_BUS.unregister(this);
         //#endif
         //#if MC<10809
         //$$ FMLCommonHandler.instance().bus().unregister(this);

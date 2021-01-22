@@ -2,9 +2,9 @@ package com.replaymod.mixin;
 
 import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.replay.camera.CameraEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.PlayerController;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,40 +19,40 @@ import net.minecraft.client.world.ClientWorld;
 
 //#if MC>=11200
 //#if MC>=11400
-import net.minecraft.client.recipebook.ClientRecipeBook;
+import net.minecraft.client.util.ClientRecipeBook;
 //#else
 //$$ import net.minecraft.stats.RecipeBook;
 //#endif
 //#endif
 //#if MC>=10904
-import net.minecraft.stat.StatHandler;
+import net.minecraft.stats.StatisticsManager;
 //#else
 //$$ import net.minecraft.stats.StatFileWriter;
 //#endif
 
 //#if MC>=10800
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 //#else
 //$$ import net.minecraft.client.entity.EntityClientPlayerMP;
 //$$ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //#endif
 
-@Mixin(ClientPlayerInteractionManager.class)
+@Mixin(PlayerController.class)
 public abstract class Mixin_PlayerControllerMP {
 
     @Shadow
-    private MinecraftClient client;
+    private Minecraft mc;
 
     @Shadow
     //#if MC>=10904
-    private ClientPlayNetworkHandler networkHandler;
+    private ClientPlayNetHandler connection;
     //#else
     //$$ private NetHandlerPlayClient netClientHandler;
     //#endif
 
     //#if MC>=11400
     //#if MC>=11602
-    @Inject(method = "createPlayer(Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/stat/StatHandler;Lnet/minecraft/client/recipebook/ClientRecipeBook;ZZ)Lnet/minecraft/client/network/ClientPlayerEntity;", at=@At("HEAD"), cancellable = true)
+    @Inject(method = "createPlayer(Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/stats/StatisticsManager;Lnet/minecraft/client/util/ClientRecipeBook;ZZ)Lnet/minecraft/client/entity/player/ClientPlayerEntity;", at=@At("HEAD"), cancellable = true)
     //#else
     //$$ @Inject(method = "createPlayer", at=@At("HEAD"), cancellable = true)
     //#endif
@@ -62,7 +62,7 @@ public abstract class Mixin_PlayerControllerMP {
             //#else
             //$$ World worldIn,
             //#endif
-            StatHandler statisticsManager,
+            StatisticsManager statisticsManager,
             ClientRecipeBook recipeBookClient,
             //#if MC>=11600
             boolean lastIsHoldingSneakKey,
@@ -71,7 +71,7 @@ public abstract class Mixin_PlayerControllerMP {
             CallbackInfoReturnable<ClientPlayerEntity> ci
     ) {
         if (ReplayModReplay.instance.getReplayHandler() != null) {
-            ci.setReturnValue(new CameraEntity(this.client, worldIn, this.networkHandler, statisticsManager, recipeBookClient));
+            ci.setReturnValue(new CameraEntity(this.mc, worldIn, this.connection, statisticsManager, recipeBookClient));
     //#else
     //#if MC>=11200
     //$$ @Inject(method = "func_192830_a", at=@At("HEAD"), cancellable = true)
@@ -105,13 +105,13 @@ public abstract class Mixin_PlayerControllerMP {
 
     //#if MC>=10800
     //#if MC>=11400
-    @Inject(method = "isFlyingLocked", at=@At("HEAD"), cancellable = true)
+    @Inject(method = "isSpectatorMode", at=@At("HEAD"), cancellable = true)
     //#else
     //$$ @Inject(method = "isSpectator", at=@At("HEAD"), cancellable = true)
     //#endif
     private void replayModReplay_isSpectator(CallbackInfoReturnable<Boolean> ci) {
-        if (this.client.player instanceof CameraEntity) { // this check should in theory not be required
-            ci.setReturnValue(this.client.player.isSpectator());
+        if (this.mc.player instanceof CameraEntity) { // this check should in theory not be required
+            ci.setReturnValue(this.mc.player.isSpectator());
         }
     }
     //#endif

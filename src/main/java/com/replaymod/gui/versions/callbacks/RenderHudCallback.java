@@ -1,7 +1,7 @@
 package com.replaymod.gui.versions.callbacks;
 
 import com.replaymod.gui.utils.Event;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 public interface RenderHudCallback {
     Event<RenderHudCallback> EVENT = Event.create((listeners) ->

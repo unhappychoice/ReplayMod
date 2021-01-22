@@ -2,7 +2,7 @@
 package com.replaymod.mixin;
 
 import com.replaymod.replay.camera.CameraEntity;
-import net.minecraft.client.gui.hud.SpectatorHud;
+import net.minecraft.client.gui.SpectatorGui;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -10,10 +10,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static com.replaymod.core.versions.MCVer.*;
 
-@Mixin(SpectatorHud.class)
+@Mixin(SpectatorGui.class)
 public abstract class MixinGuiSpectator {
     //#if MC>=10904
-    @Inject(method = "cycleSlot", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onMouseScroll", at = @At("HEAD"), cancellable = true)
     //#else
     //$$ @Inject(method = "func_175260_a", at = @At("HEAD"), cancellable = true)
     //#endif

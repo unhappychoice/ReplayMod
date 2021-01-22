@@ -7,10 +7,10 @@ import com.replaymod.render.capturer.CaptureData;
 import com.replaymod.render.capturer.RenderInfo;
 import com.replaymod.render.capturer.WorldRenderer;
 import com.replaymod.gui.utils.EventRegistrations;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 //#if MC>=11500
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 //#endif
 
 //#if MC>=11400
@@ -27,7 +27,7 @@ import com.replaymod.core.events.PreRenderCallback;
 import java.io.IOException;
 
 public class EntityRendererHandler extends EventRegistrations implements WorldRenderer {
-    public final MinecraftClient mc = MCVer.getMinecraft();
+    public final Minecraft mc = MCVer.getMinecraft();
 
     protected final RenderSettings settings;
 

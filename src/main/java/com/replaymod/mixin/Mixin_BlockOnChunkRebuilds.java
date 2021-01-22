@@ -3,9 +3,9 @@ package com.replaymod.mixin;
 //#if MC>=11500
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.replaymod.render.hooks.ForceChunkLoadingHook;
-import net.minecraft.client.render.chunk.BlockBufferBuilderStorage;
-import net.minecraft.client.render.chunk.ChunkBuilder;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.client.renderer.RegionRenderCacheBuilder;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.util.concurrent.DelegatedTaskExecutor;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,17 +20,17 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Mixin(ChunkBuilder.class)
+@Mixin(ChunkRenderDispatcher.class)
 public abstract class Mixin_BlockOnChunkRebuilds implements ForceChunkLoadingHook.IBlockOnChunkRebuilds {
-    @Shadow @Final private Queue<BlockBufferBuilderStorage> threadBuffers;
+    @Shadow @Final private Queue<RegionRenderCacheBuilder> freeBuilders;
 
-    @Shadow public abstract boolean upload();
+    @Shadow public abstract boolean runChunkUploads();
 
-    @Shadow @Final private TaskExecutor<Runnable> mailbox;
+    @Shadow @Final private DelegatedTaskExecutor<Runnable> delegatedTaskExecutor;
 
-    @Shadow protected abstract void scheduleRunTasks();
+    @Shadow protected abstract void runTask();
 
-    @Shadow @Final private Queue<Runnable> uploadQueue;
+    @Shadow @Final private Queue<Runnable> uploadTasks;
     private final Lock waitingForWorkLock = new ReentrantLock();
     private final Condition newWork = waitingForWorkLock.newCondition();
     private volatile boolean allDone;
@@ -39,12 +39,12 @@ public abstract class Mixin_BlockOnChunkRebuilds implements ForceChunkLoadingHoo
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void rememberTotalThreads(CallbackInfo ci) {
-        this.totalBufferCount = this.threadBuffers.size();
+        this.totalBufferCount = this.freeBuilders.size();
     }
 
-    @Inject(method = "scheduleRunTasks", at = @At("RETURN"))
+    @Inject(method = "runTask", at = @At("RETURN"))
     private void notifyMainThreadIfEverythingIsDone(CallbackInfo ci) {
-        if (this.threadBuffers.size() == this.totalBufferCount) {
+        if (this.freeBuilders.size() == this.totalBufferCount) {
             // Looks like we're done, better notify the main thread in case the previous task didn't generate an upload
             this.waitingForWorkLock.lock();
             try {
@@ -58,7 +58,7 @@ public abstract class Mixin_BlockOnChunkRebuilds implements ForceChunkLoadingHoo
         }
     }
 
-    @Inject(method = "scheduleUpload", at = @At("RETURN"))
+    @Inject(method = "uploadChunkLayer", at = @At("RETURN"))
     private void notifyMainThreadOfNewUpload(CallbackInfoReturnable<CompletableFuture<Void>> ci) {
         this.waitingForWorkLock.lock();
         try {
@@ -69,9 +69,9 @@ public abstract class Mixin_BlockOnChunkRebuilds implements ForceChunkLoadingHoo
     }
 
     private boolean waitForMainThreadWork() {
-        boolean allDone = this.mailbox.<Boolean>ask(reply -> () -> {
-            scheduleRunTasks();
-            reply.send(this.threadBuffers.size() == this.totalBufferCount);
+        boolean allDone = this.delegatedTaskExecutor.<Boolean>func_213141_a(reply -> () -> {
+            runTask();
+            reply.enqueue(this.freeBuilders.size() == this.totalBufferCount);
         }).join();
 
         if (allDone) {
@@ -96,7 +96,7 @@ public abstract class Mixin_BlockOnChunkRebuilds implements ForceChunkLoadingHoo
 
                     if (this.allDone) {
                         return true;
-                    } else if (!this.uploadQueue.isEmpty()) {
+                    } else if (!this.uploadTasks.isEmpty()) {
                         return false;
                     } else {
                         this.newWork.awaitUninterruptibly();
@@ -115,7 +115,7 @@ public abstract class Mixin_BlockOnChunkRebuilds implements ForceChunkLoadingHoo
         boolean allChunksBuilt;
         do {
             allChunksBuilt = waitForMainThreadWork();
-            while (upload()) {
+            while (runChunkUploads()) {
                 anything = true;
             }
         } while (!allChunksBuilt);

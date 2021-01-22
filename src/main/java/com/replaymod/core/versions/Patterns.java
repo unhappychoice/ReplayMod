@@ -1,42 +1,42 @@
 package com.replaymod.core.versions;
 
 import com.replaymod.gradle.remap.Pattern;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.Chunk;
 
 //#if MC>=11400
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.util.Window;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.MainWindow;
 //#else
 //$$ import net.minecraft.client.gui.GuiButton;
 //#endif
 
 //#if MC>=10904
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.crash.ICrashReportDetail;
 //#else
 //$$ import java.util.concurrent.Callable;
 //#endif
 
 //#if MC>=10809
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 //#else
 //#endif
 
 //#if MC>=10800
-import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.renderer.BufferBuilder;
 //#else
 //$$ import net.minecraft.entity.EntityLivingBase;
 //#endif
@@ -47,9 +47,9 @@ import java.util.List;
 class Patterns {
     //#if MC>=10904
     @Pattern
-    private static void addCrashCallable(CrashReportSection category, String name, CrashCallable<String> callable) {
+    private static void addCrashCallable(CrashReportCategory category, String name, ICrashReportDetail<String> callable) {
         //#if MC>=11200
-        category.add(name, callable);
+        category.addDetail(name, callable);
         //#else
         //$$ category.setDetail(name, callable);
         //#endif
@@ -64,7 +64,7 @@ class Patterns {
     @Pattern
     private static double Entity_getX(Entity entity) {
         //#if MC>=11500
-        return entity.getX();
+        return entity.getPosX();
         //#else
         //$$ return entity.x;
         //#endif
@@ -73,7 +73,7 @@ class Patterns {
     @Pattern
     private static double Entity_getY(Entity entity) {
         //#if MC>=11500
-        return entity.getY();
+        return entity.getPosY();
         //#else
         //$$ return entity.y;
         //#endif
@@ -82,7 +82,7 @@ class Patterns {
     @Pattern
     private static double Entity_getZ(Entity entity) {
         //#if MC>=11500
-        return entity.getZ();
+        return entity.getPosZ();
         //#else
         //$$ return entity.z;
         //#endif
@@ -91,7 +91,7 @@ class Patterns {
     @Pattern
     private static void Entity_setPos(Entity entity, double x, double y, double z) {
         //#if MC>=11500
-        entity.setPos(x, y, z);
+        entity.setRawPosition(x, y, z);
         //#else
         //$$ { net.minecraft.entity.Entity self = entity; self.x = x; self.y = y; self.z = z; }
         //#endif
@@ -99,17 +99,17 @@ class Patterns {
 
     //#if MC>=11400
     @Pattern
-    private static void setWidth(AbstractButtonWidget button, int value) {
+    private static void setWidth(Widget button, int value) {
         button.setWidth(value);
     }
 
     @Pattern
-    private static int getWidth(AbstractButtonWidget button) {
+    private static int getWidth(Widget button) {
         return button.getWidth();
     }
 
     @Pattern
-    private static int getHeight(AbstractButtonWidget button) {
+    private static int getHeight(Widget button) {
         //#if MC>=11600
         return button.getHeight();
         //#else
@@ -134,7 +134,7 @@ class Patterns {
     //#endif
 
     @Pattern
-    private static String readString(PacketByteBuf buffer, int max) {
+    private static String readString(PacketBuffer buffer, int max) {
         //#if MC>=10800
         return buffer.readString(max);
         //#else
@@ -144,8 +144,8 @@ class Patterns {
 
     @Pattern
     //#if MC>=10800
-    private static Entity getRenderViewEntity(MinecraftClient mc) {
-        return mc.getCameraEntity();
+    private static Entity getRenderViewEntity(Minecraft mc) {
+        return mc.getRenderViewEntity();
     }
     //#else
     //$$ private static EntityLivingBase getRenderViewEntity(Minecraft mc) {
@@ -155,8 +155,8 @@ class Patterns {
 
     @Pattern
     //#if MC>=10800
-    private static void setRenderViewEntity(MinecraftClient mc, Entity entity) {
-        mc.setCameraEntity(entity);
+    private static void setRenderViewEntity(Minecraft mc, Entity entity) {
+        mc.setRenderViewEntity(entity);
     }
     //#else
     //$$ private static void setRenderViewEntity(Minecraft mc, EntityLivingBase entity) {
@@ -167,7 +167,7 @@ class Patterns {
     @Pattern
     private static Entity getVehicle(Entity passenger) {
         //#if MC>=10904
-        return passenger.getVehicle();
+        return passenger.getRidingEntity();
         //#else
         //$$ return passenger.ridingEntity;
         //#endif
@@ -176,7 +176,7 @@ class Patterns {
     @Pattern
     private static Iterable<Entity> loadedEntityList(ClientWorld world) {
         //#if MC>=11400
-        return world.getEntities();
+        return world.getAllEntities();
         //#else
         //#if MC>=10809
         //$$ return world.loadedEntityList;
@@ -187,9 +187,9 @@ class Patterns {
     }
 
     @Pattern
-    private static Collection<Entity>[] getEntitySectionArray(WorldChunk chunk) {
+    private static Collection<Entity>[] getEntitySectionArray(Chunk chunk) {
         //#if MC>=10800
-        return chunk.getEntitySectionArray();
+        return chunk.getEntityLists();
         //#else
         //$$ return chunk.entityLists;
         //#endif
@@ -207,27 +207,27 @@ class Patterns {
     }
 
     @Pattern
-    private static boolean isOnMainThread(MinecraftClient mc) {
+    private static boolean isOnMainThread(Minecraft mc) {
         //#if MC>=11400
-        return mc.isOnThread();
+        return mc.isOnExecutionThread();
         //#else
         //$$ return mc.isCallingFromMinecraftThread();
         //#endif
     }
 
     @Pattern
-    private static void scheduleOnMainThread(MinecraftClient mc, Runnable runnable) {
+    private static void scheduleOnMainThread(Minecraft mc, Runnable runnable) {
         //#if MC>=11400
-        mc.send(runnable);
+        mc.enqueue(runnable);
         //#else
         //$$ mc.addScheduledTask(runnable);
         //#endif
     }
 
     @Pattern
-    private static Window getWindow(MinecraftClient mc) {
+    private static MainWindow getWindow(Minecraft mc) {
         //#if MC>=11500
-        return mc.getWindow();
+        return mc.getMainWindow();
         //#elseif MC>=11400
         //$$ return mc.window;
         //#else
@@ -247,7 +247,7 @@ class Patterns {
     @Pattern
     private static void BufferBuilder_beginPosCol(BufferBuilder buffer, int mode) {
         //#if MC>=10809
-        buffer.begin(mode, VertexFormats.POSITION_COLOR);
+        buffer.begin(mode, DefaultVertexFormats.POSITION_COLOR);
         //#else
         //$$ buffer.startDrawing(mode /* POSITION_COLOR */);
         //#endif
@@ -256,7 +256,7 @@ class Patterns {
     @Pattern
     private static void BufferBuilder_addPosCol(BufferBuilder buffer, double x, double y, double z, int r, int g, int b, int a) {
         //#if MC>=10809
-        buffer.vertex(x, y, z).color(r, g, b, a).next();
+        buffer.pos(x, y, z).color(r, g, b, a).endVertex();
         //#else
         //$$ { WorldRenderer $buffer = buffer; double $x = x; double $y = y; double $z = z; $buffer.setColorRGBA(r, g, b, a); $buffer.addVertex($x, $y, $z); }
         //#endif
@@ -265,7 +265,7 @@ class Patterns {
     @Pattern
     private static void BufferBuilder_beginPosTex(BufferBuilder buffer, int mode) {
         //#if MC>=10809
-        buffer.begin(mode, VertexFormats.POSITION_TEXTURE);
+        buffer.begin(mode, DefaultVertexFormats.POSITION_TEX);
         //#else
         //$$ buffer.startDrawing(mode /* POSITION_TEXTURE */);
         //#endif
@@ -274,7 +274,7 @@ class Patterns {
     @Pattern
     private static void BufferBuilder_addPosTex(BufferBuilder buffer, double x, double y, double z, float u, float v) {
         //#if MC>=10809
-        buffer.vertex(x, y, z).texture(u, v).next();
+        buffer.pos(x, y, z).tex(u, v).endVertex();
         //#else
         //$$ buffer.addVertexWithUV(x, y, z, u, v);
         //#endif
@@ -283,7 +283,7 @@ class Patterns {
     @Pattern
     private static void BufferBuilder_beginPosTexCol(BufferBuilder buffer, int mode) {
         //#if MC>=10809
-        buffer.begin(mode, VertexFormats.POSITION_TEXTURE_COLOR);
+        buffer.begin(mode, DefaultVertexFormats.POSITION_TEX_COLOR);
         //#else
         //$$ buffer.startDrawing(mode /* POSITION_TEXTURE_COLOR */);
         //#endif
@@ -292,7 +292,7 @@ class Patterns {
     @Pattern
     private static void BufferBuilder_addPosTexCol(BufferBuilder buffer, double x, double y, double z, float u, float v, int r, int g, int b, int a) {
         //#if MC>=10809
-        buffer.vertex(x, y, z).texture(u, v).color(r, g, b, a).next();
+        buffer.pos(x, y, z).tex(u, v).color(r, g, b, a).endVertex();
         //#else
         //$$ { WorldRenderer $buffer = buffer; double $x = x; double $y = y; double $z = z; float $u = u; float $v = v; $buffer.setColorRGBA(r, g, b, a); $buffer.addVertexWithUV($x, $y, $z, $u, $v); }
         //#endif
@@ -308,43 +308,43 @@ class Patterns {
     }
 
     @Pattern
-    private static EntityRenderDispatcher getEntityRenderDispatcher(MinecraftClient mc) {
+    private static EntityRendererManager getEntityRenderDispatcher(Minecraft mc) {
         //#if MC>=10800
-        return mc.getEntityRenderDispatcher();
+        return mc.getRenderManager();
         //#else
         //$$ return com.replaymod.core.versions.MCVer.getRenderManager(mc);
         //#endif
     }
 
     @Pattern
-    private static float getCameraYaw(EntityRenderDispatcher dispatcher) {
+    private static float getCameraYaw(EntityRendererManager dispatcher) {
         //#if MC>=11500
-        return dispatcher.camera.getYaw();
+        return dispatcher.info.getYaw();
         //#else
         //$$ return dispatcher.cameraYaw;
         //#endif
     }
 
     @Pattern
-    private static float getCameraPitch(EntityRenderDispatcher dispatcher) {
+    private static float getCameraPitch(EntityRendererManager dispatcher) {
         //#if MC>=11500
-        return dispatcher.camera.getPitch();
+        return dispatcher.info.getPitch();
         //#else
         //$$ return dispatcher.cameraPitch;
         //#endif
     }
 
     @Pattern
-    private static float getRenderPartialTicks(MinecraftClient mc) {
+    private static float getRenderPartialTicks(Minecraft mc) {
         //#if MC>=10900
-        return mc.getTickDelta();
+        return mc.getRenderPartialTicks();
         //#else
         //$$ return ((com.replaymod.core.mixin.MinecraftAccessor) mc).getTimer().renderPartialTicks;
         //#endif
     }
 
     @Pattern
-    private static TextureManager getTextureManager(MinecraftClient mc) {
+    private static TextureManager getTextureManager(Minecraft mc) {
         //#if MC>=11400
         return mc.getTextureManager();
         //#else
@@ -355,7 +355,7 @@ class Patterns {
     @Pattern
     private static String getBoundKeyName(KeyBinding keyBinding) {
         //#if MC>=11600
-        return keyBinding.getBoundKeyLocalizedText().getString();
+        return keyBinding.func_238171_j_().getString();
         //#elseif MC>=11400
         //$$ return keyBinding.getLocalizedName();
         //#else
@@ -364,9 +364,9 @@ class Patterns {
     }
 
     @Pattern
-    private static PositionedSoundInstance master(Identifier sound, float pitch) {
+    private static SimpleSound master(ResourceLocation sound, float pitch) {
         //#if MC>=10900
-        return PositionedSoundInstance.master(new SoundEvent(sound), pitch);
+        return SimpleSound.master(new SoundEvent(sound), pitch);
         //#elseif MC>=10800
         //$$ return PositionedSoundRecord.create(sound, pitch);
         //#else
@@ -377,7 +377,7 @@ class Patterns {
     @Pattern
     private static boolean isKeyBindingConflicting(KeyBinding a, KeyBinding b) {
         //#if MC>=10900
-        return a.equals(b);
+        return a.conflicts(b);
         //#else
         //$$ return (a.getKeyCode() == b.getKeyCode());
         //#endif

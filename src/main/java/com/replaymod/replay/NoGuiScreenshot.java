@@ -4,12 +4,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.gui.versions.Image;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.util.ScreenshotUtils;
+import net.minecraft.util.ScreenShotHelper;
 
 //#if MC>=11500
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 //#endif
 
 //#if MC<11400
@@ -41,7 +41,7 @@ public class NoGuiScreenshot {
         return height;
     }
 
-    public static ListenableFuture<NoGuiScreenshot> take(final MinecraftClient mc, final int width, final int height) {
+    public static ListenableFuture<NoGuiScreenshot> take(final Minecraft mc, final int width, final int height) {
         final SettableFuture<NoGuiScreenshot> future = SettableFuture.create();
         Runnable runnable = new Runnable() {
             @Override
@@ -50,12 +50,12 @@ public class NoGuiScreenshot {
                     return;
                 }
 
-                int frameWidth = mc.getWindow().getFramebufferWidth();
-                int frameHeight = mc.getWindow().getFramebufferHeight();
+                int frameWidth = mc.getMainWindow().getFramebufferWidth();
+                int frameHeight = mc.getMainWindow().getFramebufferHeight();
 
-                final boolean guiHidden = mc.options.hudHidden;
+                final boolean guiHidden = mc.gameSettings.hideGUI;
                 try {
-                    mc.options.hudHidden = true;
+                    mc.gameSettings.hideGUI = true;
 
                     // Render frame without GUI
                     GlStateManager.pushMatrix();
@@ -65,10 +65,10 @@ public class NoGuiScreenshot {
                             , true
                             //#endif
                     );
-                    mc.getFramebuffer().beginWrite(true);
+                    mc.getFramebuffer().bindFramebuffer(true);
                     GlStateManager.enableTexture();
 
-                    float tickDelta = mc.getTickDelta();
+                    float tickDelta = mc.getRenderPartialTicks();
                     //#if MC>=11500
                     mc.gameRenderer.renderWorld(tickDelta, System.nanoTime(), new MatrixStack());
                     //#else
@@ -83,24 +83,24 @@ public class NoGuiScreenshot {
                     //#endif
                     //#endif
 
-                    mc.getFramebuffer().endWrite();
+                    mc.getFramebuffer().unbindFramebuffer();
                     GlStateManager.popMatrix();
                     GlStateManager.pushMatrix();
-                    mc.getFramebuffer().draw(frameWidth, frameHeight);
+                    mc.getFramebuffer().framebufferRender(frameWidth, frameHeight);
                     GlStateManager.popMatrix();
                 } catch (Throwable t) {
                     future.setException(t);
                     return;
                 } finally {
                     // Reset GUI settings
-                    mc.options.hudHidden = guiHidden;
+                    mc.gameSettings.hideGUI = guiHidden;
                 }
 
                 // The frame without GUI has been rendered
                 // Read it, create the screenshot and finish the future
                 try {
                     //#if MC>=11400
-                    Image image = new Image(ScreenshotUtils.takeScreenshot(frameWidth, frameHeight, mc.getFramebuffer()));
+                    Image image = new Image(ScreenShotHelper.createScreenshot(frameWidth, frameHeight, mc.getFramebuffer()));
                     //#else
                     //$$ // We're using Minecraft's ScreenShotHelper even though it writes the screenshot to
                     //$$ // disk for better maintainability

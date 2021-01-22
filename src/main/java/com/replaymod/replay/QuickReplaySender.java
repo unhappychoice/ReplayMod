@@ -18,13 +18,13 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.NetworkSide;
-import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.play.server.SPlayerPositionLookPacket;
+import net.minecraft.network.play.server.SRespawnPacket;
+import net.minecraft.network.ProtocolType;
+import net.minecraft.network.PacketDirection;
+import net.minecraft.network.IPacket;
+import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 //#if MC>=11602
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.DynamicRegistries;
 import net.minecraft.util.registry.Registry;
 //#endif
 
@@ -42,7 +42,7 @@ import net.minecraft.world.World;
 //$$ import net.minecraft.world.level.LevelGeneratorType;
 //#endif
 //#if MC>=11400
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.DimensionType;
 //#else
 //$$ import net.minecraft.world.EnumDifficulty;
 //#endif
@@ -52,7 +52,7 @@ import com.replaymod.core.utils.WrappedTimer;
 //#endif
 
 //#if MC>=11002
-import net.minecraft.world.GameMode;
+import net.minecraft.world.GameType;
 //#else
 //$$ import net.minecraft.world.WorldSettings.GameType;
 //#endif
@@ -69,10 +69,10 @@ import static com.replaymod.replay.ReplayModReplay.LOGGER;
  */
 @ChannelHandler.Sharable
 public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySender {
-    private final MinecraftClient mc = getMinecraft();
+    private final Minecraft mc = getMinecraft();
 
     private final ReplayModReplay mod;
-    private final RandomAccessReplay<Packet<?>> replay;
+    private final RandomAccessReplay<IPacket<?>> replay;
     private final EventHandler eventHandler = new EventHandler();
     private ChannelHandlerContext ctx;
 
@@ -93,14 +93,14 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
 
     public QuickReplaySender(ReplayModReplay mod, ReplayFile replayFile) {
         this.mod = mod;
-        this.replay = new RandomAccessReplay<Packet<?>>(replayFile, getPacketTypeRegistry(false)) {
+        this.replay = new RandomAccessReplay<IPacket<?>>(replayFile, getPacketTypeRegistry(false)) {
             private byte[] buf = new byte[0];
 
             @Override
-            protected Packet<?> decode(com.github.steveice10.netty.buffer.ByteBuf byteBuf) throws IOException {
+            protected IPacket<?> decode(com.github.steveice10.netty.buffer.ByteBuf byteBuf) throws IOException {
                 int packetId = new ByteBufNetInput(byteBuf).readVarInt();
                 //#if MC>=11500
-                Packet<?> mcPacket = NetworkState.PLAY.getPacketHandler(NetworkSide.CLIENTBOUND, packetId);
+                IPacket<?> mcPacket = ProtocolType.PLAY.getPacket(PacketDirection.CLIENTBOUND, packetId);
                 //#else
                 //$$ Packet<?> mcPacket;
                 //$$ try {
@@ -117,13 +117,13 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
                     byteBuf.readBytes(buf, 0, size);
                     ByteBuf wrappedBuf = Unpooled.wrappedBuffer(buf);
                     wrappedBuf.writerIndex(size);
-                    mcPacket.read(new PacketByteBuf(wrappedBuf));
+                    mcPacket.readPacketData(new PacketBuffer(wrappedBuf));
                 }
                 return mcPacket;
             }
 
             @Override
-            protected void dispatch(Packet<?> packet) {
+            protected void dispatch(IPacket<?> packet) {
                 ctx.fireChannelRead(packet);
             }
         };
@@ -190,17 +190,17 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
 
     public void restart() {
         replay.reset();
-        ctx.fireChannelRead(new PlayerRespawnS2CPacket(
+        ctx.fireChannelRead(new SRespawnPacket(
                 //#if MC>=11600
                 //#if MC>=11602
-                DimensionType.addRegistryDefaults(new DynamicRegistryManager.Impl()).get(Registry.DIMENSION_TYPE_KEY).get(DimensionType.OVERWORLD_REGISTRY_KEY),
+                DimensionType.registerTypes(new DynamicRegistries.Impl()).getRegistry(Registry.DIMENSION_TYPE_KEY).getValueForKey(DimensionType.OVERWORLD),
                 //#else
                 //$$ DimensionType.OVERWORLD_REGISTRY_KEY,
                 //#endif
                 World.OVERWORLD,
                 0,
-                GameMode.SPECTATOR,
-                GameMode.SPECTATOR,
+                GameType.SPECTATOR,
+                GameType.SPECTATOR,
                 false,
                 false,
                 false
@@ -220,7 +220,7 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
                 //$$ GameMode.SPECTATOR
                 //#endif
         ));
-        ctx.fireChannelRead(new PlayerPositionLookS2CPacket(0, 0, 0, 0, 0, Collections.emptySet(), 0));
+        ctx.fireChannelRead(new SPlayerPositionLookPacket(0, 0, 0, 0, 0, Collections.emptySet(), 0));
     }
 
     @Override

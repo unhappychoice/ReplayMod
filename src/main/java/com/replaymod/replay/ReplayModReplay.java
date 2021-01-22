@@ -20,8 +20,8 @@ import com.replaymod.replay.gui.screen.GuiModCompatWarning;
 import com.replaymod.replay.handler.GuiHandler;
 import com.replaymod.replaystudio.data.Marker;
 import com.replaymod.replaystudio.replay.ReplayFile;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,11 +66,11 @@ public class ReplayModReplay implements Module {
                     if (camera != null) {
                         Marker marker = new Marker();
                         marker.setTime(replayHandler.getReplaySender().currentTimeStamp());
-                        marker.setX(camera.getX());
-                        marker.setY(camera.getY());
-                        marker.setZ(camera.getZ());
-                        marker.setYaw(camera.yaw);
-                        marker.setPitch(camera.pitch);
+                        marker.setX(camera.getPosX());
+                        marker.setY(camera.getPosY());
+                        marker.setZ(camera.getPosZ());
+                        marker.setYaw(camera.rotationYaw);
+                        marker.setPitch(camera.rotationPitch);
                         marker.setRoll(camera.roll);
                         replayHandler.getOverlay().timeline.addMarker(marker);
                     }
@@ -82,7 +82,7 @@ public class ReplayModReplay implements Module {
             @Override
             public void run() {
                 if (replayHandler != null) {
-                    MinecraftClient mc = MCVer.getMinecraft();
+                    Minecraft mc = MCVer.getMinecraft();
                     ListenableFuture<NoGuiScreenshot> future = NoGuiScreenshot.take(mc, 1280, 720);
                     Futures.addCallback(future, new FutureCallback<NoGuiScreenshot>() {
                         @Override
@@ -186,14 +186,14 @@ public class ReplayModReplay implements Module {
             }
         }
         replayHandler = new ReplayHandler(replayFile, asyncMode);
-        KeyBinding.updateKeysByCode(); // see Mixin_ContextualKeyBindings
+        KeyBinding.resetKeyBindingArrayAndHash(); // see Mixin_ContextualKeyBindings
 
         return replayHandler;
     }
 
     public void forcefullyStopReplay() {
         replayHandler = null;
-        KeyBinding.updateKeysByCode(); // see Mixin_ContextualKeyBindings
+        KeyBinding.resetKeyBindingArrayAndHash(); // see Mixin_ContextualKeyBindings
     }
 
     public ReplayMod getCore() {

@@ -14,10 +14,10 @@ import com.replaymod.recording.packet.PacketListener;
 import com.replaymod.replaystudio.replay.ReplayFile;
 import com.replaymod.replaystudio.replay.ReplayMetaData;
 import io.netty.channel.Channel;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.ClientConnection;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.network.NetworkManager;
 import org.apache.logging.log4j.Logger;
 
 //#if MC>=11600
@@ -46,7 +46,7 @@ public class ConnectionEventHandler {
     private static final String packetHandlerKey = "packet_handler";
     private static final String DATE_FORMAT = "yyyy_MM_dd_HH_mm_ss";
     private static final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-    private static final MinecraftClient mc = getMinecraft();
+    private static final Minecraft mc = getMinecraft();
 
     private final Logger logger;
     private final ReplayMod core;
@@ -61,13 +61,13 @@ public class ConnectionEventHandler {
         this.core = core;
     }
 
-    public void onConnectedToServerEvent(ClientConnection networkManager) {
+    public void onConnectedToServerEvent(NetworkManager networkManager) {
         try {
-            boolean local = networkManager.isLocal();
+            boolean local = networkManager.isLocalChannel();
             if (local) {
                 //#if MC>=10800
                 //#if MC>=11600
-                if (mc.getServer().getWorld(World.OVERWORLD).isDebugWorld()) {
+                if (mc.getIntegratedServer().getWorld(World.OVERWORLD).isDebug()) {
                 //#else
                 //#if MC>=11400
                 //$$ if (mc.getServer().getWorld(DimensionType.OVERWORLD).getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
@@ -95,16 +95,16 @@ public class ConnectionEventHandler {
             boolean autoStart = core.getSettingsRegistry().get(Setting.AUTO_START_RECORDING);
             if (local) {
                 //#if MC>=11600
-                worldName = mc.getServer().getSaveProperties().getLevelName();
+                worldName = mc.getIntegratedServer().getServerConfiguration().getWorldName();
                 //#else
                 //$$ worldName = mc.getServer().getLevelName();
                 //#endif
                 serverName = worldName;
-            } else if (mc.getCurrentServerEntry() != null) {
-                ServerInfo serverInfo = mc.getCurrentServerEntry();
-                worldName = serverInfo.address;
-                if (!I18n.translate("selectServer.defaultName").equals(serverInfo.name)) {
-                    serverName = serverInfo.name;
+            } else if (mc.getCurrentServerData() != null) {
+                ServerData serverInfo = mc.getCurrentServerData();
+                worldName = serverInfo.serverIP;
+                if (!I18n.format("selectServer.defaultName").equals(serverInfo.serverName)) {
+                    serverName = serverInfo.serverName;
                 }
 
                 Boolean autoStartServer = ServerInfoExt.from(serverInfo).getAutoRecording();

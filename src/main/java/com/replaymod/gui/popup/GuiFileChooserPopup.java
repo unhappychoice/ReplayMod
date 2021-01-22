@@ -241,7 +241,7 @@ public class GuiFileChooserPopup extends AbstractGuiPopup<GuiFileChooserPopup> i
                 @Override
                 protected ReadableDimension calcMinSize() {
                     ReadableDimension dim = super.calcMinSize();
-                    return new Dimension(dim.getWidth() - 5 - com.replaymod.gui.versions.MCVer.getFontRenderer().fontHeight,
+                    return new Dimension(dim.getWidth() - 5 - com.replaymod.gui.versions.MCVer.getFontRenderer().FONT_HEIGHT,
                             dim.getHeight());
                 }
 

@@ -11,9 +11,9 @@ import com.replaymod.render.hooks.Texture2DStateCallback;
 import com.replaymod.render.rendering.FrameCapturer;
 import com.replaymod.render.shader.Program;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.Identifier;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.ReportedException;
+import net.minecraft.util.ResourceLocation;
 
 import static com.mojang.blaze3d.platform.GlStateManager.*;
 
@@ -26,8 +26,8 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 
 public class ODSFrameCapturer implements FrameCapturer<ODSOpenGlFrame> {
-    private static final Identifier vertexResource = new Identifier("replaymod", "shader/ods.vert");
-    private static final Identifier fragmentResource = new Identifier("replaymod", "shader/ods.frag");
+    private static final ResourceLocation vertexResource = new ResourceLocation("replaymod", "shader/ods.vert");
+    private static final ResourceLocation fragmentResource = new ResourceLocation("replaymod", "shader/ods.frag");
 
     private final CubicPboOpenGlFrameCapturer left, right;
     private final Program shaderProgram;
@@ -77,7 +77,7 @@ public class ODSFrameCapturer implements FrameCapturer<ODSOpenGlFrame> {
             leftEyeVariable = shaderProgram.getUniformVariable("leftEye");
             directionVariable = shaderProgram.getUniformVariable("direction");
         } catch (Exception e) {
-            throw new CrashException(CrashReport.create(e, "Creating ODS shaders"));
+            throw new ReportedException(CrashReport.makeCrashReport(e, "Creating ODS shaders"));
         }
     }
 
@@ -168,7 +168,7 @@ public class ODSFrameCapturer implements FrameCapturer<ODSOpenGlFrame> {
             resizeMainWindow(mc, getFrameWidth(), getFrameHeight());
 
             pushMatrix();
-            frameBuffer().beginWrite(true);
+            frameBuffer().bindFramebuffer(true);
 
             clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
                     //#if MC>=11400
@@ -180,7 +180,7 @@ public class ODSFrameCapturer implements FrameCapturer<ODSOpenGlFrame> {
             directionVariable.set(captureData.ordinal());
             worldRenderer.renderWorld(partialTicks, null);
 
-            frameBuffer().endWrite();
+            frameBuffer().unbindFramebuffer();
             popMatrix();
 
             return captureFrame(frameId, captureData);

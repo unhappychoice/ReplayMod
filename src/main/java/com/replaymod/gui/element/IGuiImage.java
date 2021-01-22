@@ -25,12 +25,12 @@
 package com.replaymod.gui.element;
 
 import com.replaymod.gui.versions.Image;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 public interface IGuiImage<T extends IGuiImage<T>> extends GuiElement<T> {
     T setTexture(Image img);
-    T setTexture(Identifier resourceLocation);
-    T setTexture(Identifier resourceLocation, int u, int v, int width, int height);
+    T setTexture(ResourceLocation resourceLocation);
+    T setTexture(ResourceLocation resourceLocation, int u, int v, int width, int height);
 
     T setU(int u);
     T setV(int v);

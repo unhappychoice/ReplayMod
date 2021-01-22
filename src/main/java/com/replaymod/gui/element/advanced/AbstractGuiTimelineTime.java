@@ -76,7 +76,7 @@ public abstract class AbstractGuiTimelineTime<T extends AbstractGuiTimelineTime<
         } else {
             str = String.format("%02d:%02d", time / 1000 / 60, time / 1000 % 60);
         }
-        int stringWidth = MCVer.getFontRenderer().getWidth(str);
+        int stringWidth = MCVer.getFontRenderer().getStringWidth(str);
         positionX = Math.max(stringWidth / 2, Math.min(size.getWidth() - stringWidth / 2, positionX));
         renderer.drawCenteredString(positionX, 0, Colors.WHITE, str, true);
     }

@@ -5,20 +5,20 @@ import com.replaymod.render.blend.BlendMeshBuilder;
 import com.replaymod.render.blend.Exporter;
 import com.replaymod.render.blend.data.DMesh;
 import com.replaymod.render.blend.data.DObject;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.Direction;
 import org.lwjgl.opengl.GL11;
 
 //#if MC>=11400
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.vector.Vector3i;
 //#else
 //$$ import net.minecraftforge.client.model.pipeline.LightUtil;
 //#endif
 
 //#if MC>=11400
-import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
 //#else
 //$$ import net.minecraft.client.renderer.block.model.BakedQuad;
 //#if MC>=10904
@@ -42,7 +42,7 @@ public class ItemExporter implements Exporter {
         this.renderState = renderState;
     }
 
-    public void onRender(Object renderItem, BakedModel model, ItemStack stack) {
+    public void onRender(Object renderItem, IBakedModel model, ItemStack stack) {
         DObject object = getObjectForItemStack(renderItem, model, stack);
 
         renderState.pushObject(object);
@@ -55,7 +55,7 @@ public class ItemExporter implements Exporter {
         renderState.pop();
     }
 
-    private DObject getObjectForItemStack(Object renderItem, BakedModel model, ItemStack stack) {
+    private DObject getObjectForItemStack(Object renderItem, IBakedModel model, ItemStack stack) {
         int frame = renderState.getFrame();
         DObject parent = renderState.peekObject();
         DObject object = null;
@@ -70,7 +70,7 @@ public class ItemExporter implements Exporter {
         if (object == null) {
             object = new ItemBasedDObject(renderItem, model, stack);
             //#if MC>=11400
-            object.id.name = stack.getName().getString();
+            object.id.name = stack.getDisplayName().getString();
             //#else
             //$$ object.id.name = stack.getDisplayName();
             //#endif
@@ -81,12 +81,12 @@ public class ItemExporter implements Exporter {
     }
 
     @SuppressWarnings("unchecked")
-    private static DMesh generateMeshForItemStack(Object renderItem, BakedModel model, ItemStack stack) {
+    private static DMesh generateMeshForItemStack(Object renderItem, IBakedModel model, ItemStack stack) {
         DMesh mesh = new DMesh();
         BlendMeshBuilder builder = new BlendMeshBuilder(mesh);
         builder.setWellBehaved(true);
         //#if MC>=10809
-        builder.begin(GL11.GL_QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         //#else
         //$$ builder.startDrawingQuads();
         //$$ builder.setVertexFormat(DefaultVertexFormats.ITEM);
@@ -111,15 +111,15 @@ public class ItemExporter implements Exporter {
         //#endif
         //#endif
 
-        builder.end();
+        builder.finishDrawing();
         return mesh;
     }
 
     private static void renderQuads(Object renderItem, BlendMeshBuilder buffer, List<BakedQuad> quads, ItemStack stack) {
         for (BakedQuad quad : quads) {
-            int color = stack != null && quad.hasColor()
+            int color = stack != null && quad.hasTintIndex()
                     //#if MC>=10904
-                    ? ((ItemRendererAccessor) renderItem).getItemColors().getColorMultiplier(stack, quad.getColorIndex()) | 0xff000000
+                    ? ((ItemRendererAccessor) renderItem).getItemColors().getColor(stack, quad.getTintIndex()) | 0xff000000
                     //#else
                     //$$ ? stack.getItem().getColorFromItemStack(stack, quad.getTintIndex()) | 0xff000000
                     //#endif
@@ -142,18 +142,18 @@ public class ItemExporter implements Exporter {
 
     private static class ItemBasedDObject extends DObject {
         private final Object renderItem;
-        private final BakedModel model;
+        private final IBakedModel model;
         private final ItemStack stack;
         private boolean valid;
 
-        public ItemBasedDObject(Object renderItem, BakedModel model, ItemStack stack) {
+        public ItemBasedDObject(Object renderItem, IBakedModel model, ItemStack stack) {
             super(generateMeshForItemStack(renderItem, model, stack));
             this.renderItem = renderItem;
             this.model = model;
             this.stack = stack;
         }
 
-        public boolean isBasedOn(Object renderItem, BakedModel model, ItemStack stack) {
+        public boolean isBasedOn(Object renderItem, IBakedModel model, ItemStack stack) {
             return this.renderItem == renderItem && this.model == model && this.stack == stack;
         }
 

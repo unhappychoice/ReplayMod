@@ -10,19 +10,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //#if MC>=11500
-import net.minecraft.client.render.Frustum;
+import net.minecraft.client.renderer.culling.ClippingHelper;
 //#else
 //$$ import net.minecraft.client.render.VisibleRegion;
 //#endif
 
 //#if MC>=11400
-import net.minecraft.client.render.Camera;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 //#else
 //$$ import net.minecraft.entity.Entity;
 //#endif
 
 //#if MC>=11400
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.renderer.WorldRenderer;
 //#else
 //$$ import net.minecraft.client.renderer.RenderGlobal;
 //#endif

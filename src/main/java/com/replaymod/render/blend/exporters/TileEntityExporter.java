@@ -7,8 +7,8 @@ import com.replaymod.render.blend.Exporter;
 import com.replaymod.render.blend.data.DObject;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Matrix4f;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector3f;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.tileentity.TileEntity;
 
 //#if MC>=10904
 import net.minecraft.util.math.BlockPos;
@@ -24,11 +24,11 @@ import static com.replaymod.render.blend.Util.getGlModelViewMatrix;
 import static com.replaymod.render.blend.Util.getTileEntityId;
 
 public class TileEntityExporter implements Exporter {
-    private final MinecraftClient mc = MCVer.getMinecraft();
+    private final Minecraft mc = MCVer.getMinecraft();
     private final RenderState renderState;
     private DObject tileEntitiesObject;
-    private Map<BlockEntity, DObject> tileEntityObjects;
-    private Map<BlockEntity, DObject> tileEntityObjectsSeen;
+    private Map<TileEntity, DObject> tileEntityObjects;
+    private Map<TileEntity, DObject> tileEntityObjectsSeen;
 
     public TileEntityExporter(RenderState renderState) {
         this.renderState = renderState;
@@ -52,9 +52,9 @@ public class TileEntityExporter implements Exporter {
         // so we position it at 0/0/0 and instead have the tile entities themselves move more
         Matrix4f.translate(new Vector3f(
                 //#if MC>=11400
-                (float) -mc.getEntityRenderDispatcher().camera.getPos().x,
-                (float) -mc.getEntityRenderDispatcher().camera.getPos().y,
-                (float) -mc.getEntityRenderDispatcher().camera.getPos().z
+                (float) -mc.getRenderManager().info.getProjectedView().x,
+                (float) -mc.getRenderManager().info.getProjectedView().y,
+                (float) -mc.getRenderManager().info.getProjectedView().z
                 //#else
                 //$$ (float) -mc.getRenderManager().viewerPosX,
                 //$$ (float) -mc.getRenderManager().viewerPosY,
@@ -68,7 +68,7 @@ public class TileEntityExporter implements Exporter {
         renderState.pop();
     }
 
-    public void preRender(BlockEntity tileEntity, double dx, double dy, double dz, float renderPartialTicks, int destroyStage, float alpha) {
+    public void preRender(TileEntity tileEntity, double dx, double dy, double dz, float renderPartialTicks, int destroyStage, float alpha) {
         // FIXME: handle alpha
         DObject tileEntityObject = tileEntityObjects.get(tileEntity);
         if (tileEntityObject == null) {
@@ -102,7 +102,7 @@ public class TileEntityExporter implements Exporter {
 
     @Override
     public void postFrame(int frame) throws IOException {
-        for (Map.Entry<BlockEntity, DObject> entry : tileEntityObjects.entrySet()) {
+        for (Map.Entry<TileEntity, DObject> entry : tileEntityObjects.entrySet()) {
             if (!tileEntityObjectsSeen.containsKey(entry.getKey())) {
                 DObject object = entry.getValue();
                 object.keyframe("hide", 0, renderState.getFrame(), 1f);

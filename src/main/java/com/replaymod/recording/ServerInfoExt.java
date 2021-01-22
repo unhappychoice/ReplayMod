@@ -1,11 +1,11 @@
 package com.replaymod.recording;
 
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.multiplayer.ServerData;
 
-/** Extension interface for {@link net.minecraft.client.network.ServerInfo}. */
+/** Extension interface for {@link net.minecraft.client.multiplayer.ServerData}. */
 public interface ServerInfoExt {
 
-    static ServerInfoExt from(ServerInfo base) {
+    static ServerInfoExt from(ServerData base) {
         return (ServerInfoExt) base;
     }
 

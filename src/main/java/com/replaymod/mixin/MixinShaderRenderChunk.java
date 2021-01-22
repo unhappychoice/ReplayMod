@@ -2,7 +2,7 @@
 package com.replaymod.mixin;
 
 import com.replaymod.render.hooks.EntityRendererHandler;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,18 +13,18 @@ import org.spongepowered.asm.mixin.Shadow;
 //#endif
 
 //#if MC>=11500
-@Mixin(net.minecraft.client.render.chunk.ChunkBuilder.BuiltChunk.class)
+@Mixin(net.minecraft.client.renderer.chunk.ChunkRenderDispatcher.ChunkRender.class)
 //#else
 //$$ @Mixin(net.minecraft.client.render.chunk.ChunkRenderer.class)
 //#endif
 public abstract class MixinShaderRenderChunk {
 
-    private final MinecraftClient mc = MinecraftClient.getInstance();
+    private final Minecraft mc = Minecraft.getInstance();
 
     //#if MC>=11500
-    @Shadow private int rebuildFrame;
+    @Shadow private int frameIndex;
 
-    @Shadow public abstract boolean shouldBuild();
+    @Shadow public abstract boolean shouldStayLoaded();
 
 
     /**
@@ -38,12 +38,12 @@ public abstract class MixinShaderRenderChunk {
      * This is the most convenient place to re-introduce the check (setRebuildFrame would normally be called right after
      * shouldBuild, if it returns true).
      */
-    @Inject(method = "setRebuildFrame", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "setFrameIndex", at = @At("HEAD"), cancellable = true)
     private void replayModCompat_OFHaveYouConsideredWhetherThisChunkShouldEvenBeBuilt(int rebuildFrame, CallbackInfoReturnable<Boolean> ci) {
-        if (this.rebuildFrame == rebuildFrame) {
+        if (this.frameIndex == rebuildFrame) {
             // want to keep the fast path
             ci.setReturnValue(false);
-        } else if (!this.shouldBuild()) {
+        } else if (!this.shouldStayLoaded()) {
             // this is the check which OF removed
             // So, I think I figured out the reason why optifine applies this change: It's so chunks which are outside
             // the server view distance are still rendered if they've previously compiled. The bug still stands but

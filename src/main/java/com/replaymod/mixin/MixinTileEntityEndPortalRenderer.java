@@ -13,13 +13,13 @@ import net.minecraft.util.Util;
 //#endif
 
 //#if MC>=11500
-@Mixin(net.minecraft.client.render.RenderPhase.PortalTexturing.class)
+@Mixin(net.minecraft.client.renderer.RenderState.PortalTexturingState.class)
 //#else
 //$$ @Mixin(net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer.class)
 //#endif
 public class MixinTileEntityEndPortalRenderer {
     //#if MC>=11500
-    @Redirect(method = "method_23557", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"))
+    @Redirect(method = "func_228597_a_", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;milliTime()J"))
     static
     //#else
     //#if MC>=11400
@@ -46,7 +46,7 @@ public class MixinTileEntityEndPortalRenderer {
             return replayHandler.getReplaySender().currentTimeStamp();
         }
         //#if MC>=11400
-        return Util.getMeasuringTimeMs();
+        return Util.milliTime();
         //#else
         //$$ return Minecraft.getSystemTime();
         //#endif

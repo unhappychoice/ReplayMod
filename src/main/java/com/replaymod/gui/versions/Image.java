@@ -1,7 +1,7 @@
 package com.replaymod.gui.versions;
 
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -25,9 +25,9 @@ public class Image implements AutoCloseable {
     public Image(int width, int height) {
         this(
                 //#if FABRIC>=1
-                new NativeImage(NativeImage.Format.ABGR, width, height, true)
+                //$$ new NativeImage(NativeImage.Format.ABGR, width, height, true)
                 //#else
-                //$$ new NativeImage(NativeImage.PixelFormat.RGBA, width, height, true)
+                new NativeImage(NativeImage.PixelFormat.RGBA, width, height, true)
                 //#endif
         );
     }
@@ -65,7 +65,7 @@ public class Image implements AutoCloseable {
 
     public void setRGBA(int x, int y, int r, int g, int b, int a) {
         // actually takes ABGR, not RGBA
-        inner.setPixelColor(x, y, ((a & 0xff) << 24) | ((b & 0xff) << 16) | ((g & 0xff) << 8) | (r & 0xff));
+        inner.setPixelRGBA(x, y, ((a & 0xff) << 24) | ((b & 0xff) << 16) | ((g & 0xff) << 8) | (r & 0xff));
     }
 
     public static Image read(Path path) throws IOException {
@@ -77,13 +77,13 @@ public class Image implements AutoCloseable {
     }
 
     public void writePNG(File file) throws IOException {
-        inner.writeFile(file);
+        inner.write(file);
     }
 
     public void writePNG(OutputStream outputStream) throws IOException {
         Path tmp = Files.createTempFile("tmp", ".png");
         try {
-            inner.writeFile(tmp);
+            inner.write(tmp);
             Files.copy(tmp, outputStream);
         } finally {
             Files.delete(tmp);
@@ -108,7 +108,7 @@ public class Image implements AutoCloseable {
         }
     }
 
-    public NativeImageBackedTexture toTexture() {
-        return new NativeImageBackedTexture(inner);
+    public DynamicTexture toTexture() {
+        return new DynamicTexture(inner);
     }
 }

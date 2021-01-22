@@ -78,7 +78,7 @@ public class GuiModCompatWarning extends AbstractGuiScreen<GuiModCompatWarning> 
             }
         }
 
-        cancelButton.onClick(() -> getMinecraft().openScreen(null));
+        cancelButton.onClick(() -> getMinecraft().displayGuiScreen(null));
     }
 
     @Override

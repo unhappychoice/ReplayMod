@@ -1,8 +1,8 @@
 package com.replaymod.mixin;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.util.Timer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -21,22 +21,22 @@ import java.util.concurrent.CompletableFuture;
 //$$ import java.util.List;
 //#endif
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public interface MinecraftAccessor {
-    @Accessor("renderTickCounter")
-    RenderTickCounter getTimer();
-    @Accessor("renderTickCounter")
-    void setTimer(RenderTickCounter value);
+    @Accessor
+    Timer getTimer();
+    @Accessor
+    void setTimer(Timer value);
 
     //#if MC>=11400
-    @Accessor
+    @Accessor("futureRefreshResources")
     CompletableFuture<Void> getResourceReloadFuture();
-    @Accessor
+    @Accessor("futureRefreshResources")
     void setResourceReloadFuture(CompletableFuture<Void> value);
     //#endif
 
     //#if MC>=11400
-    @Accessor
+    @Accessor("queueChunkTracking")
     Queue<Runnable> getRenderTaskQueue();
     //#else
     //$$ @Accessor
@@ -44,11 +44,11 @@ public interface MinecraftAccessor {
     //#endif
 
     //#if FABRIC>=1
-    @Accessor("crashReport")
-    CrashReport getCrashReporter();
-    //#else
-    //$$ @Accessor
+    //$$ @Accessor("crashReport")
     //$$ CrashReport getCrashReporter();
+    //#else
+    @Accessor
+    CrashReport getCrashReporter();
     //#endif
 
     //#if MC<11400

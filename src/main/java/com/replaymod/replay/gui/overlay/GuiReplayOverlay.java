@@ -22,8 +22,8 @@ import com.replaymod.gui.utils.EventRegistrations;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import de.johni0702.minecraft.gui.utils.lwjgl.WritablePoint;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.GameSettings;
+import net.minecraft.client.resources.I18n;
 
 import static com.replaymod.core.ReplayMod.TEXTURE_SIZE;
 
@@ -44,7 +44,7 @@ public class GuiReplayOverlay extends AbstractGuiOverlay<GuiReplayOverlay> {
                 } else { // Pause button
                     label = "replaymod.gui.ingame.menu.pause";
                 }
-                tooltip.setText(I18n.translate(label) + " (" + mod.keyPlayPause.getBoundKey() + ")");
+                tooltip.setText(I18n.format(label) + " (" + mod.keyPlayPause.getBoundKey() + ")");
             }
             return tooltip;
         }
@@ -117,7 +117,7 @@ public class GuiReplayOverlay extends AbstractGuiOverlay<GuiReplayOverlay> {
             @Override
             public void run() {
                 double speed = getSpeedSliderValue();
-                speedSlider.setText(I18n.translate("replaymod.gui.speed") + ": " + speed + "x");
+                speedSlider.setText(I18n.format("replaymod.gui.speed") + ": " + speed + "x");
                 ReplaySender replaySender = replayHandler.getReplaySender();
                 if (!replaySender.paused()) {
                     replaySender.setReplaySpeed(speed);
@@ -157,7 +157,7 @@ public class GuiReplayOverlay extends AbstractGuiOverlay<GuiReplayOverlay> {
     @Override
     public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
         // Do not render overlay if all hud, or this one specifically, is hidden and we're not in some popup
-        if ((getMinecraft().options.hudHidden || hidden) && isAllowUserInput()) {
+        if ((getMinecraft().gameSettings.hideGUI || hidden) && isAllowUserInput()) {
             // Note that this only applies to when the mouse is visible, otherwise
             // the draw method isn't called in the first place
             return;
@@ -173,8 +173,8 @@ public class GuiReplayOverlay extends AbstractGuiOverlay<GuiReplayOverlay> {
     private class EventHandler extends EventRegistrations {
         { on(KeyBindingEventCallback.EVENT, this::onKeyBindingEvent); }
         private void onKeyBindingEvent() {
-            GameOptions gameSettings = getMinecraft().options;
-            while (gameSettings.keyChat.wasPressed() || gameSettings.keyCommand.wasPressed()) {
+            GameSettings gameSettings = getMinecraft().gameSettings;
+            while (gameSettings.keyBindChat.isPressed() || gameSettings.keyBindCommand.isPressed()) {
                 if (!isMouseVisible()) {
                     setMouseVisible(true);
                 }

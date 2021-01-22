@@ -28,10 +28,10 @@ import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 //#if MC>=10904
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.SoundEvent;
 //#endif
 
 public interface IGuiButton<T extends IGuiButton<T>> extends IGuiClickable<T> {
@@ -45,8 +45,8 @@ public interface IGuiButton<T extends IGuiButton<T>> extends IGuiClickable<T> {
 
     String getLabel();
 
-    Identifier getTexture();
-    T setTexture(Identifier identifier);
+    ResourceLocation getTexture();
+    T setTexture(ResourceLocation identifier);
 
     ReadableDimension getTextureSize();
     T setTextureSize(ReadableDimension size);
@@ -57,10 +57,10 @@ public interface IGuiButton<T extends IGuiButton<T>> extends IGuiClickable<T> {
         return setTextureSize(size, size);
     }
 
-    default T setTexture(Identifier identifier, int width, int height) {
+    default T setTexture(ResourceLocation identifier, int width, int height) {
         return setTexture(identifier).setTextureSize(width, height);
     }
-    default T setTexture(Identifier resourceLocation, int size) {
+    default T setTexture(ResourceLocation resourceLocation, int size) {
         return setTexture(resourceLocation, size, size);
     }
 

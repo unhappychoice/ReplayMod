@@ -3,9 +3,9 @@ package com.replaymod.mixin;
 
 import com.replaymod.core.events.PostRenderWorldCallback;
 import com.replaymod.core.events.PreRenderHandCallback;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.GameRenderer;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,7 +17,7 @@ public class MixinGameRenderer {
             method = "renderWorld",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/client/render/GameRenderer;renderHand:Z"
+                    target = "Lnet/minecraft/client/renderer/GameRenderer;renderHand:Z"
             )
     )
     private void postRenderWorld(
@@ -38,7 +38,7 @@ public class MixinGameRenderer {
             //#if MC>=11500
             MatrixStack matrixStack,
             //#endif
-            Camera camera,
+            ActiveRenderInfo camera,
             float partialTicks,
             CallbackInfo ci) {
         if (PreRenderHandCallback.EVENT.invoker().preRenderHand()) {

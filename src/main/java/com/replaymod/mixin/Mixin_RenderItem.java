@@ -13,14 +13,14 @@ import net.minecraft.util.Util;
 //#endif
 
 //#if MC>=11500
-@Mixin(net.minecraft.client.render.RenderPhase.class)
+@Mixin(net.minecraft.client.renderer.RenderState.class)
 //#else
 //$$ @Mixin(net.minecraft.client.render.item.ItemRenderer.class)
 //#endif
 public class Mixin_RenderItem {
     //#if MC>=11400
     //#if MC>=11500
-    @Redirect(method = "setupGlintTexturing", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"))
+    @Redirect(method = "setupGlintTexturing", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;milliTime()J"))
     //#else
     //#if MC>=11400
     //$$ @Redirect(method = "renderGlint", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"))
@@ -38,7 +38,7 @@ public class Mixin_RenderItem {
             return replayHandler.getReplaySender().currentTimeStamp();
         }
         //#if MC>=11400
-        return Util.getMeasuringTimeMs();
+        return Util.milliTime();
         //#else
         //$$ return Minecraft.getSystemTime();
         //#endif

@@ -48,7 +48,7 @@ public class GuiRenderingDone extends GuiScreen {
                 settingsRegistry.set(Setting.SKIP_POST_RENDER_GUI, true);
                 settingsRegistry.save();
             }
-            getMinecraft().openScreen(null);
+            getMinecraft().displayGuiScreen(null);
         }
     }).setSize(100, 20).setI18nLabel("replaymod.gui.close");
 

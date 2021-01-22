@@ -18,9 +18,9 @@ import com.replaymod.simplepathing.SPTimeline.SPPath;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.element.advanced.AbstractGuiTimeline;
 import com.replaymod.gui.function.Draggable;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.apache.commons.lang3.tuple.Pair;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
@@ -143,10 +143,10 @@ public class GuiKeyframeTimeline extends AbstractGuiTimeline<GuiKeyframeTimeline
                     final int color = 0xff0000ff;
                     Tessellator tessellator = Tessellator.getInstance();
                     BufferBuilder buffer = tessellator.getBuffer();
-                    buffer.begin(GL11.GL_LINE_STRIP, VertexFormats.POSITION_COLOR);
+                    buffer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
 
                     // Start just below the top border of the replay timeline
-                    buffer.vertex(
+                    buffer.pos(
                             replayTimelineLeft + positionXReplayTimeline,
                             replayTimelineTop + BORDER_TOP,
                             0
@@ -155,9 +155,9 @@ public class GuiKeyframeTimeline extends AbstractGuiTimeline<GuiKeyframeTimeline
                             color >> 16 & 0xff,
                             color >> 8 & 0xff,
                             color & 0xff
-                    ).next();
+                    ).endVertex();
                     // Draw vertically over the replay timeline, including its bottom border
-                    buffer.vertex(
+                    buffer.pos(
                             replayTimelineLeft + positionXReplayTimeline,
                             replayTimelineBottom,
                             0
@@ -166,9 +166,9 @@ public class GuiKeyframeTimeline extends AbstractGuiTimeline<GuiKeyframeTimeline
                             color >> 16 & 0xff,
                             color >> 8 & 0xff,
                             color & 0xff
-                    ).next();
+                    ).endVertex();
                     // Now for the important part: connecting to the keyframe timeline
-                    buffer.vertex(
+                    buffer.pos(
                             keyframeTimelineLeft + positionXKeyframeTimeline,
                             keyframeTimelineTop,
                             0
@@ -177,9 +177,9 @@ public class GuiKeyframeTimeline extends AbstractGuiTimeline<GuiKeyframeTimeline
                             color >> 16 & 0xff,
                             color >> 8 & 0xff,
                             color & 0xff
-                    ).next();
+                    ).endVertex();
                     // And finally another vertical bit (the timeline is already crammed enough, so only the border)
-                    buffer.vertex(
+                    buffer.pos(
                             keyframeTimelineLeft + positionXKeyframeTimeline,
                             keyframeTimelineTop + BORDER_TOP,
                             0
@@ -188,7 +188,7 @@ public class GuiKeyframeTimeline extends AbstractGuiTimeline<GuiKeyframeTimeline
                             color >> 16 & 0xff,
                             color >> 8 & 0xff,
                             color & 0xff
-                    ).next();
+                    ).endVertex();
 
                     GL11.glEnable(GL11.GL_LINE_SMOOTH);
                     GL11.glDisable(GL11.GL_TEXTURE_2D);

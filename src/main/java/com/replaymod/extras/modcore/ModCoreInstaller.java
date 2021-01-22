@@ -52,7 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //#if FABRIC>=1
-import net.fabricmc.loader.api.FabricLoader;
+//$$ import net.fabricmc.loader.api.FabricLoader;
 //#else
 //#if MC>=11400
 //#else

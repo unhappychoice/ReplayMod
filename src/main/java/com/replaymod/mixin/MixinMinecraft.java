@@ -1,7 +1,7 @@
 package com.replaymod.mixin;
 
 import com.replaymod.core.MinecraftMethodAccessor;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,13 +18,13 @@ import com.replaymod.core.events.PreRenderCallback;
 //#endif
 
 //#if MC>=11400
-import net.minecraft.util.thread.ReentrantThreadExecutor;
+import net.minecraft.util.concurrent.RecursiveEventLoop;
 //#endif
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public abstract class MixinMinecraft
         //#if MC>=11400
-        extends ReentrantThreadExecutor<Runnable>
+        extends RecursiveEventLoop<Runnable>
         //#endif
         implements MinecraftMethodAccessor
         {
@@ -34,32 +34,32 @@ public abstract class MixinMinecraft
     //#endif
 
     //#if FABRIC>=1
-    @Shadow protected abstract void handleInputEvents();
+    //$$ @Shadow protected abstract void handleInputEvents();
     //#elseif MC>=11400
-    //$$ @Shadow protected abstract void processKeyBinds();
+    @Shadow protected abstract void processKeyBinds();
     //#endif
 
     public void replayModProcessKeyBinds() {
-        handleInputEvents();
+        processKeyBinds();
     }
 
     //#if MC>=11400
     public void replayModExecuteTaskQueue() {
-        runTasks();
+        drainTasks();
     }
     //#endif
 
     //#if MC>=11400
-    @Inject(method = "render",
+    @Inject(method = "runGameLoop",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/GameRenderer;render(FJZ)V"))
+                    target = "Lnet/minecraft/client/renderer/GameRenderer;updateCameraAndRender(FJZ)V"))
     private void preRender(boolean unused, CallbackInfo ci) {
         PreRenderCallback.EVENT.invoker().preRender();
     }
 
-    @Inject(method = "render",
+    @Inject(method = "runGameLoop",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/GameRenderer;render(FJZ)V",
+                    target = "Lnet/minecraft/client/renderer/GameRenderer;updateCameraAndRender(FJZ)V",
                     shift = At.Shift.AFTER))
     private void postRender(boolean unused, CallbackInfo ci) {
         PostRenderCallback.EVENT.invoker().postRender();

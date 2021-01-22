@@ -8,8 +8,8 @@ import com.replaymod.render.utils.ByteBufferPool;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.WritableDimension;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -32,7 +32,7 @@ public abstract class OpenGlFrameCapturer<F extends Frame, D extends CaptureData
     protected int framesDone;
     private Framebuffer frameBuffer;
 
-    protected final MinecraftClient mc = MCVer.getMinecraft();
+    protected final Minecraft mc = MCVer.getMinecraft();
 
     public OpenGlFrameCapturer(WorldRenderer worldRenderer, RenderInfo renderInfo) {
         this.worldRenderer = worldRenderer;
@@ -84,7 +84,7 @@ public abstract class OpenGlFrameCapturer<F extends Frame, D extends CaptureData
         resizeMainWindow(mc, getFrameWidth(), getFrameHeight());
 
         pushMatrix();
-        frameBuffer().beginWrite(true);
+        frameBuffer().bindFramebuffer(true);
 
         clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
                 //#if MC>=11400
@@ -95,7 +95,7 @@ public abstract class OpenGlFrameCapturer<F extends Frame, D extends CaptureData
 
         worldRenderer.renderWorld(partialTicks, captureData);
 
-        frameBuffer().endWrite();
+        frameBuffer().unbindFramebuffer();
         popMatrix();
 
         return captureFrame(frameId, captureData);
@@ -103,9 +103,9 @@ public abstract class OpenGlFrameCapturer<F extends Frame, D extends CaptureData
 
     protected OpenGlFrame captureFrame(int frameId, D captureData) {
         ByteBuffer buffer = ByteBufferPool.allocate(getFrameWidth() * getFrameHeight() * 4);
-        frameBuffer().beginWrite(true);
+        frameBuffer().bindFramebuffer(true);
         GL11.glReadPixels(0, 0, getFrameWidth(), getFrameHeight(), GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, buffer);
-        frameBuffer().endWrite();
+        frameBuffer().unbindFramebuffer();
         buffer.rewind();
 
         return new OpenGlFrame(frameId, new Dimension(getFrameWidth(), getFrameHeight()), 4, buffer);

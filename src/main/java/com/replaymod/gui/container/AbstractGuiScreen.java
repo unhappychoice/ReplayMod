@@ -36,10 +36,10 @@ import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.CrashException;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ReportedException;
 
 //#if MC>=11400
 //#else
@@ -111,7 +111,7 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
                     break;
                 case DIRT:
                     //#if MC>=11600
-                    wrapped.renderBackgroundTexture(0);
+                    wrapped.renderDirtBackground(0);
                     //#else
                     //$$ wrapped.renderDirtBackground(0);
                     //#endif
@@ -145,17 +145,17 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
                     OffsetGuiRenderer eRenderer = new OffsetGuiRenderer(renderer, position, tooltipSize);
                     tooltip.draw(eRenderer, tooltipSize, renderInfo);
                 } catch (Exception ex) {
-                    CrashReport crashReport = CrashReport.create(ex, "Rendering Gui Tooltip");
+                    CrashReport crashReport = CrashReport.makeCrashReport(ex, "Rendering Gui Tooltip");
                     renderInfo.addTo(crashReport);
-                    CrashReportSection category = crashReport.addElement("Gui container details");
+                    CrashReportCategory category = crashReport.makeCategory("Gui container details");
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Container", this::toString);
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Width", () -> "" + size.getWidth());
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Height", () -> "" + size.getHeight());
-                    category = crashReport.addElement("Tooltip details");
+                    category = crashReport.makeCategory("Tooltip details");
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Element", tooltip::toString);
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Position", position::toString);
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Size", tooltipSize::toString);
-                    throw new CrashException(crashReport);
+                    throw new ReportedException(crashReport);
                 }
             }
         }
@@ -179,7 +179,7 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
     }
 
     public void display() {
-        getMinecraft().openScreen(toMinecraft());
+        getMinecraft().displayGuiScreen(toMinecraft());
     }
 
     public Background getBackground() {
@@ -374,7 +374,7 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
 
         @Override
         //#if MC>=11400
-        public void removed() {
+        public void onClose() {
         //#else
         //$$ public void onGuiClosed() {
         //#endif

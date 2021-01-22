@@ -117,8 +117,8 @@ public class PlayerOverview extends EventRegistrations implements Extra {
 
     { on(PreRenderHandCallback.EVENT, this::shouldHideHand); }
     private boolean shouldHideHand() {
-        Entity view = module.getCore().getMinecraft().getCameraEntity();
-        return view != null && isHidden(view.getUuid());
+        Entity view = module.getCore().getMinecraft().getRenderViewEntity();
+        return view != null && isHidden(view.getUniqueID());
     }
 
     // See MixinRender for why this is 1.7.10 only

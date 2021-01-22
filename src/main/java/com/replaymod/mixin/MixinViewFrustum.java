@@ -1,27 +1,27 @@
 //#if MC>=10800
 package com.replaymod.mixin;
 
-import net.minecraft.client.render.BuiltChunkStorage;
+import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 //#if MC>=11500
-import net.minecraft.client.render.chunk.ChunkBuilder.BuiltChunk;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher.ChunkRender;
 //#else
 //$$ import net.minecraft.client.render.chunk.ChunkRenderer;
 //#endif
 
-@Mixin(BuiltChunkStorage.class)
+@Mixin(ViewFrustum.class)
 public abstract class MixinViewFrustum {
     @Redirect(
-            method = "updateCameraPosition",
+            method = "updateChunkPositions",
             at = @At(
                     value = "INVOKE",
                     //#if MC>=10904
                     //#if MC>=11500
-                    target = "Lnet/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk;setOrigin(III)V"
+                    target = "Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender;setPosition(III)V"
                     //#else
                     //$$ target = "Lnet/minecraft/client/render/chunk/ChunkRenderer;setOrigin(III)V"
                     //#endif
@@ -32,7 +32,7 @@ public abstract class MixinViewFrustum {
     )
     private void replayModReplay_updatePositionAndMarkForUpdate(
             //#if MC>=11500
-            BuiltChunk renderChunk,
+            ChunkRender renderChunk,
             //#else
             //$$ ChunkRenderer renderChunk,
             //#endif
@@ -45,10 +45,10 @@ public abstract class MixinViewFrustum {
         //#if MC>=10904
         BlockPos pos = new BlockPos(x, y, z);
         //#endif
-        if (!pos.equals(renderChunk.getOrigin())) {
+        if (!pos.equals(renderChunk.getPosition())) {
             //#if MC>=10904
-            renderChunk.setOrigin(x, y, z);
-            renderChunk.scheduleRebuild(false);
+            renderChunk.setPosition(x, y, z);
+            renderChunk.setNeedsUpdate(false);
             //#else
             //$$ renderChunk.setPosition(pos);
             //$$ renderChunk.setNeedsUpdate(true);

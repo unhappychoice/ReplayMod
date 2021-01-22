@@ -2,7 +2,7 @@ package com.replaymod.replay;
 
 import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.mixin.TimerAccessor;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import static com.replaymod.core.versions.MCVer.getMinecraft;
 
@@ -14,7 +14,7 @@ public interface ReplaySender {
      * @return {@code true} if it is paused, {@code false} otherwise
      */
     public default boolean paused() {
-        MinecraftClient mc = getMinecraft();
+        Minecraft mc = getMinecraft();
         TimerAccessor timer = (TimerAccessor) ((MinecraftAccessor) mc).getTimer();
         //#if MC>=11200
         return timer.getTickLength() == Float.POSITIVE_INFINITY;

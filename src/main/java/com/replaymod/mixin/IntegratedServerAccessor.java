@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface IntegratedServerAccessor {
     // TODO probably https://github.com/ReplayMod/remap/issues/10
     //#if MC>=11500
-    @Accessor("paused")
+    @Accessor("isGamePaused")
     //#else
     //$$ @Accessor("field_5524")
     //#endif

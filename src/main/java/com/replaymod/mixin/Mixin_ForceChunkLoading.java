@@ -3,10 +3,10 @@ package com.replaymod.mixin;
 import com.replaymod.compat.shaders.ShaderReflection;
 import com.replaymod.render.hooks.ForceChunkLoadingHook;
 import com.replaymod.render.hooks.IForceChunkLoading;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.chunk.ChunkBuilder;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,19 +24,19 @@ public abstract class Mixin_ForceChunkLoading implements IForceChunkLoading {
         this.replayModRender_hook = hook;
     }
 
-    @Shadow private Set<ChunkBuilder.BuiltChunk> chunksToRebuild;
+    @Shadow private Set<ChunkRenderDispatcher.ChunkRender> chunksToUpdate;
 
-    @Shadow private ChunkBuilder chunkBuilder;
+    @Shadow private ChunkRenderDispatcher renderDispatcher;
 
-    @Shadow private boolean needsTerrainUpdate;
+    @Shadow private boolean displayListEntitiesDirty;
 
-    @Shadow protected abstract void setupTerrain(Camera camera_1, Frustum frustum_1, boolean boolean_1, int int_1, boolean boolean_2);
+    @Shadow protected abstract void setupTerrain(ActiveRenderInfo camera_1, ClippingHelper frustum_1, boolean boolean_1, int int_1, boolean boolean_2);
 
-    @Shadow private int frame;
+    @Shadow private int frameId;
 
     private boolean passThrough;
     @Inject(method = "setupTerrain", at = @At("HEAD"), cancellable = true)
-    private void forceAllChunks(Camera camera_1, Frustum frustum_1, boolean boolean_1, int int_1, boolean boolean_2, CallbackInfo ci) throws IllegalAccessException {
+    private void forceAllChunks(ActiveRenderInfo camera_1, ClippingHelper frustum_1, boolean boolean_1, int int_1, boolean boolean_2, CallbackInfo ci) throws IllegalAccessException {
         if (replayModRender_hook == null) {
             return;
         }
@@ -52,24 +52,24 @@ public abstract class Mixin_ForceChunkLoading implements IForceChunkLoading {
         try {
             do {
                 // Determine which chunks shall be visible
-                setupTerrain(camera_1, frustum_1, boolean_1, this.frame++, boolean_2);
+                setupTerrain(camera_1, frustum_1, boolean_1, this.frameId++, boolean_2);
 
                 // Schedule all chunks which need rebuilding (we schedule even important rebuilds because we wait for
                 // all of them anyway and this way we can take advantage of threading)
-                for (ChunkBuilder.BuiltChunk builtChunk : this.chunksToRebuild) {
+                for (ChunkRenderDispatcher.ChunkRender builtChunk : this.chunksToUpdate) {
                     // MC sometimes schedules invalid chunks when you're outside of loaded chunks (e.g. y > 256)
-                    if (builtChunk.shouldBuild()) {
-                        builtChunk.scheduleRebuild(this.chunkBuilder);
+                    if (builtChunk.shouldStayLoaded()) {
+                        builtChunk.rebuildChunkLater(this.renderDispatcher);
                     }
-                    builtChunk.cancelRebuild();
+                    builtChunk.clearNeedsUpdate();
                 }
-                this.chunksToRebuild.clear();
+                this.chunksToUpdate.clear();
 
                 // Upload all chunks
-                this.needsTerrainUpdate |= ((ForceChunkLoadingHook.IBlockOnChunkRebuilds) this.chunkBuilder).uploadEverythingBlocking();
+                this.displayListEntitiesDirty |= ((ForceChunkLoadingHook.IBlockOnChunkRebuilds) this.renderDispatcher).uploadEverythingBlocking();
 
                 // Repeat until no more updates are needed
-            } while (this.needsTerrainUpdate);
+            } while (this.displayListEntitiesDirty);
         } finally {
             passThrough = false;
         }

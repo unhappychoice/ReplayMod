@@ -17,11 +17,11 @@ public interface ParticleAccessor
     double getPrevPosY();
     @Accessor
     double getPrevPosZ();
-    @Accessor("x")
+    @Accessor
     double getPosX();
-    @Accessor("y")
+    @Accessor
     double getPosY();
-    @Accessor("z")
+    @Accessor
     double getPosZ();
     //#endif
 }

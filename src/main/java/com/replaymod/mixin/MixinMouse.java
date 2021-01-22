@@ -3,16 +3,16 @@ package com.replaymod.mixin;
 
 import com.replaymod.core.events.KeyBindingEventCallback;
 import com.replaymod.core.events.KeyEventCallback;
-import net.minecraft.client.Keyboard;
-import net.minecraft.client.Mouse;
+import net.minecraft.client.KeyboardListener;
+import net.minecraft.client.MouseHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Mouse.class)
+@Mixin(MouseHelper.class)
 public class MixinMouse {
-    @Inject(method = "onMouseButton", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/options/KeyBinding;onKeyPressed(Lnet/minecraft/client/util/InputUtil$Key;)V", shift = At.Shift.AFTER))
+    @Inject(method = "mouseButtonCallback", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;onTick(Lnet/minecraft/client/util/InputMappings$Input;)V", shift = At.Shift.AFTER))
     private void afterKeyBindingTick(CallbackInfo ci) {
         KeyBindingEventCallback.EVENT.invoker().onKeybindingEvent();
     }

@@ -5,8 +5,8 @@ import com.replaymod.core.utils.WrappedTimer;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.replay.camera.CameraController;
 import com.replaymod.replay.camera.CameraEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Timer;
 
 //#if MC>=11400
 import org.lwjgl.glfw.GLFW;
@@ -30,9 +30,9 @@ import org.lwjgl.glfw.GLFW;
 
 public class InputReplayTimer extends WrappedTimer {
     private final ReplayModReplay mod;
-    private final MinecraftClient mc;
+    private final Minecraft mc;
     
-    public InputReplayTimer(RenderTickCounter wrapped, ReplayModReplay mod) {
+    public InputReplayTimer(Timer wrapped, ReplayModReplay mod) {
         super(wrapped);
         this.mod = mod;
         this.mc = mod.getCore().getMinecraft();
@@ -45,7 +45,7 @@ public class InputReplayTimer extends WrappedTimer {
     //#else
     //$$ void
     //#endif
-    beginRenderTick(
+    getPartialTicks(
             //#if MC>=11400
             long sysClock
             //#endif
@@ -53,7 +53,7 @@ public class InputReplayTimer extends WrappedTimer {
         //#if MC>=11600
         int ticksThisFrame =
         //#endif
-        super.beginRenderTick(
+        super.getPartialTicks(
                 //#if MC>=11400
                 sysClock
                 //#endif
@@ -78,7 +78,7 @@ public class InputReplayTimer extends WrappedTimer {
                 GLFW.glfwPollEvents();
                 MCVer.processKeyBinds();
             }
-            mc.keyboard.pollDebugCrash();
+            mc.keyboardListener.tick();
             //#else
             //$$ if (mc.currentScreen != null) {
                 //#if MC>=10800

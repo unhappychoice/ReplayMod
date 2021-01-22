@@ -23,8 +23,8 @@ import com.replaymod.gui.layout.VerticalLayout;
 import com.replaymod.gui.utils.Colors;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.crash.CrashReport;
+import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +39,7 @@ import static com.replaymod.gui.utils.Utils.link;
 
 public class GuiSavingReplay {
 
-    private static final MinecraftClient mc = getMinecraft();
+    private static final Minecraft mc = getMinecraft();
     private static final Logger logger = LogManager.getLogger();
 
     private final GuiLabel label = new GuiLabel()
@@ -147,7 +147,7 @@ public class GuiSavingReplay {
                 Files.delete(path);
             } catch (IOException e) {
                 logger.error("Deleting replay file:", e);
-                CrashReport crashReport = CrashReport.create(e, "Deleting replay file");
+                CrashReport crashReport = CrashReport.makeCrashReport(e, "Deleting replay file");
                 core.runLater(() -> Utils.error(logger, VanillaGuiScreen.wrap(mc.currentScreen), crashReport, () -> {}));
             }
             return;
@@ -162,7 +162,7 @@ public class GuiSavingReplay {
             Files.move(path, newPath);
         } catch (IOException e) {
             logger.error("Renaming replay file:", e);
-            CrashReport crashReport = CrashReport.create(e, "Renaming replay file");
+            CrashReport crashReport = CrashReport.makeCrashReport(e, "Renaming replay file");
             core.runLater(() -> Utils.error(logger, VanillaGuiScreen.wrap(mc.currentScreen), crashReport, () -> {}));
         }
     }

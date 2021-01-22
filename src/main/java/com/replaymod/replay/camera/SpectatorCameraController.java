@@ -2,13 +2,13 @@ package com.replaymod.replay.camera;
 
 import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.mixin.EntityPlayerAccessor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 
 //#if MC>=11400
-import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
 //#endif
 
 //#if MC>=11400
@@ -29,17 +29,17 @@ public class SpectatorCameraController implements CameraController {
 
     @Override
     public void update(float partialTicksPassed) {
-        MinecraftClient mc = getMinecraft();
-        if (mc.options.keySneak.wasPressed()) {
+        Minecraft mc = getMinecraft();
+        if (mc.gameSettings.keyBindSneak.isPressed()) {
             ReplayModReplay.instance.getReplayHandler().spectateCamera();
         }
 
         // Soak up all remaining key presses
-        for (KeyBinding binding : Arrays.asList(mc.options.keyAttack, mc.options.keyUse,
-                mc.options.keyJump, mc.options.keySneak, mc.options.keyForward,
-                mc.options.keyBack, mc.options.keyLeft, mc.options.keyRight)) {
+        for (KeyBinding binding : Arrays.asList(mc.gameSettings.keyBindAttack, mc.gameSettings.keyBindUseItem,
+                mc.gameSettings.keyBindJump, mc.gameSettings.keyBindSneak, mc.gameSettings.keyBindForward,
+                mc.gameSettings.keyBindBack, mc.gameSettings.keyBindLeft, mc.gameSettings.keyBindRight)) {
             //noinspection StatementWithEmptyBody
-            while (binding.wasPressed());
+            while (binding.isPressed());
         }
 
         // Prevent mouse movement
@@ -52,16 +52,16 @@ public class SpectatorCameraController implements CameraController {
         // Always make sure the camera is in the exact same spot as the spectated entity
         // This is necessary as some rendering code for the hand doesn't respect the view entity
         // and always uses mc.thePlayer
-        Entity view = mc.getCameraEntity();
+        Entity view = mc.getRenderViewEntity();
         if (view != null && view != camera) {
-            camera.setCameraPosRot(mc.getCameraEntity());
+            camera.setCameraPosRot(mc.getRenderViewEntity());
             // If it's a player, also 'steal' its inventory so the rendering code knows what item to render
             if (view instanceof PlayerEntity) {
                 PlayerEntity viewPlayer = (PlayerEntity) view;
                 //#if MC>=11400
-                camera.equipStack(EquipmentSlot.HEAD, viewPlayer.getEquippedStack(EquipmentSlot.HEAD));
-                camera.equipStack(EquipmentSlot.MAINHAND, viewPlayer.getEquippedStack(EquipmentSlot.MAINHAND));
-                camera.equipStack(EquipmentSlot.OFFHAND, viewPlayer.getEquippedStack(EquipmentSlot.OFFHAND));
+                camera.setItemStackToSlot(EquipmentSlotType.HEAD, viewPlayer.getItemStackFromSlot(EquipmentSlotType.HEAD));
+                camera.setItemStackToSlot(EquipmentSlotType.MAINHAND, viewPlayer.getItemStackFromSlot(EquipmentSlotType.MAINHAND));
+                camera.setItemStackToSlot(EquipmentSlotType.OFFHAND, viewPlayer.getItemStackFromSlot(EquipmentSlotType.OFFHAND));
                 //#else
                 //$$ camera.inventory = viewPlayer.inventory;
                 //#endif
@@ -69,7 +69,7 @@ public class SpectatorCameraController implements CameraController {
                 EntityPlayerAccessor viewPlayerA = (EntityPlayerAccessor) viewPlayer;
                 //#if MC>=10904
                 cameraA.setItemStackMainHand(viewPlayerA.getItemStackMainHand());
-                camera.preferredHand = viewPlayer.preferredHand;
+                camera.swingingHand = viewPlayer.swingingHand;
                 cameraA.setActiveItemStackUseCount(viewPlayerA.getActiveItemStackUseCount());
                 //#else
                 //$$ cameraA.setItemInUse(viewPlayerA.getItemInUse());

@@ -1,25 +1,23 @@
 package com.replaymod.core.utils;
+
 import com.replaymod.replaystudio.data.ModInfo;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraftforge.registries.GameData;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.util.registry.Registry;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class ModInfoGetter {
     static Collection<ModInfo> getInstalledNetworkMods() {
-        Map<String, ModInfo> modInfoMap = FabricLoader.getInstance().getAllMods().stream()
-                .map(ModContainer::getMetadata)
-                .map(m -> new ModInfo(m.getId(), m.getName(), m.getVersion().toString()))
-                .collect(Collectors.toMap(ModInfo::getId, Function.identity()));
-        return Registry.REGISTRIES.stream()
-                .map(Registry::getIds).flatMap(Set::stream)
-                .map(Identifier::getNamespace).filter(s -> !s.equals("minecraft")).distinct()
-                .map(modInfoMap::get).filter(Objects::nonNull)
+        return  ModList.get().getMods().stream()
+                .map(mod -> new ModInfo(mod.getModId(), mod.getModId(), mod.getVersion().toString()))
                 .collect(Collectors.toList());
     }
 }

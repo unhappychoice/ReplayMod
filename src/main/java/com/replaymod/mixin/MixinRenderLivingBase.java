@@ -9,13 +9,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //#if MC>=10904
-import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.LivingRenderer;
 //#else
 //$$ import net.minecraft.client.renderer.entity.RendererLivingEntity;
 //#endif
 
 //#if MC>=10904
-@Mixin(LivingEntityRenderer.class)
+@Mixin(LivingRenderer.class)
 //#else
 //$$ @Mixin(RendererLivingEntity.class)
 //#endif
@@ -31,7 +31,7 @@ public abstract class MixinRenderLivingBase {
     //#endif
             value = "INVOKE",
             //#if MC>=11500
-            target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;scale(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/client/util/math/MatrixStack;F)V",
+            target = "Lnet/minecraft/client/renderer/entity/LivingRenderer;preRenderCallback(Lnet/minecraft/entity/LivingEntity;Lcom/mojang/blaze3d/matrix/MatrixStack;F)V",
             //#else
             //#if MC>=10904
             //$$ target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;scaleAndTranslate(Lnet/minecraft/entity/LivingEntity;F)F",

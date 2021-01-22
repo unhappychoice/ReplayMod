@@ -12,16 +12,16 @@ import com.replaymod.gui.element.GuiImage;
 import com.replaymod.gui.element.IGuiImage;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.utils.EventRegistrations;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.client.Minecraft;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 
 public class FullBrightness extends EventRegistrations implements Extra {
     private ReplayMod core;
     private ReplayModReplay module;
     private IGuiImage indicator;
 
-    private MinecraftClient mc;
+    private Minecraft mc;
     private boolean active;
     //#if MC>=11400
     private double originalGamma;
@@ -71,12 +71,12 @@ public class FullBrightness extends EventRegistrations implements Extra {
         if (active && module.getReplayHandler() != null) {
             Type type = getType();
             if (type == Type.Gamma || type == Type.Both) {
-                originalGamma = mc.options.gamma;
-                mc.options.gamma = 1000;
+                originalGamma = mc.gameSettings.gamma;
+                mc.gameSettings.gamma = 1000;
             }
             if (type == Type.NightVision || type == Type.Both) {
                 if (mc.player != null) {
-                    mc.player.addStatusEffect(new StatusEffectInstance(StatusEffects.NIGHT_VISION
+                    mc.player.addPotionEffect(new EffectInstance(Effects.NIGHT_VISION
                             //#if MC<=10809
                             //$$ .id
                             //#endif
@@ -91,11 +91,11 @@ public class FullBrightness extends EventRegistrations implements Extra {
         if (active && module.getReplayHandler() != null) {
             Type type = getType();
             if (type == Type.Gamma || type == Type.Both) {
-                mc.options.gamma = originalGamma;
+                mc.gameSettings.gamma = originalGamma;
             }
             if (type == Type.NightVision || type == Type.Both) {
                 if (mc.player != null) {
-                    mc.player.removeStatusEffect(StatusEffects.NIGHT_VISION
+                    mc.player.removePotionEffect(Effects.NIGHT_VISION
                             //#if MC<=10809
                             //$$ .id
                             //#endif

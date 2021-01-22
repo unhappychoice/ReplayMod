@@ -8,19 +8,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 //#if MC>=10800
-import net.minecraft.client.render.Frustum;
+import net.minecraft.client.renderer.culling.ClippingHelper;
 //#else
 //$$ import net.minecraft.client.renderer.culling.Frustrum;
 //#endif
 
 //#if MC>=10800
-@Mixin(Frustum.class)
+@Mixin(ClippingHelper.class)
 //#else
 //$$ @Mixin(Frustrum.class)
 //#endif
 public abstract class Mixin_Omnidirectional_DisableFrustumCulling {
     //#if MC>=11500
-    @Inject(method = "isAnyCornerVisible", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isBoxInFrustumRaw", at = @At("HEAD"), cancellable = true)
     //#else
     //$$ @Inject(method = "intersects", at = @At("HEAD"), cancellable = true)
     //#endif

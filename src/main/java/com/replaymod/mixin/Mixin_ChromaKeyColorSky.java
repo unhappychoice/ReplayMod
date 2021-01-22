@@ -3,8 +3,8 @@ package com.replaymod.mixin;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.replaymod.render.hooks.EntityRendererHandler;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,15 +18,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(WorldRenderer.class)
 public abstract class Mixin_ChromaKeyColorSky {
-    @Shadow @Final private MinecraftClient client;
+    @Shadow @Final private Minecraft mc;
 
     //#if MC>=11400 || 10710>=MC
-    @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderSky(Lcom/mojang/blaze3d/matrix/MatrixStack;F)V", at = @At("HEAD"), cancellable = true)
     //#else
     //$$ @Inject(method = "renderSky(FI)V", at = @At("HEAD"), cancellable = true)
     //#endif
     private void chromaKeyingSky(CallbackInfo ci) {
-        EntityRendererHandler handler = ((EntityRendererHandler.IEntityRenderer) this.client.gameRenderer).replayModRender_getHandler();
+        EntityRendererHandler handler = ((EntityRendererHandler.IEntityRenderer) this.mc.gameRenderer).replayModRender_getHandler();
         if (handler != null) {
             ReadableColor color = handler.getSettings().getChromaKeyingColor();
             if (color != null) {

@@ -10,10 +10,10 @@ import com.replaymod.render.blend.data.DObject;
 import com.replaymod.mixin.ParticleAccessor;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Matrix4f;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector3f;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 //#if MC>=11400
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 //#endif
 
 //#if MC>=10904
@@ -24,7 +24,7 @@ import net.minecraft.client.particle.Particle;
 //#endif
 
 //#if MC>=10809
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 //#endif
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ import static com.replaymod.render.blend.Util.getCameraPos;
 import static com.replaymod.render.blend.Util.getGlModelViewMatrix;
 
 public class ParticlesExporter implements Exporter {
-    private final MinecraftClient mc = MCVer.getMinecraft();
+    private final Minecraft mc = MCVer.getMinecraft();
     private final RenderState renderState;
     private DObject pointAtObject;
     private DObject particlesObject;
@@ -169,14 +169,14 @@ public class ParticlesExporter implements Exporter {
         builder.setReverseOffset(offset);
         builder.setWellBehaved(true);
         //#if MC>=10809
-        builder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+        builder.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
         //#else
         //$$ builder.startDrawingQuads();
         //#endif
         //#if MC>=10809
-        particle.buildGeometry(builder,
+        particle.renderParticle(builder,
                 //#if MC>=11400
-                MCVer.getMinecraft().gameRenderer.getCamera(),
+                MCVer.getMinecraft().gameRenderer.getActiveRenderInfo(),
                 //#else
                 //$$ MCVer.getMinecraft().getRenderViewEntity(),
                 //#endif
@@ -188,7 +188,7 @@ public class ParticlesExporter implements Exporter {
         //#else
         //$$ particle.func_180434_a(builder, Minecraft.getMinecraft().getRenderViewEntity(), 0, 1, 1, 0, 0, 0);
         //#endif
-        builder.end();
+        builder.finishDrawing();
         return mesh;
     }
 

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 //#if MC>=10904
-import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.LivingRenderer;
 //#else
 //$$ import net.minecraft.client.renderer.entity.RendererLivingEntity;
 //#endif
@@ -18,15 +18,15 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import static com.replaymod.core.versions.MCVer.*;
 
 //#if MC>=10904
-@Mixin(LivingEntityRenderer.class)
+@Mixin(LivingRenderer.class)
 //#else
 //$$ @Mixin(RendererLivingEntity.class)
 //#endif
 public abstract class Mixin_RenderLivingBase {
     //#if FABRIC>=1
-    @Inject(method = "hasLabel", at = @At("HEAD"), cancellable = true)
+    //$$ @Inject(method = "hasLabel", at = @At("HEAD"), cancellable = true)
     //#else
-    //$$ @Inject(method = "canRenderName(Lnet/minecraft/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "canRenderName(Lnet/minecraft/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     //#endif
     private void replayModReplay_canRenderInvisibleName(LivingEntity entity, CallbackInfoReturnable<Boolean> ci) {
         PlayerEntity thePlayer = getMinecraft().player;
@@ -51,6 +51,6 @@ public abstract class Mixin_RenderLivingBase {
             )
     )
     private boolean replayModReplay_shouldInvisibleNotBeRendered(LivingEntity entity, PlayerEntity thePlayer) {
-        return thePlayer instanceof CameraEntity || entity.isInvisibleTo(thePlayer);
+        return thePlayer instanceof CameraEntity || entity.isInvisibleToPlayer(thePlayer);
     }
 }

@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //#if MC>=11500
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.util.math.vector.Vector3f;
 //#else
 //$$ import org.lwjgl.opengl.GL11;
 //#endif
@@ -17,7 +17,7 @@ import net.minecraft.client.util.math.Vector3f;
 import static com.replaymod.core.versions.MCVer.getMinecraft;
 
 //#if MC>=11500
-@Mixin(value = net.minecraft.client.render.GameRenderer.class)
+@Mixin(value = net.minecraft.client.renderer.GameRenderer.class)
 //#else
 //#if MC>=11400
 //$$ @Mixin(value = net.minecraft.client.render.Camera.class)
@@ -79,7 +79,7 @@ public abstract class Mixin_Omnidirectional_Rotation {
                     break;
             }
             //#if MC>=11500
-            matrixStack.multiply(new Vector3f(x, y, 0).getDegreesQuaternion(angle));
+            matrixStack.rotate(new Vector3f(x, y, 0).rotationDegrees(angle));
             //#else
             //$$ GL11.glRotatef(angle, x, y, 0);
             //#endif

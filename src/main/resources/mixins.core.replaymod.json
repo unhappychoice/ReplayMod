@@ -9,8 +9,8 @@
     "AbstractButtonWidgetAccessor",
     "MixinGameRenderer",
     //#if FABRIC>=1
-    "Mixin_HideDynamicResourcePacks",
-    "Mixin_RegisterDynamicResourcePacks",
+    //$$ "Mixin_HideDynamicResourcePacks",
+    //$$ "Mixin_RegisterDynamicResourcePacks",
     //#endif
     //#endif
     //#if MC>=11400

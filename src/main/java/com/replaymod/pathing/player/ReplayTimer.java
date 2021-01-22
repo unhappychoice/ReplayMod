@@ -2,14 +2,14 @@ package com.replaymod.pathing.player;
 
 import com.replaymod.core.utils.WrappedTimer;
 import com.replaymod.gui.utils.Event;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.util.Timer;
 
 /**
  * Wrapper around the current timer that prevents the timer from advancing by itself.
  */
 public class ReplayTimer extends WrappedTimer {
     //#if MC>=11400
-    private final RenderTickCounter state = new RenderTickCounter(0, 0);
+    private final Timer state = new Timer(0, 0);
     //#else
     //$$ private final Timer state = new Timer(0);
     //#endif
@@ -18,7 +18,7 @@ public class ReplayTimer extends WrappedTimer {
     public int ticksThisFrame;
     //#endif
 
-    public ReplayTimer(RenderTickCounter wrapped) {
+    public ReplayTimer(Timer wrapped) {
         super(wrapped);
     }
 
@@ -31,7 +31,7 @@ public class ReplayTimer extends WrappedTimer {
     //#else
     //$$ void
     //#endif
-    beginRenderTick(
+    getPartialTicks(
     //#else
     //$$ public void updateTimer(
     //#endif
@@ -44,7 +44,7 @@ public class ReplayTimer extends WrappedTimer {
             //#if MC>=11600
             ticksThisFrame =
             //#endif
-            wrapped.beginRenderTick(
+            wrapped.getPartialTicks(
                     //#if MC>=11400
                     sysClock
                     //#endif
@@ -58,7 +58,7 @@ public class ReplayTimer extends WrappedTimer {
         //#endif
     }
 
-    public RenderTickCounter getWrapped() {
+    public Timer getWrapped() {
         return wrapped;
     }
 

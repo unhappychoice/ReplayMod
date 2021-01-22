@@ -1,6 +1,6 @@
 package com.replaymod.mixin;
 
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //#if MC>=11600
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import com.mojang.blaze3d.matrix.MatrixStack;
 //#endif
 
 //#if MC>=11400
@@ -31,7 +31,7 @@ public abstract class MixinShadersRender {
             GameRenderer er,
             //#if MC>=11600
             MatrixStack stack,
-            Camera camera,
+            ActiveRenderInfo camera,
             //#endif
             float partialTicks,
             //#if MC<11600

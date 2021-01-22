@@ -7,7 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.replaymod.core.events.SettingsChangedCallback;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +28,7 @@ class SettingsRegistryBackend {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<SettingsRegistry.SettingKey<?>, Object> settings;
 
-    private final Path configFile = getMinecraft().runDirectory.toPath().resolve("config/replaymod.json");
+    private final Path configFile = getMinecraft().gameDir.toPath().resolve("config/replaymod.json");
 
     SettingsRegistryBackend(Map<SettingsRegistry.SettingKey<?>, Object> settings) {
         this.settings = settings;
@@ -116,7 +116,7 @@ class SettingsRegistryBackend {
                     }
                     Path fileName = ((Path) event.context());
                     if (fileName.equals(configFile.getFileName())) {
-                        MinecraftClient.getInstance().send(this::reload);
+                        Minecraft.getInstance().enqueue(this::reload);
                     }
                 }
                 if (!nextKey.reset()) {

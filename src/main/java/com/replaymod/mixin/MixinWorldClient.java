@@ -2,12 +2,12 @@ package com.replaymod.mixin;
 
 //#if MC>=10904
 import com.replaymod.recording.handler.RecordingEventHandler;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.profiler.IProfiler;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,19 +17,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //#if MC>=11600
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.MutableWorldProperties;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.world.storage.ISpawnWorldInfo;
 import java.util.function.Supplier;
 //#else
 //$$ import net.minecraft.world.level.LevelProperties;
 //#endif
 
 //#if MC>=11400
-import net.minecraft.world.chunk.ChunkManager;
+import net.minecraft.world.chunk.AbstractChunkProvider;
 //#if MC<11600
 //$$ import net.minecraft.world.dimension.Dimension;
 //#endif
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.DimensionType;
 import java.util.function.BiFunction;
 //#else
 //$$ import net.minecraft.world.storage.ISaveHandler;
@@ -45,14 +45,14 @@ import java.util.function.BiFunction;
 @Mixin(ClientWorld.class)
 public abstract class MixinWorldClient extends World implements RecordingEventHandler.RecordingEventSender {
     @Shadow
-    private MinecraftClient client;
+    private Minecraft mc;
 
     //#if MC>=11600
-    protected MixinWorldClient(MutableWorldProperties mutableWorldProperties, RegistryKey<World> registryKey,
+    protected MixinWorldClient(ISpawnWorldInfo mutableWorldProperties, RegistryKey<World> registryKey,
                                //#if MC<11602
                                //$$ RegistryKey<DimensionType> registryKey2,
                                //#endif
-                               DimensionType dimensionType, Supplier<Profiler> profiler, boolean bl, boolean bl2, long l) {
+                               DimensionType dimensionType, Supplier<IProfiler> profiler, boolean bl, boolean bl2, long l) {
         super(mutableWorldProperties, registryKey,
                 //#if MC<11602
                 //$$ registryKey2,
@@ -86,7 +86,7 @@ public abstract class MixinWorldClient extends World implements RecordingEventHa
     //#endif
 
     private RecordingEventHandler replayModRecording_getRecordingEventHandler() {
-        return ((RecordingEventHandler.RecordingEventSender) this.client.worldRenderer).getRecordingEventHandler();
+        return ((RecordingEventHandler.RecordingEventSender) this.mc.worldRenderer).getRecordingEventHandler();
     }
 
     // Sounds that are emitted by thePlayer no longer take the long way over the server
@@ -95,11 +95,11 @@ public abstract class MixinWorldClient extends World implements RecordingEventHa
     // E.g. Block place sounds
     //#if MC>=11400
     //#if FABRIC>=1
-    @Inject(method = "playSound(Lnet/minecraft/entity/player/PlayerEntity;DDDLnet/minecraft/sound/SoundEvent;Lnet/minecraft/sound/SoundCategory;FF)V",
-            at = @At("HEAD"))
-    //#else
-    //$$ @Inject(method = "playSound(Lnet/minecraft/entity/player/PlayerEntity;DDDLnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FF)V",
+    //$$ @Inject(method = "playSound(Lnet/minecraft/entity/player/PlayerEntity;DDDLnet/minecraft/sound/SoundEvent;Lnet/minecraft/sound/SoundCategory;FF)V",
     //$$         at = @At("HEAD"))
+    //#else
+    @Inject(method = "playSound(Lnet/minecraft/entity/player/PlayerEntity;DDDLnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FF)V",
+            at = @At("HEAD"))
     //#endif
     //#else
     //$$ @Inject(method = "playSound(Lnet/minecraft/entity/player/EntityPlayer;DDDLnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FF)V",
@@ -107,7 +107,7 @@ public abstract class MixinWorldClient extends World implements RecordingEventHa
     //#endif
     public void replayModRecording_recordClientSound(PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category,
                           float volume, float pitch, CallbackInfo ci) {
-        if (player == this.client.player) {
+        if (player == this.mc.player) {
             RecordingEventHandler handler = replayModRecording_getRecordingEventHandler();
             if (handler != null) {
                 handler.onClientSound(sound, category, x, y, z, volume, pitch);
@@ -128,7 +128,7 @@ public abstract class MixinWorldClient extends World implements RecordingEventHa
     //$$ @Override
     //$$ public void playEvent (EntityPlayer player, int type, BlockPos pos, int data) {
     //#endif
-        if (player == this.client.player) {
+        if (player == this.mc.player) {
             // We caused this event, the server won't send it to us
             RecordingEventHandler handler = replayModRecording_getRecordingEventHandler();
             if (handler != null) {

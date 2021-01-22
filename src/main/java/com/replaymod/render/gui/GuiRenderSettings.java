@@ -33,9 +33,9 @@ import de.johni0702.minecraft.gui.utils.lwjgl.Color;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import net.minecraft.client.gui.screen.NoticeScreen;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.crash.CrashReport;
+import net.minecraft.client.gui.screen.AlertScreen;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.crash.CrashReport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -53,7 +53,7 @@ import static com.replaymod.core.utils.Utils.error;
 import static com.replaymod.render.ReplayModRender.LOGGER;
 
 //#if MC>=11400
-import net.minecraft.text.TranslatableText;
+import net.minecraft.util.text.TranslationTextComponent;
 //#endif
 
 public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
@@ -109,7 +109,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
     public final com.replaymod.gui.element.GuiSlider frameRateSlider = new com.replaymod.gui.element.GuiSlider().onValueChanged(new Runnable() {
         @Override
         public void run() {
-            frameRateSlider.setText(I18n.translate("replaymod.gui.rendersettings.framerate")
+            frameRateSlider.setText(I18n.format("replaymod.gui.rendersettings.framerate")
                     + ": " + (frameRateSlider.getValue() + 10));
         }
     }).setSize(122, 20).setSteps(110);
@@ -171,7 +171,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
             .onValueChanged(new Runnable() {
                 @Override
                 public void run() {
-                    sphericalFovSlider.setText(I18n.translate("replaymod.gui.rendersettings.sphericalFov")
+                    sphericalFovSlider.setText(I18n.format("replaymod.gui.rendersettings.sphericalFov")
                             + ": " + (MIN_SPHERICAL_FOV + sphericalFovSlider.getValue() * SPHERICAL_FOV_STEP_SIZE) + "°");
 
                     updateInputs();
@@ -243,17 +243,17 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
                 videoRenderer.renderVideo();
             } catch (FFmpegWriter.NoFFmpegException e) {
                 LOGGER.error("Rendering video:", e);
-                NoticeScreen errorScreen = new NoticeScreen(
+                AlertScreen errorScreen = new AlertScreen(
                         //#if MC>=11400
                         getScreen()::display,
-                        new TranslatableText("replaymod.gui.rendering.error.title"),
-                        new TranslatableText("replaymod.gui.rendering.error.message")
+                        new TranslationTextComponent("replaymod.gui.rendering.error.title"),
+                        new TranslationTextComponent("replaymod.gui.rendering.error.message")
                         //#else
                         //$$ I18n.format("replaymod.gui.rendering.error.title"),
                         //$$ I18n.format("replaymod.gui.rendering.error.message")
                         //#endif
                 );
-                getMinecraft().openScreen(errorScreen);
+                getMinecraft().displayGuiScreen(errorScreen);
             } catch (FFmpegWriter.FFmpegStartupException e) {
                 GuiExportFailed.tryToRecover(e, newSettings -> {
                     // Update settings with fixed ffmpeg arguments
@@ -262,7 +262,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
                     renderButton.onClick();
                 });
             } catch (Throwable t) {
-                error(LOGGER, GuiRenderSettings.this, CrashReport.create(t, "Rendering video"), () -> {});
+                error(LOGGER, GuiRenderSettings.this, CrashReport.makeCrashReport(t, "Rendering video"), () -> {});
                 getScreen().display(); // Re-show the render settings gui and the new error popup
             }
         }

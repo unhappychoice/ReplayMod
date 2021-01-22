@@ -34,11 +34,11 @@ import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import de.johni0702.minecraft.gui.utils.lwjgl.WritableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.WritablePoint;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 //#if MC>=10904
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.SoundEvent;
 //#endif
 
 //#if MC>=10800
@@ -49,7 +49,7 @@ import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 
 public abstract class AbstractGuiTexturedButton<T extends AbstractGuiTexturedButton<T>> extends AbstractGuiClickable<T> implements Clickable, IGuiTexturedButton<T> {
-    private Identifier texture;
+    private ResourceLocation texture;
 
     //#if MC>=10904
     private SoundEvent sound = SoundEvents.UI_BUTTON_CLICK;
@@ -130,12 +130,12 @@ public abstract class AbstractGuiTexturedButton<T extends AbstractGuiTexturedBut
     }
 
     @Override
-    public T setTexture(Identifier resourceLocation, int size) {
+    public T setTexture(ResourceLocation resourceLocation, int size) {
         return setTexture(resourceLocation, size, size);
     }
 
     @Override
-    public T setTexture(Identifier resourceLocation, int width, int height) {
+    public T setTexture(ResourceLocation resourceLocation, int width, int height) {
         this.texture = resourceLocation;
         this.textureTotalSize = new Dimension(width, height);
         return getThis();
@@ -241,7 +241,7 @@ public abstract class AbstractGuiTexturedButton<T extends AbstractGuiTexturedBut
     }
     //#endif
 
-    public Identifier getTexture() {
+    public ResourceLocation getTexture() {
         return this.texture;
     }
 

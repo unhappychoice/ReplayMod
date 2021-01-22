@@ -3,11 +3,11 @@ package com.replaymod.compat.optifine;
 import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.render.events.ReplayRenderCallback;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public class DisableFastRender extends EventRegistrations {
 
-    private final MinecraftClient mc = MinecraftClient.getInstance();
+    private final Minecraft mc = Minecraft.getInstance();
 
     private boolean wasFastRender = false;
 
@@ -16,8 +16,8 @@ public class DisableFastRender extends EventRegistrations {
         if (!MCVer.hasOptifine()) return;
 
         try {
-            wasFastRender = (boolean) OptifineReflection.gameSettings_ofFastRender.get(mc.options);
-            OptifineReflection.gameSettings_ofFastRender.set(mc.options, false);
+            wasFastRender = (boolean) OptifineReflection.gameSettings_ofFastRender.get(mc.gameSettings);
+            OptifineReflection.gameSettings_ofFastRender.set(mc.gameSettings, false);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -28,7 +28,7 @@ public class DisableFastRender extends EventRegistrations {
         if (!MCVer.hasOptifine()) return;
 
         try {
-            OptifineReflection.gameSettings_ofFastRender.set(mc.options, wasFastRender);
+            OptifineReflection.gameSettings_ofFastRender.set(mc.gameSettings, wasFastRender);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

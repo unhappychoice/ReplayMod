@@ -32,8 +32,8 @@ import com.replaymod.gui.RenderInfo;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 
 public abstract class AbstractGuiProgressBar<T extends AbstractGuiProgressBar<T>> extends AbstractGuiElement<T> implements IGuiProgressBar<T> {
     private static final int BORDER = 2;
@@ -63,14 +63,14 @@ public abstract class AbstractGuiProgressBar<T extends AbstractGuiProgressBar<T>
 
     @Override
     public T setI18nLabel(String label, Object... args) {
-        return setLabel(I18n.translate(label, args));
+        return setLabel(I18n.format(label, args));
     }
 
     @Override
     public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
         super.draw(renderer, size, renderInfo);
 
-        TextRenderer fontRenderer = MCVer.getFontRenderer();
+        FontRenderer fontRenderer = MCVer.getFontRenderer();
         int width = size.getWidth();
         int height = size.getHeight();
         int barTotalWidth = width - 2 * BORDER;
@@ -81,7 +81,7 @@ public abstract class AbstractGuiProgressBar<T extends AbstractGuiProgressBar<T>
         renderer.drawRect(BORDER, BORDER, barDoneWidth, height - 2 * BORDER, ReadableColor.GREY); // Progress
 
         String text = String.format(label, (int)(progress * 100));
-        renderer.drawCenteredString(width / 2, size.getHeight() / 2 - fontRenderer.fontHeight / 2, ReadableColor.BLACK, text);
+        renderer.drawCenteredString(width / 2, size.getHeight() / 2 - fontRenderer.FONT_HEIGHT / 2, ReadableColor.BLACK, text);
     }
 
     @Override

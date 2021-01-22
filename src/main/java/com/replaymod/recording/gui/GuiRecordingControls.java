@@ -13,11 +13,11 @@ import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.gui.versions.callbacks.InitScreenCallback;
-import net.minecraft.client.gui.screen.GameMenuScreen;
+import net.minecraft.client.gui.screen.IngameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 
 //#if MC>=11400
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.Widget;
 //#endif
 
 import java.util.List;
@@ -79,12 +79,12 @@ public class GuiRecordingControls extends EventRegistrations {
     { on(InitScreenCallback.EVENT, this::injectIntoIngameMenu); }
     private void injectIntoIngameMenu(Screen guiScreen,
                                       //#if MC>=11400
-                                      List<AbstractButtonWidget> buttonList
+                                      List<Widget> buttonList
                                       //#else
                                       //$$ List<net.minecraft.client.gui.GuiButton> buttonList
                                       //#endif
     ) {
-        if (!(guiScreen instanceof GameMenuScreen)) {
+        if (!(guiScreen instanceof IngameMenuScreen)) {
             return;
         }
         Function<Integer, Integer> yPos =

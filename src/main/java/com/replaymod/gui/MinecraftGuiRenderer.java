@@ -31,11 +31,11 @@ import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import de.johni0702.minecraft.gui.utils.lwjgl.WritableDimension;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.AbstractGui;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 //#if MC>=10800
@@ -50,8 +50,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class MinecraftGuiRenderer implements GuiRenderer {
 
-    private final DrawableHelper gui = new DrawableHelper(){};
-    private final MinecraftClient mc = com.replaymod.gui.versions.MCVer.getMinecraft();
+    private final AbstractGui gui = new AbstractGui(){};
+    private final Minecraft mc = com.replaymod.gui.versions.MCVer.getMinecraft();
 
     private final MatrixStack matrixStack;
 
@@ -59,7 +59,7 @@ public class MinecraftGuiRenderer implements GuiRenderer {
     //#if MC>=11400
     private final int scaledWidth = com.replaymod.gui.versions.MCVer.newScaledResolution(mc).getScaledWidth();
     private final int scaledHeight = com.replaymod.gui.versions.MCVer.newScaledResolution(mc).getScaledHeight();
-    private final double scaleFactor = com.replaymod.gui.versions.MCVer.newScaledResolution(mc).getScaleFactor();
+    private final double scaleFactor = com.replaymod.gui.versions.MCVer.newScaledResolution(mc).getGuiScaleFactor();
     //#else
     //$$ private final int scaledWidth = newScaledResolution(mc).getScaledWidth();
     //$$ private final int scaledHeight = newScaledResolution(mc).getScaledHeight();
@@ -110,7 +110,7 @@ public class MinecraftGuiRenderer implements GuiRenderer {
     }
 
     @Override
-    public void bindTexture(Identifier location) {
+    public void bindTexture(ResourceLocation location) {
         //#if MC>=11500
         com.replaymod.gui.versions.MCVer.getMinecraft().getTextureManager().bindTexture(location);
         //#else
@@ -130,7 +130,7 @@ public class MinecraftGuiRenderer implements GuiRenderer {
     @Override
     public void drawTexturedRect(int x, int y, int u, int v, int width, int height) {
         //#if MC>=11600
-        gui.drawTexture(matrixStack, x, y, u, v, width, height);
+        gui.blit(matrixStack, x, y, u, v, width, height);
         //#else
         //#if MC>=11400
         //$$ gui.blit(x, y, u, v, width, height);
@@ -144,7 +144,7 @@ public class MinecraftGuiRenderer implements GuiRenderer {
     public void drawTexturedRect(int x, int y, int u, int v, int width, int height, int uWidth, int vHeight, int textureWidth, int textureHeight) {
         color(1, 1, 1);
         //#if MC>=11600
-        DrawableHelper.drawTexture(matrixStack, x, y, width, height, u, v, uWidth, vHeight, textureWidth, textureHeight);
+        AbstractGui.blit(matrixStack, x, y, width, height, u, v, uWidth, vHeight, textureWidth, textureHeight);
         //#else
         //#if MC>=11400
         //$$ DrawableHelper.blit(x, y, width, height, u, v, uWidth, vHeight, textureWidth, textureHeight);
@@ -156,7 +156,7 @@ public class MinecraftGuiRenderer implements GuiRenderer {
 
     @Override
     public void drawRect(int x, int y, int width, int height, int color) {
-        DrawableHelper.fill(
+        AbstractGui.fill(
                 //#if MC>=11600
                 matrixStack,
                 //#endif
@@ -210,16 +210,16 @@ public class MinecraftGuiRenderer implements GuiRenderer {
 
     @Override
     public int drawString(int x, int y, int color, String text, boolean shadow) {
-        TextRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
+        FontRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
         try {
             if (shadow) {
-                return fontRenderer.drawWithShadow(
+                return fontRenderer.drawStringWithShadow(
                         //#if MC>=11600
                         matrixStack,
                         //#endif
                         text, x, y, color);
             } else {
-                return fontRenderer.draw(
+                return fontRenderer.drawString(
                         //#if MC>=11600
                         matrixStack,
                         //#endif
@@ -237,8 +237,8 @@ public class MinecraftGuiRenderer implements GuiRenderer {
 
     @Override
     public int drawCenteredString(int x, int y, int color, String text, boolean shadow) {
-        TextRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
-        x-=fontRenderer.getWidth(text) / 2;
+        FontRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
+        x-=fontRenderer.getStringWidth(text) / 2;
         return drawString(x, y, color, text, shadow);
     }
 

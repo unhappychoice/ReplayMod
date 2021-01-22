@@ -1,16 +1,16 @@
 package com.replaymod.mixin;
 
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.renderer.WorldRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Set;
 
 //#if MC>=10800
-import net.minecraft.client.render.chunk.ChunkBuilder;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 
 //#if MC>=11500
-import net.minecraft.client.render.chunk.ChunkBuilder.BuiltChunk;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher.ChunkRender;
 //#else
 //$$ import net.minecraft.client.render.chunk.ChunkRenderer;
 //#endif

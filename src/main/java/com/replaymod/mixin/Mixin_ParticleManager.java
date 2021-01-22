@@ -21,7 +21,7 @@ import java.util.Queue;
 @Mixin(ParticleManager.class)
 public abstract class Mixin_ParticleManager {
     @Final @Shadow
-    private Queue<Particle> newParticles;
+    private Queue<Particle> queue;
 
     /**
      * This method additionally clears the queue of particles to be added when the world is changed.
@@ -31,7 +31,7 @@ public abstract class Mixin_ParticleManager {
      * @param world The new world
      * @param ci Callback info
      */
-    @Inject(method = "setWorld", at = @At("HEAD"))
+    @Inject(method = "clearEffects", at = @At("HEAD"))
     public void replayModReplay_clearParticleQueue(
             //#if MC>=11600
             ClientWorld world,
@@ -39,7 +39,7 @@ public abstract class Mixin_ParticleManager {
             //$$ World world,
             //#endif
             CallbackInfo ci) {
-        this.newParticles.clear();
+        this.queue.clear();
     }
 }
 //#endif

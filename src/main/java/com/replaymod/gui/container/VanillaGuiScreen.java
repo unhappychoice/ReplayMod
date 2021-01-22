@@ -12,15 +12,15 @@ import com.replaymod.gui.versions.callbacks.InitScreenCallback;
 import com.replaymod.gui.versions.callbacks.OpenGuiScreenCallback;
 import com.replaymod.gui.versions.callbacks.PostRenderScreenCallback;
 import com.replaymod.gui.versions.callbacks.PreTickCallback;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 //#if FABRIC>=1
-import com.replaymod.gui.versions.callbacks.KeyboardCallback;
-import com.replaymod.gui.versions.callbacks.MouseCallback;
+//$$ import com.replaymod.gui.versions.callbacks.KeyboardCallback;
+//$$ import com.replaymod.gui.versions.callbacks.MouseCallback;
 //#elseif MC>=11600
-//$$ import net.minecraftforge.client.event.GuiScreenEvent;
-//$$ import net.minecraftforge.eventbus.api.EventPriority;
-//$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 //#else
 //$$ import net.minecraftforge.client.event.GuiOpenEvent;
 //$$ import net.minecraftforge.client.event.GuiScreenEvent;
@@ -89,7 +89,7 @@ public class VanillaGuiScreen extends GuiScreen implements Draggable, Typeable, 
     }
 
     public void display() {
-        getMinecraft().openScreen(mcScreen);
+        getMinecraft().displayGuiScreen(mcScreen);
         register();
     }
 
@@ -160,7 +160,7 @@ public class VanillaGuiScreen extends GuiScreen implements Draggable, Typeable, 
     //#endif
     class EventHandler extends EventRegistrations
         //#if FABRIC>=1
-        implements KeyboardCallback, MouseCallback
+        //$$ implements KeyboardCallback, MouseCallback
         //#endif
     {
         private boolean active;
@@ -171,7 +171,7 @@ public class VanillaGuiScreen extends GuiScreen implements Draggable, Typeable, 
 
             if (active) {
                 active = false;
-                getSuperMcGui().removed();
+                getSuperMcGui().onClose();
                 WRAPPERS.remove(mcScreen, VanillaGuiScreen.this);
             }
         }
@@ -181,7 +181,7 @@ public class VanillaGuiScreen extends GuiScreen implements Draggable, Typeable, 
             if (screen == mcScreen && active) {
                 active = false;
                 unregister();
-                getSuperMcGui().removed();
+                getSuperMcGui().onClose();
                 WRAPPERS.remove(mcScreen, VanillaGuiScreen.this);
             }
         }
@@ -206,95 +206,95 @@ public class VanillaGuiScreen extends GuiScreen implements Draggable, Typeable, 
         }
 
         //#if FABRIC>=1
-        { on(MouseCallback.EVENT, this); }
-
-        @Override
-        public boolean mouseDown(double x, double y, int button) {
-            return getSuperMcGui().mouseClicked(x, y, button);
-        }
-
-        @Override
-        public boolean mouseDrag(double x, double y, int button, double dx, double dy) {
-            return getSuperMcGui().mouseDragged(x, y, button, dx, dy);
-        }
-
-        @Override
-        public boolean mouseUp(double x, double y, int button) {
-            return getSuperMcGui().mouseReleased(x, y, button);
-        }
-
-        @Override
-        public boolean mouseScroll(double x, double y, double scroll) {
-            return getSuperMcGui().mouseScrolled(x, y, scroll);
-        }
-
-        { on(KeyboardCallback.EVENT, this); }
-
-        @Override
-        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            return getSuperMcGui().keyPressed(keyCode, scanCode, modifiers);
-        }
-
-        @Override
-        public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-            return getSuperMcGui().keyReleased(keyCode, scanCode, modifiers);
-        }
-
-        @Override
-        public boolean charTyped(char keyChar, int scanCode) {
-            return getSuperMcGui().charTyped(keyChar, scanCode);
-        }
+        //$$ { on(MouseCallback.EVENT, this); }
+        //$$
+        //$$ @Override
+        //$$ public boolean mouseDown(double x, double y, int button) {
+        //$$     return getSuperMcGui().mouseClicked(x, y, button);
+        //$$ }
+        //$$
+        //$$ @Override
+        //$$ public boolean mouseDrag(double x, double y, int button, double dx, double dy) {
+        //$$     return getSuperMcGui().mouseDragged(x, y, button, dx, dy);
+        //$$ }
+        //$$
+        //$$ @Override
+        //$$ public boolean mouseUp(double x, double y, int button) {
+        //$$     return getSuperMcGui().mouseReleased(x, y, button);
+        //$$ }
+        //$$
+        //$$ @Override
+        //$$ public boolean mouseScroll(double x, double y, double scroll) {
+        //$$     return getSuperMcGui().mouseScrolled(x, y, scroll);
+        //$$ }
+        //$$
+        //$$ { on(KeyboardCallback.EVENT, this); }
+        //$$
+        //$$ @Override
+        //$$ public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        //$$     return getSuperMcGui().keyPressed(keyCode, scanCode, modifiers);
+        //$$ }
+        //$$
+        //$$ @Override
+        //$$ public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        //$$     return getSuperMcGui().keyReleased(keyCode, scanCode, modifiers);
+        //$$ }
+        //$$
+        //$$ @Override
+        //$$ public boolean charTyped(char keyChar, int scanCode) {
+        //$$     return getSuperMcGui().charTyped(keyChar, scanCode);
+        //$$ }
         //#elseif MC>11600
-        //$$ private boolean handled;
-        //$$ @SubscribeEvent(priority = EventPriority.LOWEST)
-        //$$ public void mouseClicked(GuiScreenEvent.MouseClickedEvent event) {
-        //$$     handled = getSuperMcGui().mouseClicked(event.getMouseX(), event.getMouseY(), event.getButton());
-        //$$     if (handled) {
-        //$$       event.setCanceled(true);
-        //$$     }
-        //$$ }
-        //$$ @SubscribeEvent(priority = EventPriority.LOWEST)
-        //$$ public void mouseDrag(GuiScreenEvent.MouseDragEvent event) {
-        //$$     handled = getSuperMcGui().mouseDragged(event.getMouseX(), event.getMouseY(), event.getMouseButton(), event.getDragX(), event.getDragY());
-        //$$     if (handled) {
-        //$$         event.setCanceled(true);
-        //$$     }
-        //$$ }
-        //$$ @SubscribeEvent(priority = EventPriority.LOWEST)
-        //$$ public void mouseClicked(GuiScreenEvent.MouseReleasedEvent event) {
-        //$$     handled = getSuperMcGui().mouseReleased(event.getMouseX(), event.getMouseY(), event.getButton());
-        //$$     if (handled) {
-        //$$         event.setCanceled(true);
-        //$$     }
-        //$$ }
-        //$$ @SubscribeEvent(priority = EventPriority.LOWEST)
-        //$$ public void mouseClicked(GuiScreenEvent.MouseScrollEvent event) {
-        //$$     handled = getSuperMcGui().mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
-        //$$     if (handled) {
-        //$$         event.setCanceled(true);
-        //$$     }
-        //$$ }
-        //$$ @SubscribeEvent(priority = EventPriority.LOWEST)
-        //$$ public void mouseClicked(GuiScreenEvent.KeyboardKeyPressedEvent event) {
-        //$$     handled = getSuperMcGui().keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers());
-        //$$     if (handled) {
-        //$$         event.setCanceled(true);
-        //$$     }
-        //$$ }
-        //$$ @SubscribeEvent(priority = EventPriority.LOWEST)
-        //$$ public void mouseClicked(GuiScreenEvent.KeyboardKeyReleasedEvent event) {
-        //$$     handled = getSuperMcGui().keyReleased(event.getKeyCode(), event.getScanCode(), event.getModifiers());
-        //$$     if (handled) {
-        //$$         event.setCanceled(true);
-        //$$     }
-        //$$ }
-        //$$ @SubscribeEvent(priority = EventPriority.LOWEST)
-        //$$ public void mouseClicked(GuiScreenEvent.KeyboardCharTypedEvent event) {
-        //$$     handled = getSuperMcGui().charTyped(event.getCodePoint(), event.getModifiers());
-        //$$     if (handled) {
-        //$$         event.setCanceled(true);
-        //$$     }
-        //$$ }
+        private boolean handled;
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public void mouseClicked(GuiScreenEvent.MouseClickedEvent event) {
+            handled = getSuperMcGui().mouseClicked(event.getMouseX(), event.getMouseY(), event.getButton());
+            if (handled) {
+              event.setCanceled(true);
+            }
+        }
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public void mouseDrag(GuiScreenEvent.MouseDragEvent event) {
+            handled = getSuperMcGui().mouseDragged(event.getMouseX(), event.getMouseY(), event.getMouseButton(), event.getDragX(), event.getDragY());
+            if (handled) {
+                event.setCanceled(true);
+            }
+        }
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public void mouseClicked(GuiScreenEvent.MouseReleasedEvent event) {
+            handled = getSuperMcGui().mouseReleased(event.getMouseX(), event.getMouseY(), event.getButton());
+            if (handled) {
+                event.setCanceled(true);
+            }
+        }
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public void mouseClicked(GuiScreenEvent.MouseScrollEvent event) {
+            handled = getSuperMcGui().mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
+            if (handled) {
+                event.setCanceled(true);
+            }
+        }
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public void mouseClicked(GuiScreenEvent.KeyboardKeyPressedEvent event) {
+            handled = getSuperMcGui().keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers());
+            if (handled) {
+                event.setCanceled(true);
+            }
+        }
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public void mouseClicked(GuiScreenEvent.KeyboardKeyReleasedEvent event) {
+            handled = getSuperMcGui().keyReleased(event.getKeyCode(), event.getScanCode(), event.getModifiers());
+            if (handled) {
+                event.setCanceled(true);
+            }
+        }
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public void mouseClicked(GuiScreenEvent.KeyboardCharTypedEvent event) {
+            handled = getSuperMcGui().charTyped(event.getCodePoint(), event.getModifiers());
+            if (handled) {
+                event.setCanceled(true);
+            }
+        }
         //#else
         //$$ private boolean handled;
         //$$

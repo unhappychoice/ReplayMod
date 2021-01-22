@@ -21,16 +21,16 @@ import com.replaymod.gui.utils.Colors;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 //#if MC>=10904
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.potion.Effects;
 //#else
 //$$ import net.minecraft.potion.Potion;
 //#endif
 
 //#if MC>=10800
-import net.minecraft.client.render.entity.PlayerModelPart;
+import net.minecraft.entity.player.PlayerModelPart;
 //#endif
 
 import java.util.Collections;
@@ -94,7 +94,7 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
 
         Collections.sort(players, new PlayerComparator()); // Sort by name, spectators last
         for (final PlayerEntity p : players) {
-            final Identifier texture = Utils.getResourceLocationForPlayerUUID(p.getUuid());
+            final ResourceLocation texture = Utils.getResourceLocationForPlayerUUID(p.getUniqueID());
             final GuiClickable panel = new GuiClickable().setLayout(new HorizontalLayout().setSpacing(2)).addElements(
                     new HorizontalLayout.Data(0.5), new GuiImage() {
                         @Override
@@ -102,7 +102,7 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
                             renderer.bindTexture(texture);
                             renderer.drawTexturedRect(0, 0, 8, 8, 16, 16, 8, 8, 64, 64);
                             //#if MC>=10809
-                            if (p.isPartVisible(PlayerModelPart.HAT)) {
+                            if (p.isWearing(PlayerModelPart.HAT)) {
                             //#else
                             //#if MC>=10800
                             //$$ if (p.func_175148_a(EnumPlayerModelParts.HAT)) {
@@ -116,7 +116,7 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
                     }.setSize(16, 16),
                     new GuiLabel().setText(
                             //#if MC>=11400
-                            p.getName().asString()
+                            p.getName().getUnformattedComponentText()
                             //#else
                             //#if MC>=10800
                             //$$ p.getName()
@@ -134,10 +134,10 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
             final GuiCheckbox checkbox = new GuiCheckbox() {
                 @Override
                 public GuiCheckbox setChecked(boolean checked) {
-                    extra.setHidden(p.getUuid(), !checked);
+                    extra.setHidden(p.getUniqueID(), !checked);
                     return super.setChecked(checked);
                 }
-            }.setChecked(!extra.isHidden(p.getUuid()));
+            }.setChecked(!extra.isHidden(p.getUniqueID()));
             new GuiPanel(playersScrollable.getListPanel()).setLayout(new CustomLayout<GuiPanel>() {
                 @Override
                 protected void layout(GuiPanel container, int width, int height) {
@@ -169,7 +169,7 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
 
     private static boolean isSpectator(PlayerEntity e) {
         //#if MC>=10904
-        return e.isInvisible() && e.getStatusEffect(StatusEffects.INVISIBILITY) == null;
+        return e.isInvisible() && e.getActivePotionEffect(Effects.INVISIBILITY) == null;
         //#else
         //$$ return e.isInvisible() && e.getActivePotionEffect(Potion.invisibility) == null;
         //#endif
@@ -181,7 +181,7 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
             if (isSpectator(o1) && !isSpectator(o2)) return 1;
             if (isSpectator(o2) && !isSpectator(o1)) return -1;
             //#if MC>=11400
-            return o1.getName().asString().compareToIgnoreCase(o2.getName().asString());
+            return o1.getName().getUnformattedComponentText().compareToIgnoreCase(o2.getName().getUnformattedComponentText());
             //#else
             //#if MC>=10800
             //$$ return o1.getName().compareToIgnoreCase(o2.getName());

@@ -1,7 +1,7 @@
 package com.replaymod.core.events;
 
 import com.replaymod.gui.utils.Event;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 public interface PostRenderWorldCallback {
     Event<PostRenderWorldCallback> EVENT = Event.create((listeners) ->
