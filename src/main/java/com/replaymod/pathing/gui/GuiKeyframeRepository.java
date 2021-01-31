@@ -4,22 +4,9 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
-import com.replaymod.render.gui.GuiRenderQueue;
-import com.replaymod.render.gui.GuiRenderSettings;
-import com.replaymod.replay.ReplayHandler;
-import com.replaymod.replay.ReplayModReplay;
-import com.replaymod.replaystudio.pathing.PathingRegistry;
-import com.replaymod.replaystudio.pathing.path.Path;
-import com.replaymod.replaystudio.pathing.path.Timeline;
-import com.replaymod.replaystudio.pathing.serialize.TimelineSerialization;
-import com.replaymod.replaystudio.replay.ReplayFile;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
-import com.replaymod.gui.container.AbstractGuiClickableContainer;
-import com.replaymod.gui.container.GuiContainer;
-import com.replaymod.gui.container.GuiPanel;
-import com.replaymod.gui.container.GuiScreen;
-import com.replaymod.gui.container.GuiVerticalList;
+import com.replaymod.gui.container.*;
 import com.replaymod.gui.element.GuiButton;
 import com.replaymod.gui.element.GuiElement;
 import com.replaymod.gui.element.GuiLabel;
@@ -32,6 +19,15 @@ import com.replaymod.gui.layout.VerticalLayout;
 import com.replaymod.gui.popup.GuiYesNoPopup;
 import com.replaymod.gui.utils.Colors;
 import com.replaymod.gui.utils.Consumer;
+import com.replaymod.render.gui.GuiRenderQueue;
+import com.replaymod.render.gui.GuiRenderSettings;
+import com.replaymod.replay.ReplayHandler;
+import com.replaymod.replay.ReplayModReplay;
+import com.replaymod.replaystudio.pathing.PathingRegistry;
+import com.replaymod.replaystudio.pathing.path.Path;
+import com.replaymod.replaystudio.pathing.path.Timeline;
+import com.replaymod.replaystudio.pathing.serialize.TimelineSerialization;
+import com.replaymod.replaystudio.replay.ReplayFile;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
@@ -40,12 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.replaymod.gui.versions.MCVer.getClipboardString;
@@ -186,7 +177,8 @@ public class GuiKeyframeRepository extends GuiScreen implements Closeable, Typea
             } catch (Throwable t) {
                 t.printStackTrace();
                 CrashReport report = CrashReport.makeCrashReport(t, "Copying timeline(s)");
-                Utils.error(LOGGER, GuiKeyframeRepository.this, report, () -> {});
+                Utils.error(LOGGER, GuiKeyframeRepository.this, report, () -> {
+                });
             }
         }
     }).setSize(75, 20).setI18nLabel("replaymod.gui.copy").setDisabled();

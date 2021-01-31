@@ -4,12 +4,12 @@ import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.extras.ReplayModExtras;
+import com.replaymod.gui.versions.Image;
 import com.replaymod.render.frame.BitmapFrame;
 import com.replaymod.render.rendering.Channel;
 import com.replaymod.render.rendering.FrameConsumer;
 import com.replaymod.replay.ReplayModReplay;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.gui.versions.Image;
 import net.minecraft.crash.CrashReport;
 
 import java.io.File;

@@ -8,10 +8,13 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface MainWindowAccessor {
     @Accessor
     int getFramebufferWidth();
+
     @Accessor
     void setFramebufferWidth(int value);
+
     @Accessor
     int getFramebufferHeight();
+
     @Accessor
     void setFramebufferHeight(int value);
 }

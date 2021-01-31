@@ -2,6 +2,7 @@ package com.replaymod.pathing.properties;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.replaymod.gui.utils.NonNull;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replay.camera.CameraEntity;
 import com.replaymod.replaystudio.pathing.change.Change;
@@ -9,7 +10,6 @@ import com.replaymod.replaystudio.pathing.property.AbstractProperty;
 import com.replaymod.replaystudio.pathing.property.AbstractPropertyGroup;
 import com.replaymod.replaystudio.pathing.property.PropertyPart;
 import com.replaymod.replaystudio.pathing.property.PropertyParts;
-import com.replaymod.gui.utils.NonNull;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.io.IOException;
@@ -25,6 +25,7 @@ public class CameraProperties extends AbstractPropertyGroup {
     public static final CameraProperties GROUP = new CameraProperties();
     public static final Position POSITION = new Position();
     public static final Rotation ROTATION = new Rotation();
+
     private CameraProperties() {
         super("camera", "replaymod.gui.camera");
     }

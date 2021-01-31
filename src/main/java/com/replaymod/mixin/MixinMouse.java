@@ -1,9 +1,6 @@
-//#if MC>=11400
 package com.replaymod.mixin;
 
 import com.replaymod.core.events.KeyBindingEventCallback;
-import com.replaymod.core.events.KeyEventCallback;
-import net.minecraft.client.KeyboardListener;
 import net.minecraft.client.MouseHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,4 +14,3 @@ public class MixinMouse {
         KeyBindingEventCallback.EVENT.invoker().onKeybindingEvent();
     }
 }
-//#endif

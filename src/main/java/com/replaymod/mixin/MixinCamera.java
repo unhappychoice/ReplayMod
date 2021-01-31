@@ -1,11 +1,11 @@
 package com.replaymod.mixin;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.replaymod.replay.camera.CameraEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.vector.Vector3f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,7 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
 public class MixinCamera {
-    @Shadow @Final private Minecraft mc;
+    @Shadow
+    @Final
+    private Minecraft mc;
+
     @Inject(
             method = "renderWorld",
             at = @At(

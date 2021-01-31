@@ -1,5 +1,17 @@
 package com.replaymod.simplepathing.gui;
 
+import com.replaymod.core.versions.MCVer.Keyboard;
+import com.replaymod.gui.container.AbstractGuiContainer;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.element.*;
+import com.replaymod.gui.element.advanced.GuiDropdownMenu;
+import com.replaymod.gui.function.Typeable;
+import com.replaymod.gui.layout.GridLayout;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.gui.popup.AbstractGuiPopup;
+import com.replaymod.gui.utils.Colors;
+import com.replaymod.gui.utils.Consumer;
 import com.replaymod.pathing.properties.CameraProperties;
 import com.replaymod.pathing.properties.TimestampProperty;
 import com.replaymod.replay.ReplayModReplay;
@@ -17,22 +29,6 @@ import com.replaymod.simplepathing.SPTimeline;
 import com.replaymod.simplepathing.SPTimeline.SPPath;
 import com.replaymod.simplepathing.Setting;
 import com.replaymod.simplepathing.properties.ExplicitInterpolationProperty;
-import com.replaymod.gui.container.AbstractGuiContainer;
-import com.replaymod.gui.container.GuiPanel;
-import com.replaymod.gui.element.GuiButton;
-import com.replaymod.gui.element.GuiLabel;
-import com.replaymod.gui.element.GuiNumberField;
-import com.replaymod.gui.element.GuiTooltip;
-import com.replaymod.gui.element.IGuiClickable;
-import com.replaymod.gui.element.IGuiLabel;
-import com.replaymod.gui.element.advanced.GuiDropdownMenu;
-import com.replaymod.gui.function.Typeable;
-import com.replaymod.gui.layout.GridLayout;
-import com.replaymod.gui.layout.HorizontalLayout;
-import com.replaymod.gui.layout.VerticalLayout;
-import com.replaymod.gui.popup.AbstractGuiPopup;
-import com.replaymod.gui.utils.Colors;
-import com.replaymod.gui.utils.Consumer;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import net.minecraft.client.resources.I18n;
 import org.apache.logging.log4j.LogManager;
@@ -40,12 +36,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.Optional;
-
-//#if MC>=11400
-import com.replaymod.core.versions.MCVer.Keyboard;
-//#else
-//$$ import org.lwjgl.input.Keyboard;
-//#endif
 
 import static com.replaymod.gui.utils.Utils.link;
 

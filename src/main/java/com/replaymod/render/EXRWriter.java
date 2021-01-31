@@ -1,4 +1,3 @@
-//#if MC>=11400
 package com.replaymod.render;
 
 import com.replaymod.core.versions.MCVer;
@@ -48,11 +47,13 @@ public class EXRWriter implements FrameConsumer<BitmapFrame> {
         int numChannels = 4 + (depthFrame != null ? 1 : 0);
 
         stackPush();
-        EXRHeader header = EXRHeader.mallocStack(); InitEXRHeader(header);
+        EXRHeader header = EXRHeader.mallocStack();
+        InitEXRHeader(header);
         EXRChannelInfo.Buffer channelInfos = EXRChannelInfo.mallocStack(numChannels);
         IntBuffer pixelTypes = stackMallocInt(numChannels);
         IntBuffer requestedPixelTypes = stackMallocInt(numChannels);
-        EXRImage image = EXRImage.mallocStack(); InitEXRImage(image);
+        EXRImage image = EXRImage.mallocStack();
+        InitEXRImage(image);
         PointerBuffer imagePointers = stackMallocPointer(numChannels);
         FloatBuffer images = memAllocFloat(width * height * numChannels);
         PointerBuffer err = stackMallocPointer(1);
@@ -122,4 +123,3 @@ public class EXRWriter implements FrameConsumer<BitmapFrame> {
     public void close() {
     }
 }
-//#endif

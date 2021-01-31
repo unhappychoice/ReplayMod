@@ -1,6 +1,5 @@
 package com.replaymod.mixin;
 
-//#if MC>=11500
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.replaymod.render.hooks.ForceChunkLoadingHook;
 import net.minecraft.client.renderer.RegionRenderCacheBuilder;
@@ -22,15 +21,23 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Mixin(ChunkRenderDispatcher.class)
 public abstract class Mixin_BlockOnChunkRebuilds implements ForceChunkLoadingHook.IBlockOnChunkRebuilds {
-    @Shadow @Final private Queue<RegionRenderCacheBuilder> freeBuilders;
+    @Shadow
+    @Final
+    private Queue<RegionRenderCacheBuilder> freeBuilders;
 
-    @Shadow public abstract boolean runChunkUploads();
+    @Shadow
+    public abstract boolean runChunkUploads();
 
-    @Shadow @Final private DelegatedTaskExecutor<Runnable> delegatedTaskExecutor;
+    @Shadow
+    @Final
+    private DelegatedTaskExecutor<Runnable> delegatedTaskExecutor;
 
-    @Shadow protected abstract void runTask();
+    @Shadow
+    protected abstract void runTask();
 
-    @Shadow @Final private Queue<Runnable> uploadTasks;
+    @Shadow
+    @Final
+    private Queue<Runnable> uploadTasks;
     private final Lock waitingForWorkLock = new ReentrantLock();
     private final Condition newWork = waitingForWorkLock.newCondition();
     private volatile boolean allDone;
@@ -123,4 +130,3 @@ public abstract class Mixin_BlockOnChunkRebuilds implements ForceChunkLoadingHoo
         return anything;
     }
 }
-//#endif

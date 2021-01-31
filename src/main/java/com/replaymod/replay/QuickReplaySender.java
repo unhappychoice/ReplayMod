@@ -1,4 +1,3 @@
-//#if MC>=10904
 package com.replaymod.replay;
 
 import com.github.steveice10.packetlib.io.NetInput;
@@ -7,55 +6,35 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.replaymod.core.utils.WrappedTimer;
+import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.gui.versions.callbacks.PreTickCallback;
 import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.mixin.TimerAccessor;
 import com.replaymod.replaystudio.replay.ReplayFile;
 import com.replaymod.replaystudio.util.RandomAccessReplay;
-import com.replaymod.gui.utils.EventRegistrations;
-import com.replaymod.gui.versions.callbacks.PreTickCallback;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.play.server.SPlayerPositionLookPacket;
-import net.minecraft.network.play.server.SRespawnPacket;
-import net.minecraft.network.ProtocolType;
-import net.minecraft.network.PacketDirection;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.PacketDirection;
+import net.minecraft.network.ProtocolType;
+import net.minecraft.network.play.server.SPlayerPositionLookPacket;
+import net.minecraft.network.play.server.SRespawnPacket;
+import net.minecraft.util.registry.DynamicRegistries;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.DimensionType;
+import net.minecraft.world.GameType;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.function.Consumer;
-
-//#if MC>=11602
-import net.minecraft.util.registry.DynamicRegistries;
-import net.minecraft.util.registry.Registry;
-//#endif
-
-//#if MC>=11600
-import net.minecraft.world.World;
-//#else
-//$$ import net.minecraft.world.level.LevelGeneratorType;
-//#endif
-//#if MC>=11400
-import net.minecraft.world.DimensionType;
-//#else
-//$$ import net.minecraft.world.EnumDifficulty;
-//#endif
-
-//#if MC>=11200
-import com.replaymod.core.utils.WrappedTimer;
-//#endif
-
-//#if MC>=11002
-import net.minecraft.world.GameType;
-//#else
-//$$ import net.minecraft.world.WorldSettings.GameType;
-//#endif
 
 import static com.replaymod.core.versions.MCVer.getMinecraft;
 import static com.replaymod.core.versions.MCVer.getPacketTypeRegistry;
@@ -99,16 +78,7 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
             @Override
             protected IPacket<?> decode(com.github.steveice10.netty.buffer.ByteBuf byteBuf) throws IOException {
                 int packetId = new ByteBufNetInput(byteBuf).readVarInt();
-                //#if MC>=11500
                 IPacket<?> mcPacket = ProtocolType.PLAY.getPacket(PacketDirection.CLIENTBOUND, packetId);
-                //#else
-                //$$ Packet<?> mcPacket;
-                //$$ try {
-                //$$     mcPacket = NetworkState.PLAY.getPacketHandler(NetworkSide.CLIENTBOUND, packetId);
-                //$$ } catch (IllegalAccessException | InstantiationException e) {
-                //$$     throw new IOException(e);
-                //$$ }
-                //#endif
                 if (mcPacket != null) {
                     int size = byteBuf.readableBytes();
                     if (buf.length < size) {
@@ -173,7 +143,8 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
     private void ensureInitialized(Runnable body) {
         if (initPromise == null) {
             LOGGER.warn("QuickReplaySender used without prior initialization!", new Throwable());
-            initialize(progress -> {});
+            initialize(progress -> {
+            });
         }
         Futures.addCallback(initPromise, new FutureCallback<Void>() {
             @Override
@@ -191,12 +162,7 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
     public void restart() {
         replay.reset();
         ctx.fireChannelRead(new SRespawnPacket(
-                //#if MC>=11600
-                //#if MC>=11602
                 DimensionType.registerTypes(new DynamicRegistries.Impl()).getRegistry(Registry.DIMENSION_TYPE_KEY).getValueForKey(DimensionType.OVERWORLD),
-                //#else
-                //$$ DimensionType.OVERWORLD_REGISTRY_KEY,
-                //#endif
                 World.OVERWORLD,
                 0,
                 GameType.SPECTATOR,
@@ -204,21 +170,6 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
                 false,
                 false,
                 false
-                //#else
-                //#if MC>=11400
-                //$$ DimensionType.OVERWORLD,
-                //#else
-                //$$ 0,
-                //#endif
-                //#if MC>=11500
-                //$$ 0,
-                //#endif
-                //#if MC<11400
-                //$$ EnumDifficulty.NORMAL,
-                //#endif
-                //$$ LevelGeneratorType.DEFAULT,
-                //$$ GameMode.SPECTATOR
-                //#endif
         ));
         ctx.fireChannelRead(new SPlayerPositionLookPacket(0, 0, 0, 0, 0, Collections.emptySet(), 0));
     }
@@ -237,11 +188,7 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
             this.replaySpeed = factor;
         }
         TimerAccessor timer = (TimerAccessor) ((MinecraftAccessor) mc).getTimer();
-        //#if MC>=11200
         timer.setTickLength(WrappedTimer.DEFAULT_MS_PER_TICK / (float) factor);
-        //#else
-        //$$ timer.setTimerSpeed((float) factor);
-        //#endif
     }
 
     @Override
@@ -277,7 +224,10 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
     }
 
     private class EventHandler extends EventRegistrations {
-        { on(PreTickCallback.EVENT, this::onTick); }
+        {
+            on(PreTickCallback.EVENT, this::onTick);
+        }
+
         private void onTick() {
             if (!asyncMode || paused()) return;
 
@@ -301,4 +251,3 @@ public class QuickReplaySender extends ChannelHandlerAdapter implements ReplaySe
         });
     }
 }
-//#endif

@@ -2,9 +2,9 @@ package com.replaymod.simplepathing.properties;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.replaymod.gui.utils.NonNull;
 import com.replaymod.replaystudio.pathing.property.AbstractProperty;
 import com.replaymod.replaystudio.pathing.property.PropertyPart;
-import com.replaymod.gui.utils.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.IOException;

@@ -1,4 +1,3 @@
-//#if MC>=11400
 package com.replaymod.mixin;
 
 import com.replaymod.replay.events.RenderHotbarCallback;
@@ -28,4 +27,3 @@ public class MixinInGameHud {
         }
     }
 }
-//#endif

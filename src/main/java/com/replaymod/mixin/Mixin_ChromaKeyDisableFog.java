@@ -12,10 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class Mixin_ChromaKeyDisableFog {
     @Inject(method = "setupFog", at = @At("HEAD"), cancellable = true)
     private
-    //#if MC>=11500
-    static
-    //#endif
-    void replayModRender_onSetupFog(CallbackInfo ci) {
+    static void replayModRender_onSetupFog(CallbackInfo ci) {
         EntityRendererHandler handler =
                 ((EntityRendererHandler.IEntityRenderer) MCVer.getMinecraft().gameRenderer).replayModRender_getHandler();
         if (handler == null) return;

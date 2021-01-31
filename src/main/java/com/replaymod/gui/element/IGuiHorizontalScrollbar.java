@@ -27,6 +27,7 @@ package com.replaymod.gui.element;
 public interface IGuiHorizontalScrollbar<T extends IGuiHorizontalScrollbar<T>> extends GuiElement<T> {
     /**
      * Set the position of the scrollbar.
+     *
      * @param pos Position between 0 (inclusive) and 1-zoom (inclusive)
      * @return {@code this}, for chaining
      */
@@ -34,6 +35,7 @@ public interface IGuiHorizontalScrollbar<T extends IGuiHorizontalScrollbar<T>> e
 
     /**
      * Returns the position of the scrollbar.
+     *
      * @return Position between 0 (inclusive) and 1-zoom (inclusive)
      */
     double getPosition();
@@ -41,6 +43,7 @@ public interface IGuiHorizontalScrollbar<T extends IGuiHorizontalScrollbar<T>> e
     /**
      * Set the zoom of the scrollbar where 1 is zoomed out completely
      * and 0 would be zoomed in infinitely far.
+     *
      * @param zoom Zoom between 1 (inclusive) and 0 (exclusive)
      * @return {@code this}, for chaining
      */
@@ -49,12 +52,14 @@ public interface IGuiHorizontalScrollbar<T extends IGuiHorizontalScrollbar<T>> e
     /**
      * Returns the zoom of the scrollbar where 1 is zoomed out completely
      * and 0 would be zoomed in infinitely far.
+     *
      * @return Zoom between 1 (inclusive) and 0 (exclusive)
      */
     double getZoom();
 
     /**
      * Sets the runnable called when the position or zoom of the scrollbar changed.
+     *
      * @param runnable The Runnable to be called
      * @return {@code this}, for chaining
      */

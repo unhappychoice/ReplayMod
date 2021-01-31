@@ -1,36 +1,16 @@
-//#if MC>=10800
 package com.replaymod.render.blend.exporters;
 
+import com.replaymod.mixin.ItemRendererAccessor;
 import com.replaymod.render.blend.BlendMeshBuilder;
 import com.replaymod.render.blend.Exporter;
 import com.replaymod.render.blend.data.DMesh;
 import com.replaymod.render.blend.data.DObject;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import org.lwjgl.opengl.GL11;
-
-//#if MC>=11400
-import net.minecraft.util.math.vector.Vector3i;
-//#else
-//$$ import net.minecraftforge.client.model.pipeline.LightUtil;
-//#endif
-
-//#if MC>=11400
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-//#else
-//$$ import net.minecraft.client.renderer.block.model.BakedQuad;
-//#if MC>=10904
-//$$ import net.minecraft.client.renderer.block.model.IBakedModel;
-//#else
-//$$ import net.minecraft.client.resources.model.IBakedModel;
-//#endif
-//#endif
-
-//#if MC>=10904
-import com.replaymod.mixin.ItemRendererAccessor;
-//#endif
 
 import java.util.List;
 import java.util.Random;
@@ -69,11 +49,7 @@ public class ItemExporter implements Exporter {
         }
         if (object == null) {
             object = new ItemBasedDObject(renderItem, model, stack);
-            //#if MC>=11400
             object.id.name = stack.getDisplayName().getString();
-            //#else
-            //$$ object.id.name = stack.getDisplayName();
-            //#endif
             object.setParent(parent);
         }
         object.lastFrame = frame;
@@ -85,31 +61,12 @@ public class ItemExporter implements Exporter {
         DMesh mesh = new DMesh();
         BlendMeshBuilder builder = new BlendMeshBuilder(mesh);
         builder.setWellBehaved(true);
-        //#if MC>=10809
         builder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        //#else
-        //$$ builder.startDrawingQuads();
-        //$$ builder.setVertexFormat(DefaultVertexFormats.ITEM);
-        //#endif
 
-        //#if MC>=11400
         for (Direction face : Direction.values()) {
             renderQuads(renderItem, builder, model.getQuads(null, face, new Random()), stack);
         }
         renderQuads(renderItem, builder, model.getQuads(null, null, new Random()), stack);
-        //#else
-        //#if MC>=10904
-        //$$ for (EnumFacing face : EnumFacing.values()) {
-        //$$     renderQuads(renderItem, builder, model.getQuads(null, face, 0), stack);
-        //$$ }
-        //$$ renderQuads(renderItem, builder, model.getQuads(null, null, 0), stack);
-        //#else
-        //$$ for (EnumFacing face : EnumFacing.values()) {
-        //$$     renderQuads(renderItem, builder, model.getFaceQuads(face), stack);
-        //$$ }
-        //$$ renderQuads(renderItem, builder, model.getGeneralQuads(), stack);
-        //#endif
-        //#endif
 
         builder.finishDrawing();
         return mesh;
@@ -118,24 +75,9 @@ public class ItemExporter implements Exporter {
     private static void renderQuads(Object renderItem, BlendMeshBuilder buffer, List<BakedQuad> quads, ItemStack stack) {
         for (BakedQuad quad : quads) {
             int color = stack != null && quad.hasTintIndex()
-                    //#if MC>=10904
                     ? ((ItemRendererAccessor) renderItem).getItemColors().getColor(stack, quad.getTintIndex()) | 0xff000000
-                    //#else
-                    //$$ ? stack.getItem().getColorFromItemStack(stack, quad.getTintIndex()) | 0xff000000
-                    //#endif
                     : 0xffffffff;
-            //#if MC>=11500
             // FIXME 1.15
-            //#else
-            //#if MC>=11400
-            //$$ buffer.putVertexData(quad.getVertexData());
-            //$$ buffer.setQuadColor(color);
-            //$$ Vec3i vec3i_1 = quad.getFace().getVector();
-            //$$ buffer.postNormal(vec3i_1.getX(), vec3i_1.getY(), vec3i_1.getZ());
-            //#else
-            //$$ LightUtil.renderQuadColor(buffer, quad, color);
-            //#endif
-            //#endif
         }
 
     }
@@ -169,4 +111,3 @@ public class ItemExporter implements Exporter {
         }
     }
 }
-//#endif

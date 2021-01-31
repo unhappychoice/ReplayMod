@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.vector.Vector3d;
 import org.blender.dna.Link;
 import org.blender.dna.ListBase;
 import org.blender.utils.BlenderFactory;
@@ -16,10 +17,6 @@ import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
-
-//#if MC>=11400
-import net.minecraft.util.math.vector.Vector3d;
-//#endif
 
 public class Util {
     public static BlenderFactory factory() {
@@ -40,13 +37,10 @@ public class Util {
     }
 
     private static FloatBuffer floatBuffer = GLAllocation.createDirectFloatBuffer(16);
+
     public static Matrix4f getGlMatrix(int matrix) {
         floatBuffer.clear();
-        //#if MC>=11400
         GL11.glGetFloatv(matrix, floatBuffer);
-        //#else
-        //$$ GL11.glGetFloat(matrix, floatBuffer);
-        //#endif
         floatBuffer.rewind();
         Matrix4f mat = new Matrix4f();
         mat.load(floatBuffer);
@@ -136,21 +130,11 @@ public class Util {
         q.w = -q.w;
     }
 
-    //#if MC>=10800
     public static Vector3f getCameraPos() {
         Minecraft mc = Minecraft.getInstance();
-        //#if MC>=11400
         Vector3d pos = mc.getRenderManager().info.getProjectedView();
         return new Vector3f((float) pos.x, (float) pos.y, (float) pos.z);
-        //#else
-        //$$ return new Vector3f(
-        //$$         (float) -mc.getRenderManager().viewerPosX,
-        //$$         (float) -mc.getRenderManager().viewerPosY,
-        //$$         (float) -mc.getRenderManager().viewerPosZ
-        //$$ );
-        //#endif
     }
-    //#endif
 
     public static Vector3f rotate(Quaternion rot, Vector3f vec, Vector3f dest) {
         if (dest == null) dest = new Vector3f();
@@ -184,11 +168,7 @@ public class Util {
 
     public static String getTileEntityId(TileEntity tileEntity) {
         CompoundNBT nbt = new CompoundNBT();
-        //#if MC>=11400
         tileEntity.write(nbt);
-        //#else
-        //$$ tileEntity.writeToNBT(nbt);
-        //#endif
         return nbt.getString("id");
     }
 

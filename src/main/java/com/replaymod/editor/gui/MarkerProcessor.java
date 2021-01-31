@@ -21,14 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -58,11 +51,17 @@ public class MarkerProcessor {
     }
 
     private enum OutputState {
-        /** A new output file has begun but not data has been written yet. */
+        /**
+         * A new output file has begun but not data has been written yet.
+         */
         NotYetWriting,
-        /** Currently writing data to the active output file. */
+        /**
+         * Currently writing data to the active output file.
+         */
         Writing,
-        /** Currently not writing data. */
+        /**
+         * Currently not writing data.
+         */
         Paused,
     }
 

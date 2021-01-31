@@ -1,24 +1,10 @@
 package com.replaymod.core;
 
-import com.mojang.bridge.launcher.Launcher;
-import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.core.versions.forge.EventsAdapter;
-import com.replaymod.extras.modcore.ModCoreInstaller;
-import net.minecraft.resources.IResourcePack;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.javafmlmod.FMLModContainer;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.Mixins;
-
-import java.util.List;
-
-import static com.replaymod.core.ReplayMod.MOD_ID;
-import static com.replaymod.core.ReplayMod.jGuiResourcePack;
-import static com.replaymod.core.versions.MCVer.getMinecraft;
 
 @Mod(ReplayMod.MOD_ID)
 public class ReplayModBackend {

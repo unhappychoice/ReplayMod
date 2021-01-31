@@ -29,14 +29,20 @@ import net.minecraft.util.ResourceLocation;
 
 public interface IGuiImage<T extends IGuiImage<T>> extends GuiElement<T> {
     T setTexture(Image img);
+
     T setTexture(ResourceLocation resourceLocation);
+
     T setTexture(ResourceLocation resourceLocation, int u, int v, int width, int height);
 
     T setU(int u);
+
     T setV(int v);
+
     T setUV(int u, int v);
 
     T setUWidth(int width);
+
     T setVHeight(int height);
+
     T setUVSize(int width, int height);
 }

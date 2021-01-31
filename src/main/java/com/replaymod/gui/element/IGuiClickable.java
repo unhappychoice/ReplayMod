@@ -26,5 +26,6 @@ package com.replaymod.gui.element;
 
 public interface IGuiClickable<T extends IGuiClickable<T>> extends GuiElement<T> {
     T onClick(Runnable onClick);
+
     Runnable getOnClick();
 }

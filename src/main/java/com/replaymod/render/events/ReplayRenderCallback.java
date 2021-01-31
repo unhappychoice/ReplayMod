@@ -1,7 +1,7 @@
 package com.replaymod.render.events;
 
-import com.replaymod.render.rendering.VideoRenderer;
 import com.replaymod.gui.utils.Event;
+import com.replaymod.render.rendering.VideoRenderer;
 
 public interface ReplayRenderCallback {
     interface Pre {

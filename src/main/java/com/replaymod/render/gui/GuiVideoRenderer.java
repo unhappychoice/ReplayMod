@@ -1,7 +1,6 @@
 package com.replaymod.render.gui;
 
 import com.replaymod.core.utils.Utils;
-import com.replaymod.render.rendering.VideoRenderer;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiPanel;
@@ -13,16 +12,14 @@ import com.replaymod.gui.element.advanced.GuiProgressBar;
 import com.replaymod.gui.function.Tickable;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.render.rendering.VideoRenderer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-
-//#if MC>=11400
-import net.minecraft.client.renderer.texture.NativeImage;
-//#endif
 
 import java.nio.ByteBuffer;
 
@@ -32,7 +29,7 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
     private final VideoRenderer renderer;
 
     public final GuiLabel title = new GuiLabel().setI18nText("replaymod.gui.rendering.title");
-    public final GuiPanel imagePanel = new GuiPanel(){
+    public final GuiPanel imagePanel = new GuiPanel() {
         @Override
         public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
             if (previewCheckbox.isChecked()) {
@@ -60,7 +57,7 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
         }
     }).setI18nLabel("replaymod.gui.rendering.pause").setSize(150, 20);
 
-    public final GuiButton cancelButton = new GuiButton(buttonPanel){
+    public final GuiButton cancelButton = new GuiButton(buttonPanel) {
         boolean waitingForConfirmation;
 
         @Override
@@ -143,7 +140,7 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
         long current = System.currentTimeMillis();
 
         //first, update the total render time (only if rendering is not paused and has already started)
-        if(!renderer.isPaused() && renderer.getFramesDone() > 0 && prevTime > -1) {
+        if (!renderer.isPaused() && renderer.getFramesDone() > 0 && prevTime > -1) {
             renderTimeTaken += (current - prevTime);
         } else {
             //if the rendering process is paused, we have to update the frame start time to prevent huge render times
@@ -158,25 +155,25 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
         //calculate estimated time left
 
         //if the amount of rendered frames has increased since the last update
-        if(prevRenderedFrames < renderer.getFramesDone()) {
+        if (prevRenderedFrames < renderer.getFramesDone()) {
             //we don't include the first frame in our calculations,
             //as setting up the rendering process takes a few seconds
-            if(prevRenderedFrames > 0) {
+            if (prevRenderedFrames > 0) {
 
                 //calculate the amount of frames that have been rendered since the last update
                 int framesRendered = renderer.getFramesDone() - prevRenderedFrames;
 
                 //calculate the time it took to render these frames
-                int renderTime = (int)(current - frameStartTime);
+                int renderTime = (int) (current - frameStartTime);
 
                 //calculate the average time it took for each of these frames to render
-                int avgRenderTime = renderTime/framesRendered;
+                int avgRenderTime = renderTime / framesRendered;
 
                 //add all of the average render times to the render times array
-                for(int i=0; i<framesRendered; i++) {
+                for (int i = 0; i < framesRendered; i++) {
                     renderTimes[currentIndex] = avgRenderTime;
                     currentIndex++;
-                    if(currentIndex >= renderTimes.length) currentIndex = 0;
+                    if (currentIndex >= renderTimes.length) currentIndex = 0;
                 }
 
                 //the renderTimes array initially contains lots of zeros,
@@ -184,8 +181,8 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
                 int validValues = 0;
 
                 int totalTime = 0;
-                for(int i : renderTimes) {
-                    if(i > 0) {
+                for (int i : renderTimes) {
+                    if (i > 0) {
                         totalTime += i;
                         validValues++;
                     }
@@ -204,7 +201,7 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
             prevRenderedFrames = renderer.getFramesDone();
         }
 
-        renderTime.setText(I18n.format("replaymod.gui.rendering.timetaken") + ": " + secToString(renderTimeTaken/1000));
+        renderTime.setText(I18n.format("replaymod.gui.rendering.timetaken") + ": " + secToString(renderTimeTaken / 1000));
         remainingTime.setText(I18n.format("replaymod.gui.rendering.timeleft") + ": " + secToString(renderTimeLeft));
 
         int framesDone = renderer.getFramesDone(), framesTotal = renderer.getTotalFrames();
@@ -213,13 +210,13 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
     }
 
     private String secToString(int seconds) {
-        int hours = seconds/(60*60);
-        int min = seconds/60 - hours*60;
-        int sec = seconds - ((min*60) + (hours*60*60));
+        int hours = seconds / (60 * 60);
+        int min = seconds / 60 - hours * 60;
+        int sec = seconds - ((min * 60) + (hours * 60 * 60));
 
         StringBuilder builder = new StringBuilder();
-        if(hours > 0) builder.append(hours).append(I18n.format("replaymod.gui.hours"));
-        if(min > 0 || hours > 0) builder.append(min).append(I18n.format("replaymod.gui.minutes"));
+        if (hours > 0) builder.append(hours).append(I18n.format("replaymod.gui.hours"));
+        if (min > 0 || hours > 0) builder.append(min).append(I18n.format("replaymod.gui.minutes"));
         builder.append(sec).append(I18n.format("replaymod.gui.seconds"));
 
         return builder.toString();
@@ -231,11 +228,7 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
         final int videoHeight = videoSize.getHeight();
 
         if (previewTexture == null) {
-            //#if MC>=11400
             previewTexture = new DynamicTexture(videoWidth, videoHeight, true);
-            //#else
-            //$$ previewTexture = new DynamicTexture(videoWidth, videoHeight);
-            //#endif
         }
 
         if (previewTextureDirty) {
@@ -268,12 +261,8 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
         if (previewCheckbox.isChecked() && previewTexture != null) {
             buffer.mark();
             synchronized (this) {
-                //#if MC>=11400
                 NativeImage data = previewTexture.getTextureData();
                 assert data != null;
-                //#else
-                //$$ int[] data = previewTexture.getTextureData();
-                //#endif
                 // Note: Optifine changes the texture data array to be three times as long (for use by shaders),
                 //       we only want to initialize the first third and since we use our frame size, not the array size,
                 //       we're good to go.
@@ -284,13 +273,8 @@ public class GuiVideoRenderer extends GuiScreen implements Tickable {
                         int g = buffer.get() & 0xff;
                         int r = buffer.get() & 0xff;
                         buffer.get(); // alpha
-                        //#if MC>=11400
-                        int value = 0xff << 24 | b << 16 | g << 8 |  r;
+                        int value = 0xff << 24 | b << 16 | g << 8 | r;
                         data.setPixelRGBA(x, y, value); // actually takes ABGR, not RGBA
-                        //#else
-                        //$$ int value = 0xff << 24 | r << 16 | g << 8 |  b;
-                        //$$ data[y * width + x] = value;
-                        //#endif
                     }
                 }
                 previewTextureDirty = true;

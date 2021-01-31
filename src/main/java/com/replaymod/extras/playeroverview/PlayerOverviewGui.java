@@ -1,37 +1,21 @@
 package com.replaymod.extras.playeroverview;
 
 import com.replaymod.core.utils.Utils;
-import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
-import com.replaymod.gui.container.GuiClickable;
-import com.replaymod.gui.container.GuiContainer;
-import com.replaymod.gui.container.GuiPanel;
-import com.replaymod.gui.container.GuiScreen;
-import com.replaymod.gui.container.GuiVerticalList;
-import com.replaymod.gui.element.GuiCheckbox;
-import com.replaymod.gui.element.GuiImage;
-import com.replaymod.gui.element.GuiLabel;
-import com.replaymod.gui.element.GuiTooltip;
-import com.replaymod.gui.element.IGuiCheckbox;
+import com.replaymod.gui.container.*;
+import com.replaymod.gui.element.*;
 import com.replaymod.gui.function.Closeable;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.utils.Colors;
+import com.replaymod.replay.ReplayModReplay;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-
-//#if MC>=10904
-import net.minecraft.potion.Effects;
-//#else
-//$$ import net.minecraft.potion.Potion;
-//#endif
-
-//#if MC>=10800
 import net.minecraft.entity.player.PlayerModelPart;
-//#endif
+import net.minecraft.potion.Effects;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,13 +34,13 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
     public final GuiCheckbox saveCheckbox = new GuiCheckbox(contentPanel)
             .setTooltip(new GuiTooltip().setI18nText("replaymod.gui.playeroverview.remembersettings.description"))
             .setI18nLabel("replaymod.gui.playeroverview.remembersettings");
-    public final GuiCheckbox checkAll = new GuiCheckbox(contentPanel){
+    public final GuiCheckbox checkAll = new GuiCheckbox(contentPanel) {
         @Override
         public void onClick() {
             playersScrollable.invokeAll(IGuiCheckbox.class, e -> e.setChecked(true));
         }
     }.setLabel("").setChecked(true).setTooltip(new GuiTooltip().setI18nText("replaymod.gui.playeroverview.showall"));
-    public final GuiCheckbox uncheckAll = new GuiCheckbox(contentPanel){
+    public final GuiCheckbox uncheckAll = new GuiCheckbox(contentPanel) {
         @Override
         public void onClick() {
             playersScrollable.invokeAll(IGuiCheckbox.class, e -> e.setChecked(false));
@@ -101,29 +85,13 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
                         public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
                             renderer.bindTexture(texture);
                             renderer.drawTexturedRect(0, 0, 8, 8, 16, 16, 8, 8, 64, 64);
-                            //#if MC>=10809
                             if (p.isWearing(PlayerModelPart.HAT)) {
-                            //#else
-                            //#if MC>=10800
-                            //$$ if (p.func_175148_a(EnumPlayerModelParts.HAT)) {
-                            //#else
-                            //$$ {
-                            //#endif
-                            //#endif
                                 renderer.drawTexturedRect(0, 0, 40, 8, size.getWidth(), size.getHeight(), 8, 8, 64, 64);
                             }
                         }
                     }.setSize(16, 16),
                     new GuiLabel().setText(
-                            //#if MC>=11400
                             p.getName().getUnformattedComponentText()
-                            //#else
-                            //#if MC>=10800
-                            //$$ p.getName()
-                            //#else
-                            //$$ p.getDisplayName()
-                            //#endif
-                            //#endif
                     ).setColor(isSpectator(p) ? Colors.DKGREY : Colors.WHITE)
             ).onClick(new Runnable() {
                 @Override
@@ -168,11 +136,7 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
     }
 
     private static boolean isSpectator(PlayerEntity e) {
-        //#if MC>=10904
         return e.isInvisible() && e.getActivePotionEffect(Effects.INVISIBILITY) == null;
-        //#else
-        //$$ return e.isInvisible() && e.getActivePotionEffect(Potion.invisibility) == null;
-        //#endif
     }
 
     private static final class PlayerComparator implements Comparator<PlayerEntity> {
@@ -180,15 +144,7 @@ public class PlayerOverviewGui extends GuiScreen implements Closeable {
         public int compare(PlayerEntity o1, PlayerEntity o2) {
             if (isSpectator(o1) && !isSpectator(o2)) return 1;
             if (isSpectator(o2) && !isSpectator(o1)) return -1;
-            //#if MC>=11400
             return o1.getName().getUnformattedComponentText().compareToIgnoreCase(o2.getName().getUnformattedComponentText());
-            //#else
-            //#if MC>=10800
-            //$$ return o1.getName().compareToIgnoreCase(o2.getName());
-            //#else
-            //$$ return o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName());
-            //#endif
-            //#endif
         }
     }
 }

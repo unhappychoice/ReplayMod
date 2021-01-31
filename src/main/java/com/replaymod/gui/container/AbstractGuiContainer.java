@@ -24,20 +24,20 @@
  */
 package com.replaymod.gui.container;
 
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.OffsetGuiRenderer;
+import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.element.AbstractComposedGuiElement;
 import com.replaymod.gui.element.ComposedGuiElement;
 import com.replaymod.gui.element.GuiElement;
 import com.replaymod.gui.layout.HorizontalLayout;
-import com.replaymod.gui.layout.LayoutData;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.OffsetGuiRenderer;
-import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.layout.Layout;
+import com.replaymod.gui.layout.LayoutData;
+import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import com.replaymod.gui.versions.MCVer;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.crash.ReportedException;

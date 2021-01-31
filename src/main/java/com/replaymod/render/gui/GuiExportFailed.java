@@ -1,8 +1,6 @@
 package com.replaymod.render.gui;
 
 import com.replaymod.core.ReplayMod;
-import com.replaymod.render.RenderSettings;
-import com.replaymod.render.FFmpegWriter;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.gui.container.GuiVerticalList;
@@ -12,6 +10,8 @@ import com.replaymod.gui.element.GuiLabel;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.render.FFmpegWriter;
+import com.replaymod.render.RenderSettings;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.crash.ReportedException;
@@ -62,8 +62,8 @@ public class GuiExportFailed extends GuiScreen {
         setLayout(new CustomLayout<GuiScreen>() {
             @Override
             protected void layout(GuiScreen container, int width, int height) {
-                pos(info, width/2 - width(info)/2, (height/2 - height(info) - 30) / 2 + 30);
-                pos(logLabel, width/2 - width(logLabel)/2, height/2 + 4);
+                pos(info, width / 2 - width(info) / 2, (height / 2 - height(info) - 30) / 2 + 30);
+                pos(logLabel, width / 2 - width(logLabel) / 2, height / 2 + 4);
                 pos(logList, 10, y(logLabel) + height(logLabel) + 4);
                 size(logList, width - 10 - x(logList), height - 10 - y(logList));
             }

@@ -33,11 +33,7 @@ import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class GridLayout implements Layout {
     private static final Data DEFAULT_DATA = new Data();
@@ -61,7 +57,7 @@ public class GridLayout implements Layout {
 
         Pair<int[], int[]> maxCellSize = null;
 
-        if(!cellsEqualSize) {
+        if (!cellsEqualSize) {
             maxCellSize = calcNeededCellSize(container);
         }
 
@@ -93,7 +89,7 @@ public class GridLayout implements Layout {
                 }
 
                 Map.Entry<GuiElement, com.replaymod.gui.layout.LayoutData> entry = iter.next();
-                GuiElement element  = entry.getKey();
+                GuiElement element = entry.getKey();
                 Data data = entry.getValue() instanceof Data ? (Data) entry.getValue() : DEFAULT_DATA;
                 Dimension elementSize = new Dimension(element.getMinSize());
                 ReadableDimension elementMaxSize = element.getMaxSize();
@@ -151,10 +147,10 @@ public class GridLayout implements Layout {
         }
 
         if (elements > 0) {
-            totalWidth+=spacingX * (columns - 1);
+            totalWidth += spacingX * (columns - 1);
         }
         if (elements > columns) {
-            totalHeight+=spacingY * (rows - 1);
+            totalHeight += spacingY * (rows - 1);
         }
         return new Dimension(totalWidth, totalHeight);
     }

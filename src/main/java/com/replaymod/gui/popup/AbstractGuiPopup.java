@@ -38,7 +38,7 @@ import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import java.util.function.Function;
 
 public abstract class AbstractGuiPopup<T extends AbstractGuiPopup<T>> extends AbstractGuiContainer<T> {
-    private final com.replaymod.gui.container.GuiPanel popupContainer = new com.replaymod.gui.container.GuiPanel(this){
+    private final com.replaymod.gui.container.GuiPanel popupContainer = new com.replaymod.gui.container.GuiPanel(this) {
         private final int u0 = 0;
         private final int v0 = 39;
 

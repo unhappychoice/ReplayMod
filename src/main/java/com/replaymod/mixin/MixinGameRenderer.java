@@ -1,11 +1,10 @@
-//#if MC>=11400
 package com.replaymod.mixin;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.replaymod.core.events.PostRenderWorldCallback;
 import com.replaymod.core.events.PreRenderHandCallback;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GameRenderer;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,21 +22,14 @@ public class MixinGameRenderer {
     private void postRenderWorld(
             float partialTicks,
             long nanoTime,
-            //#if MC>=11500
             MatrixStack matrixStack,
-            //#endif
             CallbackInfo ci) {
-        //#if MC<11500
-        //$$ MatrixStack matrixStack = new MatrixStack();
-        //#endif
         PostRenderWorldCallback.EVENT.invoker().postRenderWorld(matrixStack);
     }
 
     @Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)
     private void preRenderHand(
-            //#if MC>=11500
             MatrixStack matrixStack,
-            //#endif
             ActiveRenderInfo camera,
             float partialTicks,
             CallbackInfo ci) {
@@ -46,4 +38,3 @@ public class MixinGameRenderer {
         }
     }
 }
-//#endif

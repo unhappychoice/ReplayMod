@@ -1,4 +1,3 @@
-//#if MC>=11400
 package com.replaymod.mixin;
 
 import net.minecraft.client.gui.widget.Widget;
@@ -10,4 +9,3 @@ public interface AbstractButtonWidgetAccessor {
     @Accessor
     int getHeight();
 }
-//#endif

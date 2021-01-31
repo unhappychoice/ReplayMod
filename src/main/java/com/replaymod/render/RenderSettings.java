@@ -43,11 +43,9 @@ public class RenderSettings {
 
         @SuppressWarnings("RedundantIfStatement")
         public boolean isSupported() {
-            //#if MC<10800 || MC>=11500
             if (this == BLEND) {
                 return false;
             }
-            //#endif
 
             return true;
         }
@@ -94,7 +92,9 @@ public class RenderSettings {
             return preset != null && preset.contains("%BITRATE%");
         }
 
-        public boolean isYuv420() { return preset != null && preset.contains("-pix_fmt yuv420p"); }
+        public boolean isYuv420() {
+            return preset != null && preset.contains("-pix_fmt yuv420p");
+        }
 
         @Override
         public String toString() {
@@ -106,11 +106,7 @@ public class RenderSettings {
                 return RenderMethod.BLEND.isSupported();
             } else if (this == EXR) {
                 // Need LJWGL 3
-                //#if MC>=11400
                 return true;
-                //#else
-                //$$ return false;
-                //#endif
             } else {
                 return true;
             }

@@ -2,8 +2,6 @@ package com.replaymod.extras;
 
 import com.replaymod.core.KeyBindingRegistry;
 import com.replaymod.core.ReplayMod;
-import com.replaymod.replay.events.ReplayOpenedCallback;
-import com.replaymod.replay.gui.overlay.GuiReplayOverlay;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiPanel;
@@ -15,6 +13,8 @@ import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.GridLayout;
 import com.replaymod.gui.layout.LayoutData;
 import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.replay.events.ReplayOpenedCallback;
+import com.replaymod.replay.gui.overlay.GuiReplayOverlay;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
@@ -34,7 +34,10 @@ public class HotkeyButtons extends EventRegistrations implements Extra {
         register();
     }
 
-    { on(ReplayOpenedCallback.EVENT, replayHandler -> new Gui(mod, replayHandler.getOverlay())); }
+    {
+        on(ReplayOpenedCallback.EVENT, replayHandler -> new Gui(mod, replayHandler.getOverlay()));
+    }
+
     public static final class Gui {
         private final GuiButton toggleButton;
         private final GridLayout panelLayout;
@@ -68,49 +71,49 @@ public class HotkeyButtons extends EventRegistrations implements Extra {
             keyBindingRegistry.getBindings().values().stream()
                     .sorted(Comparator.comparing(it -> I18n.format(it.name)))
                     .forEachOrdered(keyBinding -> {
-                GuiButton button = new GuiButton(){
-                    @Override
-                    public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
-                        // There doesn't seem to be an KeyBindingUpdate event, so we'll just update it every time
-                        setLabel(keyBinding.isBound() ? keyBinding.getBoundKey() : "");
+                        GuiButton button = new GuiButton() {
+                            @Override
+                            public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
+                                // There doesn't seem to be an KeyBindingUpdate event, so we'll just update it every time
+                                setLabel(keyBinding.isBound() ? keyBinding.getBoundKey() : "");
 
-                        if (keyBinding.supportsAutoActivation()) {
-                            setTooltip(new GuiTooltip().setText(new String[]{
-                                    I18n.format("replaymod.gui.ingame.autoactivating"),
-                                    I18n.format("replaymod.gui.ingame.autoactivating."
-                                            + (keyBinding.isAutoActivating() ? "disable" : "enable")),
-                            }));
-                            setLabelColor(keyBinding.isAutoActivating() ? 0x00ff00 : 0xe0e0e0);
-                        }
+                                if (keyBinding.supportsAutoActivation()) {
+                                    setTooltip(new GuiTooltip().setText(new String[]{
+                                            I18n.format("replaymod.gui.ingame.autoactivating"),
+                                            I18n.format("replaymod.gui.ingame.autoactivating."
+                                                    + (keyBinding.isAutoActivating() ? "disable" : "enable")),
+                                    }));
+                                    setLabelColor(keyBinding.isAutoActivating() ? 0x00ff00 : 0xe0e0e0);
+                                }
 
-                        super.draw(renderer, size, renderInfo);
-                    }
-                }.onClick(() -> {
-                    if (keyBinding.supportsAutoActivation() && Screen.hasControlDown()) {
-                        keyBinding.setAutoActivating(!keyBinding.isAutoActivating());
-                    } else {
-                        keyBinding.trigger();
-                    }
-                });
-                GuiLabel label = new GuiLabel().setI18nText(keyBinding.name);
-                panel.addElements(null, new GuiPanel().setLayout(new CustomLayout<GuiPanel>() {
-                    @Override
-                    protected void layout(GuiPanel container, int width, int height) {
-                        width(button, Math.max(10 /* consistent min width */, width(button)) + 10 /* padding */);
-                        height(button, 20);
+                                super.draw(renderer, size, renderInfo);
+                            }
+                        }.onClick(() -> {
+                            if (keyBinding.supportsAutoActivation() && Screen.hasControlDown()) {
+                                keyBinding.setAutoActivating(!keyBinding.isAutoActivating());
+                            } else {
+                                keyBinding.trigger();
+                            }
+                        });
+                        GuiLabel label = new GuiLabel().setI18nText(keyBinding.name);
+                        panel.addElements(null, new GuiPanel().setLayout(new CustomLayout<GuiPanel>() {
+                            @Override
+                            protected void layout(GuiPanel container, int width, int height) {
+                                width(button, Math.max(10 /* consistent min width */, width(button)) + 10 /* padding */);
+                                height(button, 20);
 
-                        int textWidth = width(label);
+                                int textWidth = width(label);
 
-                        x(label, width(button) + 4);
-                        width(label, width - x(label));
+                                x(label, width(button) + 4);
+                                width(label, width - x(label));
 
-                        if (textWidth > width - x(label)) {
-                            height(label, height(label) * 2); // split over two lines
-                        }
-                        y(label, (height - height(label)) / 2);
-                    }
-                }).addElements(null, button, label).setSize(150, 20));
-            });
+                                if (textWidth > width - x(label)) {
+                                    height(label, height(label) * 2); // split over two lines
+                                }
+                                y(label, (height - height(label)) / 2);
+                            }
+                        }).addElements(null, button, label).setSize(150, 20));
+                    });
 
             overlay.setLayout(new CustomLayout<GuiReplayOverlay>(overlay.getLayout()) {
                 @Override

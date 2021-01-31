@@ -24,31 +24,20 @@
  */
 package com.replaymod.gui.element.advanced;
 
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.element.AbstractGuiElement;
 import com.replaymod.gui.function.Clickable;
 import com.replaymod.gui.function.Focusable;
 import com.replaymod.gui.function.Tickable;
 import com.replaymod.gui.function.Typeable;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.RenderInfo;
-import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.utils.Consumer;
-import de.johni0702.minecraft.gui.utils.lwjgl.Color;
-import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
+import de.johni0702.minecraft.gui.utils.lwjgl.*;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
-
-//#if MC>=11400
 import net.minecraft.util.SharedConstants;
-//#else
-//$$ import net.minecraft.util.ChatAllowedCharacters;
-//$$ import org.lwjgl.input.Keyboard;
-//#endif
 
 import java.util.Arrays;
 
@@ -227,20 +216,16 @@ public abstract class AbstractGuiTextArea<T extends AbstractGuiTextArea<T>>
 
     @Override
     public void writeChar(char c) {
-        //#if MC>=11400
         if (!SharedConstants.isAllowedCharacter(c)) {
-        //#else
-        //$$ if (!ChatAllowedCharacters.isAllowedCharacter(c)) {
-        //#endif
             return;
         }
 
         int totalCharCount = 0;
-        for(String line : text) {
+        for (String line : text) {
             totalCharCount += line.length();
         }
 
-        if(maxCharCount > 0 && totalCharCount-(getSelectedText().length()) >= maxCharCount) {
+        if (maxCharCount > 0 && totalCharCount - (getSelectedText().length()) >= maxCharCount) {
             return;
         }
 

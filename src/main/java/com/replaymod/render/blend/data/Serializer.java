@@ -14,9 +14,7 @@ import org.cakelab.blender.nio.CPointer;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static com.replaymod.render.blend.Util.align4;
 import static com.replaymod.render.blend.Util.factory;

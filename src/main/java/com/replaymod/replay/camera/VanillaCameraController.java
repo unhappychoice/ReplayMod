@@ -1,8 +1,8 @@
 package com.replaymod.replay.camera;
 
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector3f;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.GameSettings;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 
 /**

@@ -7,10 +7,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(MainMenuScreen.class)
 public interface GuiMainMenuAccessor {
-    //#if MC>=10904
     @Accessor
     Screen getRealmsNotification();
+
     @Accessor
     void setRealmsNotification(Screen value);
-    //#endif
 }

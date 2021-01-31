@@ -14,9 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-//#if MC>=11200
 import org.spongepowered.asm.launch.platform.container.ContainerHandleURI;
-//#endif
 
 // Fabric equivalent is in ReplayModMMLauncher
 public class ReplayModTweaker implements ITweaker {
@@ -70,19 +68,10 @@ public class ReplayModTweaker implements ITweaker {
             throw new RuntimeException(e);
         }
         MixinPlatformManager platform = MixinBootstrap.getPlatform();
-        //#if MC>=11200
-        platform.addContainer(new ContainerHandleURI(uri));
-        //#else
-        //$$ platform.addContainer(uri);
-        //#endif
-
-        //#if MC>=11202 && MC<=11202
-        initModCore("1.12.2");
-        //#endif
-        //#if MC>=10809 && MC<=10809
-        //$$ initModCore("1.8.9");
-        //#endif
-    }
+                platform.addContainer(new ContainerHandleURI(uri));
+                        
+                initModCore("1.12.2");
+                                    }
 
     @Override
     public String getLaunchTarget() {

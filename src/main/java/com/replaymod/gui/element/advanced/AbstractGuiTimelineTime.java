@@ -24,12 +24,12 @@
  */
 package com.replaymod.gui.element.advanced;
 
-import com.replaymod.gui.container.GuiContainer;
-import com.replaymod.gui.element.AbstractGuiElement;
-import com.replaymod.gui.versions.MCVer;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.element.AbstractGuiElement;
 import com.replaymod.gui.utils.Colors;
+import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 

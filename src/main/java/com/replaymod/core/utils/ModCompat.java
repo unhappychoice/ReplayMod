@@ -12,6 +12,7 @@ public class ModCompat {
     public static final class ModInfoDifference {
         private final Set<ModInfo> missing = new HashSet<>();
         private final Map<ModInfo, String> differing = new HashMap<>();
+
         public ModInfoDifference(Collection<ModInfo> requiredList) {
             Collection<ModInfo> installedList = getInstalledNetworkMods();
             REQUIRED:

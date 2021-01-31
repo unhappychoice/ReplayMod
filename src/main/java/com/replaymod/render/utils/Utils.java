@@ -7,11 +7,12 @@ import java.nio.ByteBuffer;
 public class Utils {
     /**
      * Copies the rgb image (flipped vertically) to the specified position in the target buffer
-     * @param source Source image
+     *
+     * @param source  Source image
      * @param xOffset X offset in target image
      * @param yOffset Y offset in target image
-     * @param to Target image
-     * @param width Target image width
+     * @param to      Target image
+     * @param width   Target image width
      */
     public static void openGlBytesToBitmap(OpenGlFrame source, int xOffset, int yOffset, ByteBuffer to, int width) {
         openGlBytesToBitmap(
@@ -21,13 +22,14 @@ public class Utils {
 
     /**
      * Copies the rgb image (flipped vertically) to the specified position in the target buffer
-     * @param buffer Source image
-     * @param bufferWidth  Source image width
-     * @param bbp Bytes per pixel
-     * @param xOffset X offset in target image
-     * @param yOffset Y offset in target image
-     * @param to Target image
-     * @param width Target image width
+     *
+     * @param buffer      Source image
+     * @param bufferWidth Source image width
+     * @param bbp         Bytes per pixel
+     * @param xOffset     X offset in target image
+     * @param yOffset     Y offset in target image
+     * @param to          Target image
+     * @param width       Target image width
      */
     public static void openGlBytesToBitmap(ByteBuffer buffer, int bufferWidth, int bbp, int xOffset, int yOffset, ByteBuffer to, int width) {
         byte[] rowBuf = new byte[bufferWidth * bbp];

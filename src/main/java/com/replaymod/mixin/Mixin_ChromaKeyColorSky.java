@@ -18,13 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(WorldRenderer.class)
 public abstract class Mixin_ChromaKeyColorSky {
-    @Shadow @Final private Minecraft mc;
+    @Shadow
+    @Final
+    private Minecraft mc;
 
-    //#if MC>=11400 || 10710>=MC
     @Inject(method = "renderSky(Lcom/mojang/blaze3d/matrix/MatrixStack;F)V", at = @At("HEAD"), cancellable = true)
-    //#else
-    //$$ @Inject(method = "renderSky(FI)V", at = @At("HEAD"), cancellable = true)
-    //#endif
     private void chromaKeyingSky(CallbackInfo ci) {
         EntityRendererHandler handler = ((EntityRendererHandler.IEntityRenderer) this.mc.gameRenderer).replayModRender_getHandler();
         if (handler != null) {
@@ -32,9 +30,7 @@ public abstract class Mixin_ChromaKeyColorSky {
             if (color != null) {
                 GlStateManager.clearColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1);
                 GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT
-                        //#if MC>=11400
                         , false
-                        //#endif
                 );
                 ci.cancel();
             }

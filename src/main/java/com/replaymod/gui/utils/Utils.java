@@ -40,6 +40,7 @@ public class Utils {
 
     /**
      * Link the specified focusable compontents in the order they're supplied.
+     *
      * @param focusables Focusables to link
      * @see com.replaymod.gui.function.Focusable#setNext(com.replaymod.gui.function.Focusable)
      * @see com.replaymod.gui.function.Focusable#setPrevious(com.replaymod.gui.function.Focusable)

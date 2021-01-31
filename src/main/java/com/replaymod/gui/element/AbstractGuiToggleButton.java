@@ -30,7 +30,7 @@ import com.replaymod.gui.container.GuiContainer;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 
 public abstract class AbstractGuiToggleButton<V, T extends AbstractGuiToggleButton<V, T>>
-        extends AbstractGuiButton<T> implements IGuiToggleButton<V,T> {
+        extends AbstractGuiButton<T> implements IGuiToggleButton<V, T> {
 
     private int selected;
 

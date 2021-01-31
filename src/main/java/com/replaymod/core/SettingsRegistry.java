@@ -56,8 +56,11 @@ public class SettingsRegistry {
 
     public interface SettingKey<T> {
         String getCategory();
+
         String getKey();
+
         String getDisplayString();
+
         T getDefault();
     }
 

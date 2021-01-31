@@ -1,4 +1,3 @@
-//#if MC>=11600
 package com.replaymod.mixin;
 
 import com.replaymod.core.ReplayMod;
@@ -24,4 +23,3 @@ public abstract class Mixin_MoveRealmsButton {
         return height;
     }
 }
-//#endif

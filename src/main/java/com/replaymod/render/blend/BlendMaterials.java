@@ -1,10 +1,10 @@
 package com.replaymod.render.blend;
 
+import com.replaymod.gui.versions.Image;
 import com.replaymod.render.blend.data.DImage;
 import com.replaymod.render.blend.data.DMaterial;
 import com.replaymod.render.blend.data.DPackedFile;
 import com.replaymod.render.blend.data.DTexture;
-import com.replaymod.gui.versions.Image;
 import net.minecraft.client.renderer.GLAllocation;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;

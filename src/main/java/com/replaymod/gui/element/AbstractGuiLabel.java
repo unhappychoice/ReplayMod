@@ -27,21 +27,18 @@ package com.replaymod.gui.element;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.gui.versions.MCVer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
-
-import java.util.List;
-
-//#if MC>=11600
-import java.util.Optional;
-import java.util.stream.Collectors;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
-//#endif
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class AbstractGuiLabel<T extends AbstractGuiLabel<T>> extends AbstractGuiElement<T> implements IGuiLabel<T> {
     private String text = "";
@@ -59,18 +56,13 @@ public abstract class AbstractGuiLabel<T extends AbstractGuiLabel<T>> extends Ab
     public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
         super.draw(renderer, size, renderInfo);
         FontRenderer fontRenderer = MCVer.getFontRenderer();
-        //#if MC>=11600
         List<String> lines = fontRenderer.getCharacterManager().func_238362_b_(new StringTextComponent(text), size.getWidth(), Style.EMPTY).stream()
                 .map(it -> it.getComponent(Optional::of)).filter(Optional::isPresent).map(Optional::get)
                 .collect(Collectors.toList());
-        //#else
-        //$$ @SuppressWarnings("unchecked")
-        //$$ List<String> lines = fontRenderer.wrapStringToWidthAsList(text, size.getWidth());
-        //#endif
         int y = 0;
         for (String line : lines) {
             renderer.drawString(0, y, isEnabled() ? color : disabledColor, line);
-            y+=fontRenderer.FONT_HEIGHT;
+            y += fontRenderer.FONT_HEIGHT;
         }
     }
 

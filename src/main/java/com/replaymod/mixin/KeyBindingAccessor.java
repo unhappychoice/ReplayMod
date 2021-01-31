@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface KeyBindingAccessor {
     @Accessor
     int getPressTime();
+
     @Accessor
     void setPressTime(int value);
 }

@@ -1,4 +1,3 @@
-//#if MC>=10800
 package com.replaymod.render.blend.exporters;
 
 import com.replaymod.core.versions.MCVer;
@@ -9,12 +8,7 @@ import de.johni0702.minecraft.gui.utils.lwjgl.vector.Matrix4f;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
-
-//#if MC>=10904
 import net.minecraft.util.math.BlockPos;
-//#else
-//$$ import net.minecraft.util.BlockPos;
-//#endif
 
 import java.io.IOException;
 import java.util.IdentityHashMap;
@@ -51,15 +45,9 @@ public class TileEntityExporter implements Exporter {
         // We however want our TileEntities object to not move when the viewer does,
         // so we position it at 0/0/0 and instead have the tile entities themselves move more
         Matrix4f.translate(new Vector3f(
-                //#if MC>=11400
                 (float) -mc.getRenderManager().info.getProjectedView().x,
                 (float) -mc.getRenderManager().info.getProjectedView().y,
                 (float) -mc.getRenderManager().info.getProjectedView().z
-                //#else
-                //$$ (float) -mc.getRenderManager().viewerPosX,
-                //$$ (float) -mc.getRenderManager().viewerPosY,
-                //$$ (float) -mc.getRenderManager().viewerPosZ
-                //#endif
         ), modelView, modelView);
         renderState.push(tileEntitiesObject, modelView);
     }
@@ -112,4 +100,3 @@ public class TileEntityExporter implements Exporter {
         tileEntityObjectsSeen = new IdentityHashMap<>();
     }
 }
-//#endif

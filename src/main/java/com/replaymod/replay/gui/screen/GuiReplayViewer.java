@@ -1,30 +1,19 @@
 package com.replaymod.replay.gui.screen;
 
 import com.google.common.util.concurrent.SettableFuture;
-import com.replaymod.gui.element.GuiTextField;
-import com.replaymod.render.gui.GuiRenderQueue;
-import com.replaymod.render.rendering.VideoRenderer;
-import com.replaymod.render.utils.RenderJob;
-import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.RenderInfo;
-import com.replaymod.gui.versions.Image;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.text.TextFormatting;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.SettingsRegistry;
 import com.replaymod.core.gui.GuiReplaySettings;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.core.versions.MCVer.Keyboard;
-import com.replaymod.replay.ReplayModReplay;
-import com.replaymod.replay.Setting;
-import com.replaymod.replaystudio.replay.ReplayFile;
-import com.replaymod.replaystudio.replay.ReplayMetaData;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.AbstractGuiContainer;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.element.GuiTextField;
 import com.replaymod.gui.element.advanced.AbstractGuiResourceLoadingList;
 import com.replaymod.gui.function.Typeable;
 import com.replaymod.gui.layout.CustomLayout;
@@ -34,12 +23,24 @@ import com.replaymod.gui.popup.AbstractGuiPopup;
 import com.replaymod.gui.popup.GuiYesNoPopup;
 import com.replaymod.gui.utils.Colors;
 import com.replaymod.gui.utils.Consumer;
+import com.replaymod.gui.versions.Image;
+import com.replaymod.render.gui.GuiRenderQueue;
+import com.replaymod.render.rendering.VideoRenderer;
+import com.replaymod.render.utils.RenderJob;
+import com.replaymod.replay.ReplayModReplay;
+import com.replaymod.replay.Setting;
+import com.replaymod.replaystudio.replay.ReplayFile;
+import com.replaymod.replaystudio.replay.ReplayMetaData;
+import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.AlertScreen;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ReportedException;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -50,27 +51,12 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.replaymod.replay.ReplayModReplay.LOGGER;
 import static com.replaymod.gui.versions.MCVer.getFontRenderer;
-
-//#if MC>=11400
-import net.minecraft.util.text.TranslationTextComponent;
-//#else
-//$$ import net.minecraft.client.resources.I18n;
-//#endif
+import static com.replaymod.replay.ReplayModReplay.LOGGER;
 
 public class GuiReplayViewer extends GuiScreen {
     private final ReplayModReplay mod;
@@ -161,14 +147,9 @@ public class GuiReplayViewer extends GuiScreen {
                     // We failed (might also be their OS)
                     e.printStackTrace();
                     getMinecraft().displayGuiScreen(new AlertScreen(
-                            //#if MC>=11400
                             GuiReplayViewer.this::display,
                             new TranslationTextComponent("replaymod.gui.viewer.delete.failed1"),
                             new TranslationTextComponent("replaymod.gui.viewer.delete.failed2")
-                            //#else
-                            //$$ I18n.format("replaymod.gui.viewer.delete.failed1"),
-                            //$$ I18n.format("replaymod.gui.viewer.delete.failed2")
-                            //#endif
                     ));
                     return;
                 }
@@ -207,7 +188,11 @@ public class GuiReplayViewer extends GuiScreen {
     }).setSize(73, 20).setI18nLabel("replaymod.gui.cancel");
 
     public final List<com.replaymod.gui.element.GuiButton> replaySpecificButtons = new ArrayList<>();
-    { replaySpecificButtons.addAll(Arrays.asList(renameButton)); }
+
+    {
+        replaySpecificButtons.addAll(Arrays.asList(renameButton));
+    }
+
     public final GuiPanel editorButton = new GuiPanel();
 
     public final GuiPanel upperButtonPanel = new GuiPanel().setLayout(new HorizontalLayout().setSpacing(5))

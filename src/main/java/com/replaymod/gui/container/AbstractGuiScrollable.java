@@ -24,16 +24,12 @@
  */
 package com.replaymod.gui.container;
 
-import com.replaymod.gui.element.GuiElement;
-import com.replaymod.gui.function.Scrollable;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.OffsetGuiRenderer;
 import com.replaymod.gui.RenderInfo;
-import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import de.johni0702.minecraft.gui.utils.lwjgl.WritablePoint;
+import com.replaymod.gui.element.GuiElement;
+import com.replaymod.gui.function.Scrollable;
+import de.johni0702.minecraft.gui.utils.lwjgl.*;
 
 public abstract class AbstractGuiScrollable<T extends AbstractGuiScrollable<T>> extends AbstractGuiContainer<T>
         implements Scrollable {
@@ -70,7 +66,7 @@ public abstract class AbstractGuiScrollable<T extends AbstractGuiScrollable<T>> 
     public void convertFor(GuiElement element, Point point, int relativeLayer) {
         super.convertFor(element, point, relativeLayer);
         if (relativeLayer > 0 || (point.getX() > 0 && point.getX() < lastRenderSize.getWidth()
-                 && point.getY() > 0 && point.getY() < lastRenderSize.getHeight())) {
+                && point.getY() > 0 && point.getY() < lastRenderSize.getHeight())) {
             point.translate(offsetX, offsetY);
         } else {
             point.setLocation(Integer.MIN_VALUE, Integer.MIN_VALUE);

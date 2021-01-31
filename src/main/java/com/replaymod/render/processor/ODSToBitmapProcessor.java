@@ -1,7 +1,7 @@
 package com.replaymod.render.processor;
 
-import com.replaymod.render.frame.ODSOpenGlFrame;
 import com.replaymod.render.frame.BitmapFrame;
+import com.replaymod.render.frame.ODSOpenGlFrame;
 import com.replaymod.render.utils.ByteBufferPool;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;

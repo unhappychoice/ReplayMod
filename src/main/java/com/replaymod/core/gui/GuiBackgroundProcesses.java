@@ -10,18 +10,22 @@ import com.replaymod.gui.element.GuiElement;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.VerticalLayout;
 import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.gui.versions.callbacks.InitScreenCallback;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.gui.versions.callbacks.InitScreenCallback;
 
 import static com.replaymod.core.versions.MCVer.getMinecraft;
 
 public class GuiBackgroundProcesses extends EventRegistrations {
     private GuiPanel panel = new GuiPanel().setLayout(new VerticalLayout().setSpacing(10));
 
-    { on(InitScreenCallback.EVENT, (screen, buttons) -> onGuiInit(screen)); }
+    {
+        on(InitScreenCallback.EVENT, (screen, buttons) -> onGuiInit(screen));
+    }
+
     private void onGuiInit(net.minecraft.client.gui.screen.Screen guiScreen) {
-        if (guiScreen != getMinecraft().currentScreen) return; // people tend to construct GuiScreens without opening them
+        if (guiScreen != getMinecraft().currentScreen)
+            return; // people tend to construct GuiScreens without opening them
 
         VanillaGuiScreen vanillaGui = VanillaGuiScreen.wrap(guiScreen);
         vanillaGui.setLayout(new CustomLayout<GuiScreen>(vanillaGui.getLayout()) {

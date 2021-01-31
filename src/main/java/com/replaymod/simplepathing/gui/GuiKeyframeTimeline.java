@@ -2,6 +2,9 @@ package com.replaymod.simplepathing.gui;
 
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.versions.MCVer;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.element.advanced.AbstractGuiTimeline;
+import com.replaymod.gui.function.Draggable;
 import com.replaymod.pathing.properties.CameraProperties;
 import com.replaymod.pathing.properties.SpectatorProperty;
 import com.replaymod.pathing.properties.TimestampProperty;
@@ -15,16 +18,13 @@ import com.replaymod.replaystudio.pathing.property.Property;
 import com.replaymod.simplepathing.ReplayModSimplePathing;
 import com.replaymod.simplepathing.SPTimeline;
 import com.replaymod.simplepathing.SPTimeline.SPPath;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.element.advanced.AbstractGuiTimeline;
-import com.replaymod.gui.function.Draggable;
+import de.johni0702.minecraft.gui.utils.lwjgl.Point;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.apache.commons.lang3.tuple.Pair;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Comparator;
@@ -247,6 +247,7 @@ public class GuiKeyframeTimeline extends AbstractGuiTimeline<GuiKeyframeTimeline
 
     /**
      * Returns the keyframe at the specified position.
+     *
      * @param position The raw position
      * @return Pair of path id and keyframe or null when no keyframe was clicked
      */
@@ -376,7 +377,7 @@ public class GuiKeyframeTimeline extends AbstractGuiTimeline<GuiKeyframeTimeline
             int width = getLastSize().getWidth();
             int bodyWidth = width - BORDER_LEFT - BORDER_RIGHT;
             double segmentLength = getLength() * getZoom();
-            double segmentTime =  segmentLength * (mouseX - BORDER_LEFT) / bodyWidth;
+            double segmentTime = segmentLength * (mouseX - BORDER_LEFT) / bodyWidth;
             int newTime = Math.min(Math.max((int) Math.round(getOffset() + segmentTime), 0), getLength());
             if (newTime < 0) {
                 return true;

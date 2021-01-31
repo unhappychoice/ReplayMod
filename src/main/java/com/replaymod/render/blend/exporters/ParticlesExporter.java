@@ -1,31 +1,17 @@
-//#if MC>=10800
 package com.replaymod.render.blend.exporters;
 
 import com.replaymod.core.versions.MCVer;
+import com.replaymod.mixin.ParticleAccessor;
 import com.replaymod.render.blend.BlendMeshBuilder;
 import com.replaymod.render.blend.BlendState;
 import com.replaymod.render.blend.Exporter;
 import com.replaymod.render.blend.data.DMesh;
 import com.replaymod.render.blend.data.DObject;
-import com.replaymod.mixin.ParticleAccessor;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Matrix4f;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector3f;
 import net.minecraft.client.Minecraft;
-
-//#if MC>=11400
-import net.minecraft.util.math.vector.Vector3d;
-//#endif
-
-//#if MC>=10904
 import net.minecraft.client.particle.Particle;
-//#else
-//$$ import net.minecraft.client.particle.EntityFX;
-//$$ import net.minecraft.entity.Entity;
-//#endif
-
-//#if MC>=10809
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-//#endif
 
 import java.io.IOException;
 import java.util.IdentityHashMap;
@@ -40,13 +26,8 @@ public class ParticlesExporter implements Exporter {
     private DObject pointAtObject;
     private DObject particlesObject;
     private DObject litParticlesObject;
-    //#if MC>=10904
     private Map<Particle, DObject> particleObjects;
     private Map<Particle, DObject> particleObjectsSeen;
-    //#else
-    //$$ private Map<Entity, DObject> particleObjects;
-    //$$ private Map<Entity, DObject> particleObjectsSeen;
-    //#endif
 
     public ParticlesExporter(RenderState renderState) {
         this.renderState = renderState;
@@ -87,11 +68,7 @@ public class ParticlesExporter implements Exporter {
         renderState.pop();
     }
 
-    //#if MC>=10904
     public void onRender(Particle particle, float renderPartialTicks) {
-    //#else
-    //$$ public void onRender(EntityFX particle, float renderPartialTicks) {
-    //#endif
         DObject particleObject = particleObjects.get(particle);
         if (particleObject == null) {
             particleObject = new DObject(DObject.Type.OB_EMPTY); // mesh generation is delayed, see below
@@ -116,13 +93,7 @@ public class ParticlesExporter implements Exporter {
         double dx = acc.getPrevPosX() + (acc.getPosX() - acc.getPrevPosX()) * renderPartialTicks;
         double dy = acc.getPrevPosY() + (acc.getPosY() - acc.getPrevPosY()) * renderPartialTicks;
         double dz = acc.getPrevPosZ() + (acc.getPosZ() - acc.getPrevPosZ()) * renderPartialTicks;
-        //#if MC>=11500
         // FIXME 1.15 is this still required?
-        //#else
-        //$$ dx -= Particle.cameraX;
-        //$$ dy -= Particle.cameraY;
-        //$$ dz -= Particle.cameraZ;
-        //#endif
         Vector3f offset = new Vector3f((float) dx, (float) dy, (float) dz);
         Matrix4f.translate(offset, modelView, modelView);
         renderState.pushModelView(modelView);
@@ -159,35 +130,16 @@ public class ParticlesExporter implements Exporter {
         renderState.pop();
     }
 
-    //#if MC>=10904
     private DMesh generateMeshForParticle(Particle particle, Vector3f offset) {
-    //#else
-    //$$ private DMesh generateMeshForParticle(EntityFX particle, Vector3f offset) {
-    //#endif
         DMesh mesh = new DMesh();
         BlendMeshBuilder builder = new BlendMeshBuilder(mesh);
         builder.setReverseOffset(offset);
         builder.setWellBehaved(true);
-        //#if MC>=10809
         builder.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
-        //#else
-        //$$ builder.startDrawingQuads();
-        //#endif
-        //#if MC>=10809
         particle.renderParticle(builder,
-                //#if MC>=11400
                 MCVer.getMinecraft().gameRenderer.getActiveRenderInfo(),
-                //#else
-                //$$ MCVer.getMinecraft().getRenderViewEntity(),
-                //#endif
                 0
-                //#if MC<11500
-                //$$ , 1, 1, 0, 0, 0
-                //#endif
         );
-        //#else
-        //$$ particle.func_180434_a(builder, Minecraft.getMinecraft().getRenderViewEntity(), 0, 1, 1, 0, 0, 0);
-        //#endif
         builder.finishDrawing();
         return mesh;
     }
@@ -201,4 +153,3 @@ public class ParticlesExporter implements Exporter {
         particleObjectsSeen = new IdentityHashMap<>();
     }
 }
-//#endif

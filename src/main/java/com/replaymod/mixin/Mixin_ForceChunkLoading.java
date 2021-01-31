@@ -4,9 +4,9 @@ import com.replaymod.compat.shaders.ShaderReflection;
 import com.replaymod.render.hooks.ForceChunkLoadingHook;
 import com.replaymod.render.hooks.IForceChunkLoading;
 import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.client.renderer.culling.ClippingHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,17 +24,23 @@ public abstract class Mixin_ForceChunkLoading implements IForceChunkLoading {
         this.replayModRender_hook = hook;
     }
 
-    @Shadow private Set<ChunkRenderDispatcher.ChunkRender> chunksToUpdate;
+    @Shadow
+    private Set<ChunkRenderDispatcher.ChunkRender> chunksToUpdate;
 
-    @Shadow private ChunkRenderDispatcher renderDispatcher;
+    @Shadow
+    private ChunkRenderDispatcher renderDispatcher;
 
-    @Shadow private boolean displayListEntitiesDirty;
+    @Shadow
+    private boolean displayListEntitiesDirty;
 
-    @Shadow protected abstract void setupTerrain(ActiveRenderInfo camera_1, ClippingHelper frustum_1, boolean boolean_1, int int_1, boolean boolean_2);
+    @Shadow
+    protected abstract void setupTerrain(ActiveRenderInfo camera_1, ClippingHelper frustum_1, boolean boolean_1, int int_1, boolean boolean_2);
 
-    @Shadow private int frameId;
+    @Shadow
+    private int frameId;
 
     private boolean passThrough;
+
     @Inject(method = "setupTerrain", at = @At("HEAD"), cancellable = true)
     private void forceAllChunks(ActiveRenderInfo camera_1, ClippingHelper frustum_1, boolean boolean_1, int int_1, boolean boolean_2, CallbackInfo ci) throws IllegalAccessException {
         if (replayModRender_hook == null) {

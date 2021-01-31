@@ -34,29 +34,36 @@ public interface IGuiTextField<T extends IGuiTextField<T>> extends GuiElement<T>
      * Set the text to the specified string.
      * If the string is longer than {@link #getMaxLength()} it is truncated from the end.
      * This method positions the cursor at the end of the text and removes any selections.
+     *
      * @param text The new text
      * @return {@code this} for chaining
      */
-    @NonNull T setText(String text);
+    @NonNull
+    T setText(String text);
 
     /**
      * Set the text to the specified string.
      * If the string is longer than {@link #getMaxLength()} it is truncated from the end.
      * This method positions the cursor at the end of the text and removes any selections.
+     *
      * @param text The language key for the new text
      * @param args The arguments used in translating the language key
      * @return {@code this} for chaining
      */
-    @NonNull T setI18nText(String text, Object... args);
+    @NonNull
+    T setI18nText(String text, Object... args);
 
     /**
      * Return the whole text in this text field.
+     *
      * @return The text, may be empty
      */
-    @NonNull String getText();
+    @NonNull
+    String getText();
 
     /**
      * Return the maximum allowed length of the text in this text field.
+     *
      * @return Maximum number of characters
      */
     int getMaxLength();
@@ -65,6 +72,7 @@ public interface IGuiTextField<T extends IGuiTextField<T>> extends GuiElement<T>
      * Set the maximum allowed length of the text in this text field.
      * If the current test is longer than the new limit, it is truncated from the end (the cursor and selection
      * are reset in that process, see {@link #setText(String)}).
+     *
      * @param maxLength Maximum number of characters
      * @return {@code this} for chaining
      * @throws IllegalArgumentException When {@code maxLength} is negative
@@ -73,57 +81,70 @@ public interface IGuiTextField<T extends IGuiTextField<T>> extends GuiElement<T>
 
     /**
      * Deletes the text between {@code from} and {@code to} (inclusive).
+     *
      * @param from Index at which to start
-     * @param to Index to which to delete
+     * @param to   Index to which to delete
      * @return The deleted text
      * @throws IllegalArgumentException If {@code from} is greater than {@code to} or either is out of bounds
      */
-    @NonNull String deleteText(int from, int to);
+    @NonNull
+    String deleteText(int from, int to);
 
     /**
      * Return the index at which the selection starts (inclusive)
+     *
      * @return Index of first character
      */
     int getSelectionFrom();
 
     /**
      * Return the index at which the selection ends (exclusive)
+     *
      * @return Index after the last character
      */
     int getSelectionTo();
 
     /**
      * Return the selected text.
+     *
      * @return The selected text
      */
-    @NonNull String getSelectedText();
+    @NonNull
+    String getSelectedText();
 
     /**
      * Delete the selected text. Positions the cursor at the beginning of the selection and clears the selection.
+     *
      * @return The deleted text
      */
-    @NonNull String deleteSelectedText();
+    @NonNull
+    String deleteSelectedText();
 
     /**
      * Appends the specified string to this text field character by character.
      * Excess characters are ignored.
+     *
      * @param append String to append
      * @return {@code this} for chaining
      * @see #writeChar(char)
      */
-    @NonNull T writeText(String append);
+    @NonNull
+    T writeText(String append);
 
     /**
      * Appends the specified character to this text field replacing the current selection (if any).
      * This does nothing if the maximum character limit is reached.
+     *
      * @param c Character to append
      * @return {@code this} for chaining
      */
-    @NonNull T writeChar(char c);
+    @NonNull
+    T writeChar(char c);
 
     /**
      * Delete the nex character (if any).
      * Clears the selection.
+     *
      * @return {@code this} for chaining
      */
     T deleteNextChar();
@@ -131,39 +152,52 @@ public interface IGuiTextField<T extends IGuiTextField<T>> extends GuiElement<T>
     /**
      * Delete everything from the cursor (inclusive) to the beginning of the next word (exclusive).
      * If there are no more words, delete everything until the end of the line.
+     *
      * @return The deleted text
      */
     String deleteNextWord();
 
     /**
      * Delete the previous character (if any).
+     *
      * @return {@code this} for chaining
      */
-    @NonNull T deletePreviousChar();
+    @NonNull
+    T deletePreviousChar();
 
     /**
      * Delete everything from cursor to the first character of the previous word (or the start of the line).
+     *
      * @return The deleted text
      */
-    @NonNull String deletePreviousWord();
+    @NonNull
+    String deletePreviousWord();
 
     /**
      * Set the cursor position.
+     *
      * @param pos Position of the cursor
      * @return {@code this} for chaining
      * @throws IllegalArgumentException If {@code pos} &lt 0 or pos &gt length
      */
-    @NonNull T setCursorPosition(int pos);
+    @NonNull
+    T setCursorPosition(int pos);
 
     T onEnter(Runnable onEnter);
+
     T onTextChanged(Consumer<String> textChanged);
 
     String getHint();
+
     T setHint(String hint);
+
     T setI18nHint(String hint, Object... args);
 
     ReadableColor getTextColor();
+
     T setTextColor(ReadableColor textColor);
+
     ReadableColor getTextColorDisabled();
+
     T setTextColorDisabled(ReadableColor textColorDisabled);
 }

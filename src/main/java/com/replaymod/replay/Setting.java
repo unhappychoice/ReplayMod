@@ -15,6 +15,7 @@ public final class Setting<T> extends SettingsRegistry.SettingKeys<T> {
     public static final SettingsRegistry.MultipleChoiceSettingKeys<String> MAIN_MENU_BUTTON =
             new SettingsRegistry.MultipleChoiceSettingKeys<>(
                     "replay", "mainMenuButton", null, MainMenuButtonPosition.DEFAULT.name());
+
     static {
         MAIN_MENU_BUTTON.setChoices(Arrays.stream(MainMenuButtonPosition.values()).map(Enum::name).collect(Collectors.toList()));
     }

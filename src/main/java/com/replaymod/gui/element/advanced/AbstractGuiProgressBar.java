@@ -24,11 +24,11 @@
  */
 package com.replaymod.gui.element.advanced;
 
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.element.AbstractGuiElement;
 import com.replaymod.gui.versions.MCVer;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.RenderInfo;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
@@ -80,7 +80,7 @@ public abstract class AbstractGuiProgressBar<T extends AbstractGuiProgressBar<T>
         renderer.drawRect(BORDER, BORDER, barTotalWidth, height - 2 * BORDER, ReadableColor.WHITE); // Background
         renderer.drawRect(BORDER, BORDER, barDoneWidth, height - 2 * BORDER, ReadableColor.GREY); // Progress
 
-        String text = String.format(label, (int)(progress * 100));
+        String text = String.format(label, (int) (progress * 100));
         renderer.drawCenteredString(width / 2, size.getHeight() / 2 - fontRenderer.FONT_HEIGHT / 2, ReadableColor.BLACK, text);
     }
 

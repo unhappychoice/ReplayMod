@@ -2,28 +2,15 @@ package com.replaymod.mixin;
 
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.render.hooks.EntityRendererHandler;
+import net.minecraft.client.renderer.culling.ClippingHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-//#if MC>=10800
-import net.minecraft.client.renderer.culling.ClippingHelper;
-//#else
-//$$ import net.minecraft.client.renderer.culling.Frustrum;
-//#endif
-
-//#if MC>=10800
 @Mixin(ClippingHelper.class)
-//#else
-//$$ @Mixin(Frustrum.class)
-//#endif
 public abstract class Mixin_Omnidirectional_DisableFrustumCulling {
-    //#if MC>=11500
     @Inject(method = "isBoxInFrustumRaw", at = @At("HEAD"), cancellable = true)
-    //#else
-    //$$ @Inject(method = "intersects", at = @At("HEAD"), cancellable = true)
-    //#endif
     public void intersects(CallbackInfoReturnable<Boolean> ci) {
         EntityRendererHandler handler = ((EntityRendererHandler.IEntityRenderer) MCVer.getMinecraft().gameRenderer).replayModRender_getHandler();
         if (handler != null && handler.omnidirectional) {

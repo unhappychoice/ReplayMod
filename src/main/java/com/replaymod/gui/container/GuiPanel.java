@@ -25,8 +25,8 @@
 package com.replaymod.gui.container;
 
 import com.replaymod.gui.element.GuiElement;
-import com.replaymod.gui.layout.LayoutData;
 import com.replaymod.gui.layout.Layout;
+import com.replaymod.gui.layout.LayoutData;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class GuiPanel extends AbstractGuiContainer<GuiPanel> {
         super(container);
     }
 
-    GuiPanel(Layout layout, int width , int height, Map<com.replaymod.gui.element.GuiElement, com.replaymod.gui.layout.LayoutData> withElements) {
+    GuiPanel(Layout layout, int width, int height, Map<com.replaymod.gui.element.GuiElement, com.replaymod.gui.layout.LayoutData> withElements) {
         setLayout(layout);
         if (width != 0 || height != 0) {
             setSize(width, height);

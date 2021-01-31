@@ -4,24 +4,9 @@ import com.google.common.collect.Iterables;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
-import com.replaymod.render.RenderSettings;
-import com.replaymod.render.ReplayModRender;
-import com.replaymod.render.FFmpegWriter;
-import com.replaymod.render.rendering.VideoRenderer;
-import com.replaymod.render.utils.RenderJob;
-import com.replaymod.replay.ReplayHandler;
-import com.replaymod.replay.ReplayModReplay;
-import com.replaymod.replay.ReplaySender;
-import com.replaymod.replaystudio.pathing.path.Timeline;
-import com.replaymod.replaystudio.replay.ReplayFile;
-import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
-import com.replaymod.gui.container.AbstractGuiClickableContainer;
-import com.replaymod.gui.container.AbstractGuiScreen;
-import com.replaymod.gui.container.GuiContainer;
-import com.replaymod.gui.container.GuiPanel;
-import com.replaymod.gui.container.GuiVerticalList;
+import com.replaymod.gui.container.*;
 import com.replaymod.gui.element.GuiButton;
 import com.replaymod.gui.element.GuiElement;
 import com.replaymod.gui.element.GuiLabel;
@@ -32,31 +17,33 @@ import com.replaymod.gui.layout.GridLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.popup.AbstractGuiPopup;
 import com.replaymod.gui.utils.Colors;
+import com.replaymod.render.FFmpegWriter;
+import com.replaymod.render.RenderSettings;
+import com.replaymod.render.ReplayModRender;
+import com.replaymod.render.rendering.VideoRenderer;
+import com.replaymod.render.utils.RenderJob;
+import com.replaymod.replay.ReplayHandler;
+import com.replaymod.replay.ReplayModReplay;
+import com.replaymod.replay.ReplaySender;
+import com.replaymod.replaystudio.pathing.path.Timeline;
+import com.replaymod.replaystudio.replay.ReplayFile;
+import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.AlertScreen;
 import net.minecraft.crash.CrashReport;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.replaymod.render.ReplayModRender.LOGGER;
-
-//#if MC>=11400
-import net.minecraft.util.text.TranslationTextComponent;
-//#else
-//$$ import com.replaymod.replaystudio.util.I18n;
-//#endif
 
 public class GuiRenderQueue extends AbstractGuiPopup<GuiRenderQueue> implements Typeable {
     private final GuiLabel title = new GuiLabel().setI18nText("replaymod.gui.renderqueue.title").setColor(Colors.BLACK);
@@ -159,7 +146,8 @@ public class GuiRenderQueue extends AbstractGuiPopup<GuiRenderQueue> implements 
                     }
                 }
             }
-            ReplayMod.instance.runLaterWithoutLock(() -> processQueue(container, replayHandler, renderQueue, () -> {}));
+            ReplayMod.instance.runLaterWithoutLock(() -> processQueue(container, replayHandler, renderQueue, () -> {
+            }));
         });
 
         updateButtons();
@@ -180,14 +168,9 @@ public class GuiRenderQueue extends AbstractGuiPopup<GuiRenderQueue> implements 
             } catch (FFmpegWriter.NoFFmpegException e) {
                 LOGGER.error("Rendering video:", e);
                 AlertScreen errorScreen = new AlertScreen(
-                        //#if MC>=11400
                         container::display,
                         new TranslationTextComponent("replaymod.gui.rendering.error.title"),
                         new TranslationTextComponent("replaymod.gui.rendering.error.message")
-                        //#else
-                        //$$ I18n.format("replaymod.gui.rendering.error.title"),
-                        //$$ I18n.format("replaymod.gui.rendering.error.message")
-                        //#endif
                 );
                 mc.displayGuiScreen(errorScreen);
                 return;
@@ -201,7 +184,8 @@ public class GuiRenderQueue extends AbstractGuiPopup<GuiRenderQueue> implements 
                 });
                 return;
             } catch (Throwable t) {
-                Utils.error(LOGGER, container, CrashReport.makeCrashReport(t, "Rendering video"), () -> {});
+                Utils.error(LOGGER, container, CrashReport.makeCrashReport(t, "Rendering video"), () -> {
+                });
                 container.display(); // Re-show the queue popup and the new error popup
                 return;
             }
@@ -229,7 +213,8 @@ public class GuiRenderQueue extends AbstractGuiPopup<GuiRenderQueue> implements 
             replayFile = mod.getCore().openReplay(next.getKey().toPath());
             replayHandler = mod.startReplay(replayFile, true, false);
         } catch (IOException e) {
-            Utils.error(LOGGER, container, CrashReport.makeCrashReport(e, "Opening replay"), () -> {});
+            Utils.error(LOGGER, container, CrashReport.makeCrashReport(e, "Opening replay"), () -> {
+            });
             container.display(); // Re-show the queue popup and the new error popup
             IOUtils.closeQuietly(replayFile);
             return;
@@ -259,7 +244,8 @@ public class GuiRenderQueue extends AbstractGuiPopup<GuiRenderQueue> implements 
             try {
                 replayHandler.endReplay();
             } catch (IOException e) {
-                Utils.error(LOGGER, container, CrashReport.makeCrashReport(e, "Closing replay"), () -> {});
+                Utils.error(LOGGER, container, CrashReport.makeCrashReport(e, "Closing replay"), () -> {
+                });
                 container.display(); // Re-show the queue popup and the new error popup
                 return;
             }

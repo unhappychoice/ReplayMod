@@ -1,4 +1,3 @@
-//#if FABRIC<=0
 package com.replaymod.replay.events;
 
 import com.replaymod.replay.camera.CameraEntity;
@@ -9,7 +8,7 @@ import net.minecraftforge.eventbus.api.Event;
 public class ReplayChatMessageEvent extends Event {
     private final CameraEntity cameraEntity;
 
-    public ReplayChatMessageEvent(CameraEntity  cameraEntity) {
+    public ReplayChatMessageEvent(CameraEntity cameraEntity) {
         this.cameraEntity = cameraEntity;
     }
 
@@ -17,4 +16,3 @@ public class ReplayChatMessageEvent extends Event {
         return cameraEntity;
     }
 }
-//#endif

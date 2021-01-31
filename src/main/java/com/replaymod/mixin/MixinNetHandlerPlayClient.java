@@ -2,8 +2,16 @@ package com.replaymod.mixin;
 
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.recording.handler.RecordingEventHandler;
+import com.replaymod.replaystudio.protocol.Packet;
+import com.replaymod.replaystudio.protocol.PacketType;
+import com.replaymod.replaystudio.protocol.packets.PacketPlayerListEntry;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
+import net.minecraft.client.network.play.NetworkPlayerInfo;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.SPlayerListItemPacket;
 import net.minecraft.network.play.server.SRespawnPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -11,22 +19,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//#if MC>=10800
-import com.replaymod.replaystudio.protocol.Packet;
-import com.replaymod.replaystudio.protocol.PacketType;
-import com.replaymod.replaystudio.protocol.packets.PacketPlayerListEntry;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SPlayerListItemPacket;
-import net.minecraft.client.network.play.NetworkPlayerInfo;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
-//#else
-//$$ import net.minecraft.network.play.server.S01PacketJoinGame;
-//#endif
 
 @Mixin(ClientPlayNetHandler.class)
 public abstract class MixinNetHandlerPlayClient {
@@ -34,10 +29,8 @@ public abstract class MixinNetHandlerPlayClient {
     // The stupid name is required as otherwise Mixin treats it as a shadow, seemingly ignoring the lack of @Shadow
     private static Minecraft mcStatic = MCVer.getMinecraft();
 
-    //#if MC>=10800
     @Shadow
     private Map<UUID, NetworkPlayerInfo> playerInfoMap;
-    //#endif
 
     public RecordingEventHandler getRecordingEventHandler() {
         return ((RecordingEventHandler.RecordingEventSender) mcStatic.worldRenderer).getRecordingEventHandler();
@@ -47,15 +40,11 @@ public abstract class MixinNetHandlerPlayClient {
      * Record the own player entity joining the world.
      * We cannot use the {@link net.minecraftforge.event.entity.EntityJoinWorldEvent} because the entity id
      * of the player is set afterwards and the tablist entry might not yet be sent.
+     *
      * @param packet The packet
-     * @param ci Callback info
+     * @param ci     Callback info
      */
-    //#if MC>=10800
-    //#if FABRIC>=1
-    //$$ @Inject(method = "onPlayerList", at=@At("HEAD"))
-    //#else
-    @Inject(method = "handlePlayerListItem", at=@At("HEAD"))
-    //#endif
+    @Inject(method = "handlePlayerListItem", at = @At("HEAD"))
     public void recordOwnJoin(SPlayerListItemPacket packet, CallbackInfo ci) {
         if (!mcStatic.isOnExecutionThread()) return;
         if (mcStatic.player == null) return;
@@ -91,28 +80,16 @@ public abstract class MixinNetHandlerPlayClient {
             }
         }
     }
-    //#else
-    //$$ @Inject(method = "handleJoinGame", at=@At("RETURN"))
-    //$$ public void recordOwnJoin(S01PacketJoinGame packet, CallbackInfo ci) {
-    //$$     RecordingEventHandler handler = getRecordingEventHandler();
-    //$$     if (handler != null) {
-    //$$         handler.spawnRecordingPlayer();
-    //$$     }
-    //$$ }
-    //#endif
 
     /**
      * Record the own player entity respawning.
      * We cannot use the {@link net.minecraftforge.event.entity.EntityJoinWorldEvent} because that would also include
      * the first spawn which is already handled by the above method.
+     *
      * @param packet The packet
-     * @param ci Callback info
+     * @param ci     Callback info
      */
-    //#if FABRIC>=1
-    //$$ @Inject(method = "onPlayerRespawn", at=@At("RETURN"))
-    //#else
-    @Inject(method = "handleRespawn", at=@At("RETURN"))
-    //#endif
+    @Inject(method = "handleRespawn", at = @At("RETURN"))
     public void recordOwnRespawn(SRespawnPacket packet, CallbackInfo ci) {
         RecordingEventHandler handler = getRecordingEventHandler();
         if (handler != null) {

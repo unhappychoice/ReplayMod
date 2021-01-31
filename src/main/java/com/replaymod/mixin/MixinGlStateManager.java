@@ -1,9 +1,8 @@
-//#if MC>=10800
 package com.replaymod.mixin;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.replaymod.render.hooks.FogStateCallback;
 import com.replaymod.render.hooks.Texture2DStateCallback;
-import com.mojang.blaze3d.platform.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,7 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GlStateManager.class)
 public abstract class MixinGlStateManager {
-    @Shadow private static int activeTexture;
+    @Shadow
+    private static int activeTexture;
 
     @Inject(method = "enableFog", at = @At("HEAD"))
     private static void enableFog(CallbackInfo ci) {
@@ -34,4 +34,3 @@ public abstract class MixinGlStateManager {
         Texture2DStateCallback.EVENT.invoker().texture2DStateChanged(MixinGlStateManager.activeTexture, false);
     }
 }
-//#endif

@@ -2,21 +2,13 @@ package com.replaymod.replay;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.gui.versions.Image;
 import net.minecraft.client.Minecraft;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.util.ScreenShotHelper;
 
-//#if MC>=11500
-import com.mojang.blaze3d.matrix.MatrixStack;
-//#endif
-
-//#if MC<11400
-//$$ import com.google.common.io.Files;
-//$$ import org.apache.commons.io.FileUtils;
-//$$ import java.io.File;
-//#endif
 
 public class NoGuiScreenshot {
     private final Image image;
@@ -61,27 +53,13 @@ public class NoGuiScreenshot {
                     GlStateManager.pushMatrix();
                     GlStateManager.clear(
                             16640
-                            //#if MC>=11400
                             , true
-                            //#endif
                     );
                     mc.getFramebuffer().bindFramebuffer(true);
                     GlStateManager.enableTexture();
 
                     float tickDelta = mc.getRenderPartialTicks();
-                    //#if MC>=11500
                     mc.gameRenderer.renderWorld(tickDelta, System.nanoTime(), new MatrixStack());
-                    //#else
-                    //#if MC>=11400
-                    //$$ mc.gameRenderer.renderWorld(tickDelta, System.nanoTime());
-                    //#else
-                    //#if MC>=10809
-                    //$$ mc.entityRenderer.updateCameraAndRender(tickDelta, System.nanoTime());
-                    //#else
-                    //$$ mc.entityRenderer.updateCameraAndRender(tickDelta);
-                    //#endif
-                    //#endif
-                    //#endif
 
                     mc.getFramebuffer().unbindFramebuffer();
                     GlStateManager.popMatrix();
@@ -99,21 +77,7 @@ public class NoGuiScreenshot {
                 // The frame without GUI has been rendered
                 // Read it, create the screenshot and finish the future
                 try {
-                    //#if MC>=11400
                     Image image = new Image(ScreenShotHelper.createScreenshot(frameWidth, frameHeight, mc.getFramebuffer()));
-                    //#else
-                    //$$ // We're using Minecraft's ScreenShotHelper even though it writes the screenshot to
-                    //$$ // disk for better maintainability
-                    //$$ File tmpFolder = Files.createTempDir();
-                    //$$ Image image;
-                    //$$ try {
-                    //$$     ScreenShotHelper.saveScreenshot(tmpFolder, "tmp", frameWidth, frameHeight, mc.getFramebuffer());
-                    //$$     File screenshotFile = new File(tmpFolder, "screenshots/tmp");
-                    //$$     image = Image.read(screenshotFile.toPath());
-                    //$$ } finally {
-                    //$$     FileUtils.deleteQuietly(tmpFolder);
-                    //$$ }
-                    //#endif
                     int imageWidth = image.getWidth();
                     int imageHeight = image.getHeight();
 

@@ -1,13 +1,13 @@
 package com.replaymod.render.rendering;
 
-import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.core.versions.MCVer;
+import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.render.capturer.WorldRenderer;
 import com.replaymod.render.frame.BitmapFrame;
 import com.replaymod.render.processor.GlToAbsoluteDepthProcessor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.crash.ReportedException;
 import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.ReportedException;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;

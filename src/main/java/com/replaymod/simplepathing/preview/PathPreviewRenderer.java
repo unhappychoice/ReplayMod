@@ -1,9 +1,12 @@
 package com.replaymod.simplepathing.preview;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.events.PostRenderWorldCallback;
 import com.replaymod.core.versions.MCVer;
+import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.pathing.properties.CameraProperties;
 import com.replaymod.pathing.properties.SpectatorProperty;
 import com.replaymod.pathing.properties.TimestampProperty;
@@ -17,21 +20,15 @@ import com.replaymod.replaystudio.util.Location;
 import com.replaymod.simplepathing.ReplayModSimplePathing;
 import com.replaymod.simplepathing.SPTimeline;
 import com.replaymod.simplepathing.gui.GuiPathing;
-import com.replaymod.gui.utils.EventRegistrations;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.lwjgl.opengl.GL11;
-
-//#if MC>=11500
-import com.mojang.blaze3d.systems.RenderSystem;
-//#endif
 
 import java.util.Comparator;
 import java.util.Optional;
@@ -54,7 +51,10 @@ public class PathPreviewRenderer extends EventRegistrations {
         this.replayHandler = replayHandler;
     }
 
-    { on(PostRenderWorldCallback.EVENT, this::renderCameraPath); }
+    {
+        on(PostRenderWorldCallback.EVENT, this::renderCameraPath);
+    }
+
     private void renderCameraPath(MatrixStack matrixStack) {
         if (!replayHandler.getReplaySender().isAsyncMode() || mc.gameSettings.hideGUI) return;
 
@@ -79,12 +79,7 @@ public class PathPreviewRenderer extends EventRegistrations {
         Triple<Double, Double, Double> viewPos = Triple.of(
                 view.getPosX(),
                 view.getPosY()
-                //#if MC>=10800 && MC<11500
-                //$$ // Eye height is subtracted to make path appear higher (at eye height) than it actually is (at foot height)
-                //$$ - view.getStandingEyeHeight(),
-                //#else
                 ,
-                //#endif
                 view.getPosZ()
         );
 
@@ -94,9 +89,7 @@ public class PathPreviewRenderer extends EventRegistrations {
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-            //#if MC>=11500
             RenderSystem.multMatrix(matrixStack.getLast().getMatrix());
-            //#endif
 
             for (PathSegment segment : path.getSegments()) {
                 Interpolator interpolator = segment.getInterpolator();
@@ -326,44 +319,44 @@ public class PathPreviewRenderer extends EventRegistrations {
 
         float cubeSize = 0.5f;
 
-        double r = -cubeSize/2;
+        double r = -cubeSize / 2;
 
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 
         //back
         buffer.pos(r, r + cubeSize, r).tex(3 * 8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r + cubeSize, r + cubeSize, r).tex(4*8/64f, 8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r + cubeSize, r, r).tex(4*8/64f, 2*8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r, r, r).tex(3*8/64f, 2*8/64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r + cubeSize, r).tex(4 * 8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r, r).tex(4 * 8 / 64f, 2 * 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r, r, r).tex(3 * 8 / 64f, 2 * 8 / 64f).color(255, 255, 255, 200).endVertex();
 
         //front
-        buffer.pos(r + cubeSize, r, r + cubeSize).tex(2 * 8 / 64f, 2*8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r + cubeSize, r + cubeSize, r + cubeSize).tex(2 * 8 / 64f, 8/64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r, r + cubeSize).tex(2 * 8 / 64f, 2 * 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r + cubeSize, r + cubeSize).tex(2 * 8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
         buffer.pos(r, r + cubeSize, r + cubeSize).tex(8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r, r, r + cubeSize).tex(8 / 64f, 2*8/64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r, r, r + cubeSize).tex(8 / 64f, 2 * 8 / 64f).color(255, 255, 255, 200).endVertex();
 
         //left
-        buffer.pos(r + cubeSize, r + cubeSize, r).tex(0, 8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r + cubeSize, r + cubeSize, r + cubeSize).tex(8/64f, 8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r + cubeSize, r, r + cubeSize).tex(8/64f, 2*8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r+cubeSize, r, r).tex(0, 2*8/64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r + cubeSize, r).tex(0, 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r + cubeSize, r + cubeSize).tex(8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r, r + cubeSize).tex(8 / 64f, 2 * 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r, r).tex(0, 2 * 8 / 64f).color(255, 255, 255, 200).endVertex();
 
         //right
-        buffer.pos(r, r + cubeSize, r + cubeSize).tex(2*8/64f, 8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r, r + cubeSize, r).tex(3*8/64f, 8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r, r, r).tex(3*8/64f, 2*8/64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r, r + cubeSize, r + cubeSize).tex(2 * 8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r, r + cubeSize, r).tex(3 * 8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r, r, r).tex(3 * 8 / 64f, 2 * 8 / 64f).color(255, 255, 255, 200).endVertex();
         buffer.pos(r, r, r + cubeSize).tex(2 * 8 / 64f, 2 * 8 / 64f).color(255, 255, 255, 200).endVertex();
 
         //bottom
-        buffer.pos(r + cubeSize, r, r).tex(3*8/64f, 0).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r + cubeSize, r, r + cubeSize).tex(3*8/64f, 8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r, r, r + cubeSize).tex(2*8/64f, 8/64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r, r).tex(3 * 8 / 64f, 0).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r, r + cubeSize).tex(3 * 8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r, r, r + cubeSize).tex(2 * 8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
         buffer.pos(r, r, r).tex(2 * 8 / 64f, 0).color(255, 255, 255, 200).endVertex();
 
         //top
-        buffer.pos(r, r + cubeSize, r).tex(8/64f, 0).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r, r + cubeSize, r + cubeSize).tex(8/64f, 8/64f).color(255, 255, 255, 200).endVertex();
-        buffer.pos(r + cubeSize, r + cubeSize, r + cubeSize).tex(2*8/64f, 8/64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r, r + cubeSize, r).tex(8 / 64f, 0).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r, r + cubeSize, r + cubeSize).tex(8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
+        buffer.pos(r + cubeSize, r + cubeSize, r + cubeSize).tex(2 * 8 / 64f, 8 / 64f).color(255, 255, 255, 200).endVertex();
         buffer.pos(r + cubeSize, r + cubeSize, r).tex(2 * 8 / 64f, 0).color(255, 255, 255, 200).endVertex();
 
         tessellator.draw();

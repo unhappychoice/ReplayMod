@@ -1,16 +1,11 @@
 package com.replaymod.gui.versions;
 
-import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -24,11 +19,7 @@ public class Image implements AutoCloseable {
 
     public Image(int width, int height) {
         this(
-                //#if FABRIC>=1
-                //$$ new NativeImage(NativeImage.Format.ABGR, width, height, true)
-                //#else
                 new NativeImage(NativeImage.PixelFormat.RGBA, width, height, true)
-                //#endif
         );
     }
 

@@ -34,26 +34,15 @@ import com.replaymod.gui.function.Focusable;
 import com.replaymod.gui.function.Tickable;
 import com.replaymod.gui.function.Typeable;
 import com.replaymod.gui.utils.Consumer;
-import de.johni0702.minecraft.gui.utils.lwjgl.Color;
-import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import com.replaymod.gui.versions.MCVer;
+import de.johni0702.minecraft.gui.utils.lwjgl.*;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
-
-//#if MC>=11400
 import net.minecraft.util.SharedConstants;
-//#else
-//$$ import net.minecraft.util.ChatAllowedCharacters;
-//$$ import org.lwjgl.input.Keyboard;
-//#endif
 
 import static com.replaymod.gui.utils.Utils.clamp;
-import static com.replaymod.gui.versions.MCVer.*;
+import static com.replaymod.gui.versions.MCVer.Keyboard;
 
 public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
         extends AbstractGuiElement<T> implements Clickable, Tickable, Typeable, IGuiTextField<T> {
@@ -163,8 +152,8 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
         String line = text.substring(currentOffset, cursorPos);
         FontRenderer fontRenderer = MCVer.getFontRenderer();
         int currentWidth = fontRenderer.getStringWidth(line);
-        if (currentWidth > size.getWidth() - 2*BORDER) {
-            currentOffset = cursorPos - fontRenderer.getLineScrollOffset(line, size.getWidth() - 2*BORDER, true).length();
+        if (currentWidth > size.getWidth() - 2 * BORDER) {
+            currentOffset = cursorPos - fontRenderer.getLineScrollOffset(line, size.getWidth() - 2 * BORDER, true).length();
         }
     }
 
@@ -178,11 +167,7 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
 
     @Override
     public T writeChar(char c) {
-        //#if MC>=11400
         if (!SharedConstants.isAllowedCharacter(c)) {
-        //#else
-        //$$ if (!ChatAllowedCharacters.isAllowedCharacter(c)) {
-        //#endif
             return getThis();
         }
 
@@ -211,6 +196,7 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
      * Return the amount of characters to the next word (excluding).
      * If this is the last word in the line, return the amount of characters remaining to till the end.
      * Everything except the Space character is considered part of a word.
+     *
      * @return Length in characters
      */
     protected int getNextWordLength() {
@@ -253,6 +239,7 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
      * Return the amount of characters to the previous word (including).
      * If this is the first word in the line, return the amount of characters till the start.
      * Everything except the Space character is considered part of a word.
+     *
      * @return Length in characters
      */
     protected int getPreviousWordLength() {
@@ -363,12 +350,12 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
 
         if (text.isEmpty() && !isFocused() && !Strings.isNullOrEmpty(hint)) {
             // Draw hint
-            String text = fontRenderer.trimStringToWidth(hint, width - 2*BORDER);
+            String text = fontRenderer.trimStringToWidth(hint, width - 2 * BORDER);
             renderer.drawString(BORDER, posY, textColorDisabled, text);
         } else {
             // Draw text
             String renderText = text.substring(currentOffset);
-            renderText = fontRenderer.trimStringToWidth(renderText, width - 2*BORDER);
+            renderText = fontRenderer.trimStringToWidth(renderText, width - 2 * BORDER);
             ReadableColor color = isEnabled() ? textColorEnabled : textColorDisabled;
             int lineEnd = renderer.drawString(BORDER, height / 2 - fontRenderer.FONT_HEIGHT / 2, color, renderText);
 

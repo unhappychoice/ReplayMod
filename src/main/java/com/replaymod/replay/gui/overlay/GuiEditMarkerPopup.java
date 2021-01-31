@@ -1,6 +1,7 @@
 package com.replaymod.replay.gui.overlay;
 
 import com.google.common.base.Strings;
+import com.replaymod.core.versions.MCVer.Keyboard;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.element.GuiTextField;
@@ -10,7 +11,6 @@ import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.layout.VerticalLayout;
 import com.replaymod.gui.popup.AbstractGuiPopup;
 import com.replaymod.gui.utils.Colors;
-import com.replaymod.core.versions.MCVer.Keyboard;
 import com.replaymod.replaystudio.data.Marker;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 

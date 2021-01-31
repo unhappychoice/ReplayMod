@@ -3,31 +3,16 @@ package com.replaymod.render;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.replay.camera.CameraEntity;
-import de.javagl.jgltf.impl.v2.Accessor;
-import de.javagl.jgltf.impl.v2.Animation;
-import de.javagl.jgltf.impl.v2.AnimationChannel;
-import de.javagl.jgltf.impl.v2.AnimationChannelTarget;
-import de.javagl.jgltf.impl.v2.AnimationSampler;
-import de.javagl.jgltf.impl.v2.Asset;
-import de.javagl.jgltf.impl.v2.Buffer;
-import de.javagl.jgltf.impl.v2.BufferView;
-import de.javagl.jgltf.impl.v2.Camera;
-import de.javagl.jgltf.impl.v2.CameraPerspective;
-import de.javagl.jgltf.impl.v2.GlTF;
-import de.javagl.jgltf.impl.v2.Node;
+import de.javagl.jgltf.impl.v2.*;
 import de.javagl.jgltf.model.io.v2.GltfAssetV2;
 import de.javagl.jgltf.model.io.v2.GltfAssetWriterV2;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Quaternion;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.vector.Vector3d;
 import org.apache.commons.io.FilenameUtils;
 import org.lwjgl.opengl.GL11;
-
-//#if MC>=11400
-import net.minecraft.util.math.vector.Vector3d;
-//#else
-//#endif
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -57,13 +42,8 @@ public class CameraPathExporter {
     }
 
     public void recordFrame(float tickDelta) {
-        //#if MC>=10800
         Entity entity = mc.getRenderViewEntity() == null ? mc.player : mc.getRenderViewEntity();
-        //#else
-        //$$ Entity entity = mc.renderViewEntity == null ? mc.thePlayer : mc.renderViewEntity;
-        //#endif
 
-        //#if MC>=11400
         net.minecraft.client.renderer.ActiveRenderInfo camera = mc.gameRenderer.getActiveRenderInfo();
         Vector3d vec = camera.getProjectedView();
         float x = (float) vec.getX();
@@ -71,18 +51,6 @@ public class CameraPathExporter {
         float z = (float) vec.getZ();
         float yaw = camera.getYaw() + 180;
         float pitch = camera.getPitch();
-        //#else
-        //#if MC>=10800
-        //$$ float eyeHeight = entity.getEyeHeight();
-        //#else
-        //$$ float eyeHeight = 1.62f - entity.yOffset;
-        //#endif
-        //$$ float x = (float) (entity.prevPosX + (entity.posX - entity.prevPosX) * tickDelta);
-        //$$ float y = (float) (entity.prevPosY + (entity.posY - entity.prevPosY) * tickDelta + eyeHeight);
-        //$$ float z = (float) (entity.prevPosZ + (entity.posZ - entity.prevPosZ) * tickDelta);
-        //$$ float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * tickDelta + 180;
-        //$$ float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * tickDelta;
-        //#endif
         float roll = entity instanceof CameraEntity ? ((CameraEntity) entity).roll : 0;
 
         Quaternion quatYaw = new Quaternion();
@@ -99,8 +67,8 @@ public class CameraPathExporter {
         Quaternion.mul(quaternion, quatRoll, quaternion);
         quaternion.normalise(quaternion);
 
-        float[] translation = new float[] { x, y, z };
-        float[] rotation = new float[] { quaternion.getX(), quaternion.getY(), quaternion.getZ(), quaternion.getW() };
+        float[] translation = new float[]{x, y, z};
+        float[] rotation = new float[]{quaternion.getX(), quaternion.getY(), quaternion.getZ(), quaternion.getW()};
 
         timeBuffer.putFloat(framesDone / (float) settings.getFramesPerSecond());
         for (float f : translation) {

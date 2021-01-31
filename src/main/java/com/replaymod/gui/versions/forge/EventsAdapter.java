@@ -16,19 +16,11 @@ import java.util.List;
 
 public class EventsAdapter extends EventRegistrations {
     public static Screen getScreen(GuiScreenEvent event) {
-        //#if MC>=10904
         return event.getGui();
-        //#else
-        //$$ return event.gui;
-        //#endif
     }
 
     public static List<Widget> getButtonList(GuiScreenEvent.InitGuiEvent event) {
-        //#if MC>=10904
         return event.getWidgetList();
-        //#else
-        //$$ return event.buttonList;
-        //#endif
     }
 
     @SubscribeEvent
@@ -44,28 +36,16 @@ public class EventsAdapter extends EventRegistrations {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiClosed(GuiOpenEvent event) {
         OpenGuiScreenCallback.EVENT.invoker().openGuiScreen(
-                //#if MC>=10904
                 event.getGui()
-                //#else
-                //$$ event.gui
-                //#endif
         );
     }
 
     public static float getPartialTicks(RenderGameOverlayEvent event) {
-        //#if MC>=10904
         return event.getPartialTicks();
-        //#else
-        //$$ return event.partialTicks;
-        //#endif
     }
 
     public static float getPartialTicks(GuiScreenEvent.DrawScreenEvent.Post event) {
-        //#if MC>=10904
         return event.getRenderPartialTicks();
-        //#else
-        //$$ return event.renderPartialTicks;
-        //#endif
     }
 
     @SubscribeEvent

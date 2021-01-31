@@ -1,15 +1,15 @@
 package com.replaymod.extras.advancedscreenshots;
 
 import com.replaymod.core.ReplayMod;
-import com.replaymod.render.RenderSettings;
-import com.replaymod.render.gui.GuiRenderSettings;
-import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.element.GuiLabel;
 import com.replaymod.gui.function.Loadable;
 import com.replaymod.gui.layout.GridLayout;
 import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.render.RenderSettings;
+import com.replaymod.render.gui.GuiRenderSettings;
+import com.replaymod.replay.ReplayModReplay;
 import net.minecraft.crash.CrashReport;
 
 import java.io.File;
@@ -63,7 +63,8 @@ public class GuiCreateScreenshot extends GuiRenderSettings implements Loadable {
                     }
 
                 } catch (Throwable t) {
-                    error(LOGGER, GuiCreateScreenshot.this, CrashReport.makeCrashReport(t, "Rendering video"), () -> {});
+                    error(LOGGER, GuiCreateScreenshot.this, CrashReport.makeCrashReport(t, "Rendering video"), () -> {
+                    });
                     getScreen().display(); // Re-show the render settings gui and the new error popup
                 }
             });

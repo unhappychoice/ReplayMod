@@ -8,8 +8,8 @@ import com.replaymod.render.hooks.ForceChunkLoadingHook;
 import com.replaymod.render.rendering.Pipelines;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.MainWindow;
+import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 
 import static com.replaymod.core.versions.MCVer.resizeMainWindow;

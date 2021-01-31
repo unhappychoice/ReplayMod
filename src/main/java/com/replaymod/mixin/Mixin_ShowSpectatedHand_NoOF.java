@@ -1,4 +1,3 @@
-//#if MC>=11400
 package com.replaymod.mixin;
 
 import com.replaymod.replay.camera.CameraEntity;
@@ -30,4 +29,3 @@ public abstract class Mixin_ShowSpectatedHand_NoOF {
         return interactionManager.getCurrentGameType();
     }
 }
-//#endif

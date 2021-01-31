@@ -10,6 +10,7 @@ import com.replaymod.core.versions.scheduler.Scheduler;
 import com.replaymod.core.versions.scheduler.SchedulerImpl;
 import com.replaymod.editor.ReplayModEditor;
 import com.replaymod.extras.ReplayModExtras;
+import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.recording.ReplayModRecording;
 import com.replaymod.render.ReplayModRender;
 import com.replaymod.replay.ReplayModReplay;
@@ -19,16 +20,11 @@ import com.replaymod.replaystudio.studio.ReplayStudio;
 import com.replaymod.replaystudio.us.myles.ViaVersion.api.protocol.ProtocolVersion;
 import com.replaymod.replaystudio.util.I18n;
 import com.replaymod.simplepathing.ReplayModSimplePathing;
-import com.replaymod.gui.container.GuiScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.AbstractOption;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.FolderPack;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -38,11 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,11 +55,15 @@ public class ReplayMod implements Module, Scheduler {
     private final SchedulerImpl scheduler = new SchedulerImpl();
     private final KeyBindingRegistry keyBindingRegistry = new KeyBindingRegistry();
     private final SettingsRegistry settingsRegistry = new SettingsRegistry();
+
     {
         settingsRegistry.register(Setting.class);
     }
 
-    { instance = this; }
+    {
+        instance = this;
+    }
+
     public static ReplayMod instance;
 
     private final List<Module> modules = new ArrayList<>();
@@ -78,7 +74,7 @@ public class ReplayMod implements Module, Scheduler {
      * Whether the current MC version is supported by the embedded ReplayStudio version.
      * If this is not the case (i.e. if this is variable true), any feature of the RM which depends on the ReplayStudio
      * lib will be disabled.
-     *
+     * <p>
      * Only supported on Fabric builds, i.e. will always be false / crash the game with Forge/pre-1.14 builds.
      * (specifically the code below and MCVer#getProtocolVersion make this assumption)
      */
@@ -168,6 +164,7 @@ public class ReplayMod implements Module, Scheduler {
 
     public static final FolderPack jGuiResourcePack = createJGuiResourcePack();
     public static final String JGUI_RESOURCE_PACK_NAME = "replaymod_jgui";
+
     private static FolderPack createJGuiResourcePack() {
         File folder = new File("../jGui/src/main/resources");
         if (!folder.exists()) {
@@ -175,11 +172,7 @@ public class ReplayMod implements Module, Scheduler {
         }
         return new FolderPack(folder) {
             @Override
-            //#if MC>=11400
             public String getName() {
-            //#else
-            //$$ public String getPackName() {
-            //#endif
                 return JGUI_RESOURCE_PACK_NAME;
             }
 
@@ -189,11 +182,7 @@ public class ReplayMod implements Module, Scheduler {
                     return super.getInputStream(resourceName);
                 } catch (IOException e) {
                     if ("pack.mcmeta".equals(resourceName)) {
-                        //#if MC>=11400
                         int version = 4;
-                        //#else
-                        //$$ int version = 1;
-                        //#endif
                         return new ByteArrayInputStream(("{\"pack\": {\"description\": \"dummy pack for jGui resources in dev-env\", \"pack_format\": "
                                 + version + "}}").getBytes(StandardCharsets.UTF_8));
                     }
@@ -222,11 +211,9 @@ public class ReplayMod implements Module, Scheduler {
         keyBindingRegistry.register();
 
         // 1.7.10 crashes when render distance > 16
-        //#if MC>=10800
         if (!MCVer.hasOptifine()) {
             AbstractOption.RENDER_DISTANCE.setMaxValue(64f);
         }
-        //#endif
 
         runPostStartup(() -> {
             final long DAYS = 24 * 60 * 60 * 1000;
@@ -378,29 +365,13 @@ public class ReplayMod implements Module, Scheduler {
     private void printToChat(boolean warning, String message, Object... args) {
         if (getSettingsRegistry().get(Setting.NOTIFICATIONS)) {
             // Some nostalgia: "§8[§6Replay Mod§8]§r Your message goes here"
-            //#if MC>=10904
-            //#if MC>=11600
             Style coloredDarkGray = Style.EMPTY.setFormatting(TextFormatting.DARK_GRAY);
             Style coloredGold = Style.EMPTY.setFormatting(TextFormatting.GOLD);
             Style alert = Style.EMPTY.setFormatting(warning ? TextFormatting.RED : TextFormatting.DARK_GREEN);
-            //#else
-            //$$ Style coloredDarkGray = new Style().setColor(Formatting.DARK_GRAY);
-            //$$ Style coloredGold = new Style().setColor(Formatting.GOLD);
-            //$$ Style alert = new Style().setColor(warning ? Formatting.RED : Formatting.DARK_GREEN);
-            //#endif
             ITextComponent text = new StringTextComponent("[").setStyle(coloredDarkGray)
                     .appendSibling(new TranslationTextComponent("replaymod.title").setStyle(coloredGold))
                     .appendSibling(new StringTextComponent("] "))
                     .appendSibling(new TranslationTextComponent(message, args).setStyle(alert));
-            //#else
-            //$$ ChatStyle coloredDarkGray = new ChatStyle().setColor(EnumChatFormatting.DARK_GRAY);
-            //$$ ChatStyle coloredGold = new ChatStyle().setColor(EnumChatFormatting.GOLD);
-            //$$ IChatComponent text = new ChatComponentText("[").setChatStyle(coloredDarkGray)
-            //$$         .appendSibling(new ChatComponentTranslation("replaymod.title").setChatStyle(coloredGold))
-            //$$         .appendSibling(new ChatComponentText("] "))
-            //$$         .appendSibling(new ChatComponentTranslation(message, args).setChatStyle(new ChatStyle()
-            //$$                 .setColor(warning ? EnumChatFormatting.RED : EnumChatFormatting.DARK_GREEN)));
-            //#endif
             // Send message to chat GUI
             // The ingame GUI is initialized at startup, therefore this is possible before the client is connected
             mc.ingameGUI.getChatGUI().printChatMessage(text);

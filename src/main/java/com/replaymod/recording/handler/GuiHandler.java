@@ -3,9 +3,6 @@ package com.replaymod.recording.handler;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.SettingsRegistry;
 import com.replaymod.core.gui.GuiReplayButton;
-import com.replaymod.recording.ServerInfoExt;
-import com.replaymod.recording.Setting;
-import com.replaymod.mixin.AddServerScreenAccessor;
 import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.gui.container.VanillaGuiScreen;
 import com.replaymod.gui.element.GuiButton;
@@ -15,6 +12,9 @@ import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.popup.GuiInfoPopup;
 import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.gui.versions.callbacks.InitScreenCallback;
+import com.replaymod.mixin.AddServerScreenAccessor;
+import com.replaymod.recording.ServerInfoExt;
+import com.replaymod.recording.Setting;
 import net.minecraft.client.gui.screen.AddServerScreen;
 import net.minecraft.client.gui.screen.MultiplayerScreen;
 import net.minecraft.client.gui.screen.WorldSelectionScreen;
@@ -29,7 +29,10 @@ public class GuiHandler extends EventRegistrations {
         this.mod = mod;
     }
 
-    { on(InitScreenCallback.EVENT, (screen, buttons) -> onGuiInit(screen)); }
+    {
+        on(InitScreenCallback.EVENT, (screen, buttons) -> onGuiInit(screen));
+    }
+
     private void onGuiInit(net.minecraft.client.gui.screen.Screen gui) {
         if (gui instanceof WorldSelectionScreen || gui instanceof MultiplayerScreen) {
             boolean sp = gui instanceof WorldSelectionScreen;

@@ -16,7 +16,8 @@ import java.util.List;
 @Mixin(Screen.class)
 public class MixinScreen {
     @Shadow
-    protected @Final List<Widget> buttons;
+    protected @Final
+    List<Widget> buttons;
 
     @Inject(method = "init(Lnet/minecraft/client/Minecraft;II)V", at = @At("HEAD"))
     private void preInit(Minecraft minecraftClient_1, int int_1, int int_2, CallbackInfo ci) {

@@ -2,16 +2,16 @@ package com.replaymod.replay.gui.overlay;
 
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.versions.MCVer.Keyboard;
-import com.replaymod.replay.ReplayHandler;
-import com.replaymod.replay.ReplayModReplay;
-import com.replaymod.replay.camera.CameraEntity;
-import com.replaymod.replaystudio.data.Marker;
-import com.replaymod.replaystudio.util.Location;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.element.advanced.AbstractGuiTimeline;
 import com.replaymod.gui.function.Draggable;
 import com.replaymod.gui.function.Typeable;
+import com.replaymod.replay.ReplayHandler;
+import com.replaymod.replay.ReplayModReplay;
+import com.replaymod.replay.camera.CameraEntity;
+import com.replaymod.replaystudio.data.Marker;
+import com.replaymod.replaystudio.util.Location;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
@@ -19,7 +19,6 @@ import net.minecraft.client.resources.I18n;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -116,6 +115,7 @@ public class GuiMarkerTimeline extends AbstractGuiTimeline<GuiMarkerTimeline> im
 
     /**
      * Returns the marker which the mouse is at.
+     *
      * @param mouseX X coordinate of the mouse
      * @param mouseY Y coordinate of the mouse
      * @return The marker or {@code null} if the mouse isn't on a marker

@@ -56,6 +56,7 @@ public interface IGuiDropdownMenu<V, T extends IGuiDropdownMenu<V, T>> extends G
      * The returned map is only valid until {@link #setValues(Object[])} is
      * called, at which point new GUI elements are created.<br>
      * This may return null if {@link #setValues(Object[])} has not yet been called.
+     *
      * @return Unmodifiable, ordered map of entries
      */
     Map<V, IGuiClickable> getDropdownEntries();
@@ -63,6 +64,7 @@ public interface IGuiDropdownMenu<V, T extends IGuiDropdownMenu<V, T>> extends G
     /**
      * Set the function used to convert the values to display strings.
      * If not set, {@code Object::toString} is used.
+     *
      * @param toString Function used to convert
      * @return {@code this}, for chaining
      */

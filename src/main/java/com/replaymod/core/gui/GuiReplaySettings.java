@@ -39,8 +39,7 @@ public class GuiReplaySettings extends AbstractGuiScreen<GuiReplaySettings> {
             if (key.getDisplayString() != null) {
                 GuiElement<?> element;
                 if (key.getDefault() instanceof Boolean) {
-                    @SuppressWarnings("unchecked")
-                    final SettingsRegistry.SettingKey<Boolean> booleanKey = (SettingsRegistry.SettingKey<Boolean>) key;
+                    @SuppressWarnings("unchecked") final SettingsRegistry.SettingKey<Boolean> booleanKey = (SettingsRegistry.SettingKey<Boolean>) key;
                     final GuiToggleButton button = new GuiToggleButton<>().setSize(150, 20)
                             .setI18nLabel(key.getDisplayString()).setSelected(settingsRegistry.get(booleanKey) ? 0 : 1)
                             .setValues(I18n.format("options.on"), I18n.format("options.off"));

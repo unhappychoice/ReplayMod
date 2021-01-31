@@ -1,4 +1,3 @@
-//#if MC>=10800
 package com.replaymod.render.blend.exporters;
 
 import com.replaymod.core.versions.MCVer;
@@ -55,11 +54,7 @@ public class EntityExporter implements Exporter {
         if (entityObject == null) {
             entityObject = new DObject(DObject.Type.OB_EMPTY);
             entityObject.setParent(renderState.peekObject());
-            //#if MC>=11400
             entityObject.id.name = entity.getName().getString();
-            //#else
-            //$$ entityObject.id.name = entity.getName();
-            //#endif
             entityObjects.put(entity, entityObject);
         }
         renderState.pushObject(entityObject);
@@ -93,4 +88,3 @@ public class EntityExporter implements Exporter {
         renderState.pop();
     }
 }
-//#endif

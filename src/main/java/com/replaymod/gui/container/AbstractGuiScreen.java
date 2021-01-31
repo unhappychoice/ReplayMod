@@ -24,36 +24,23 @@
  */
 package com.replaymod.gui.container;
 
-import com.replaymod.gui.element.GuiElement;
-import com.replaymod.gui.element.GuiLabel;
-import com.replaymod.gui.function.Loadable;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.MinecraftGuiRenderer;
 import com.replaymod.gui.OffsetGuiRenderer;
 import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.element.GuiElement;
+import com.replaymod.gui.element.GuiLabel;
+import com.replaymod.gui.function.Loadable;
 import com.replaymod.gui.utils.MouseUtils;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.crash.ReportedException;
 
-//#if MC>=11400
-//#else
-//$$ import org.lwjgl.input.Keyboard;
-//$$ import org.lwjgl.input.Mouse;
-//#endif
-
-//#if MC>=10800
-
-
-//#if MC<11400
-//$$ import java.io.IOException;
-//#endif
-//#endif
 
 public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends AbstractGuiContainer<T> {
 
@@ -99,22 +86,14 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
                 case NONE:
                     break;
                 case DEFAULT:
-                    //#if MC>=11600
                     wrapped.renderBackground(renderer.getMatrixStack());
-                    //#else
-                    //$$ wrapped.renderBackground();
-                    //#endif
                     break;
                 case TRANSPARENT:
                     int top = 0xc0_10_10_10, bottom = 0xd0_10_10_10;
                     renderer.drawRect(0, 0, size.getWidth(), size.getHeight(), top, top, bottom, bottom);
                     break;
                 case DIRT:
-                    //#if MC>=11600
                     wrapped.renderDirtBackground(0);
-                    //#else
-                    //$$ wrapped.renderDirtBackground(0);
-                    //#endif
                     break;
             }
             if (title != null) {
@@ -205,7 +184,6 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
     protected class MinecraftGuiScreen extends net.minecraft.client.gui.screen.Screen {
         private boolean active;
 
-        //#if MC>=11400
         protected MinecraftGuiScreen() {
             super(null);
         }
@@ -214,25 +192,11 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
         public String getNarrationMessage() {
             return title == null ? "" : title.getString();
         }
-        //#endif
 
         @Override
-        //#if MC>=11600
         public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
-        //#else
-        //#if MC>=11400
-        //$$ public void render(int mouseX, int mouseY, float partialTicks) {
-        //#else
-        //$$ public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        //#endif
-        //$$     MatrixStack stack = new MatrixStack();
-        //#endif
             // The Forge loading screen apparently leaves one of the textures of the GlStateManager in an
             // incorrect state which can cause the whole screen to just remain white. This is a workaround.
-            //#if MC>=10800 && MC<11400
-            //$$ GlStateManager.disableTexture2D();
-            //$$ GlStateManager.enableTexture2D();
-            //#endif
 
             int layers = getMaxLayer();
             RenderInfo renderInfo = new RenderInfo(partialTicks, mouseX, mouseY, 0);
@@ -245,7 +209,6 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
             }
         }
 
-        //#if MC>=11400
         @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
             Point mouse = MouseUtils.getMousePos();
@@ -273,111 +236,47 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
             }
             return true;
         }
-        //#else
-        //$$ @Override
-        //$$ protected void keyTyped(char typedChar, int keyCode)
-                //#if MC>=10800
-                //$$ throws IOException
-                //#endif
-        //$$ {
-        //$$     Point mouse = MouseUtils.getMousePos();
-        //$$     boolean ctrlDown = isCtrlKeyDown();
-        //$$     boolean shiftDown = isShiftKeyDown();
-        //$$     if (!invokeHandlers(Typeable.class, e -> e.typeKey(mouse, keyCode, typedChar, ctrlDown, shiftDown))) {
-        //$$         if (suppressVanillaKeys) {
-        //$$             return;
-        //$$         }
-        //$$         super.keyTyped(typedChar, keyCode);
-        //$$     }
-        //$$ }
-        //#endif
 
         @Override
-        //#if MC>=11400
         public boolean mouseClicked(double mouseXD, double mouseYD, int mouseButton) {
             int mouseX = (int) Math.round(mouseXD), mouseY = (int) Math.round(mouseYD);
             return
-        //#else
-        //$$ protected void mouseClicked(int mouseX, int mouseY, int mouseButton)
-                //#if MC>=10800
-                //$$ throws IOException
-                //#endif
-        //$$ {
-        //#endif
-            invokeHandlers(com.replaymod.gui.function.Clickable.class, e -> e.mouseClick(new Point(mouseX, mouseY), mouseButton));
+                    invokeHandlers(com.replaymod.gui.function.Clickable.class, e -> e.mouseClick(new Point(mouseX, mouseY), mouseButton));
         }
 
         @Override
-        //#if MC>=11400
         public boolean mouseReleased(double mouseXD, double mouseYD, int mouseButton) {
             int mouseX = (int) Math.round(mouseXD), mouseY = (int) Math.round(mouseYD);
             return
-        //#else
-        //$$ protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
-        //#endif
-            invokeHandlers(com.replaymod.gui.function.Draggable.class, e -> e.mouseRelease(new Point(mouseX, mouseY), mouseButton));
+                    invokeHandlers(com.replaymod.gui.function.Draggable.class, e -> e.mouseRelease(new Point(mouseX, mouseY), mouseButton));
         }
 
         @Override
-        //#if MC>=11400
         public boolean mouseDragged(double mouseXD, double mouseYD, int mouseButton, double deltaX, double deltaY) {
             int mouseX = (int) Math.round(mouseXD), mouseY = (int) Math.round(mouseYD);
             long timeSinceLastClick = 0;
             return
-        //#else
-        //$$ protected void mouseClickMove(int mouseX, int mouseY, int mouseButton, long timeSinceLastClick) {
-        //#endif
-            invokeHandlers(com.replaymod.gui.function.Draggable.class, e -> e.mouseDrag(new Point(mouseX, mouseY), mouseButton, timeSinceLastClick));
+                    invokeHandlers(com.replaymod.gui.function.Draggable.class, e -> e.mouseDrag(new Point(mouseX, mouseY), mouseButton, timeSinceLastClick));
         }
 
         @Override
-        //#if MC>=11400
         public void tick() {
-        //#else
-        //$$ public void updateScreen() {
-        //#endif
             invokeAll(com.replaymod.gui.function.Tickable.class, com.replaymod.gui.function.Tickable::tick);
         }
 
-        //#if MC>=11400
         @Override
         public boolean mouseScrolled(
-                //#if MC>=11400
                 double mouseX,
                 double mouseY,
-                //#endif
                 double dWheel
         ) {
-            //#if MC>=11400
             Point mouse = new Point((int) mouseX, (int) mouseY);
-            //#else
-            //$$ Point mouse = MouseUtils.getMousePos();
-            //#endif
             int wheel = (int) (dWheel * 120);
             return invokeHandlers(com.replaymod.gui.function.Scrollable.class, e -> e.scroll(mouse, wheel));
         }
-        //#else
-        //$$ @Override
-        //$$ public void handleMouseInput()
-                //#if MC>=10800
-                //$$ throws IOException
-                //#endif
-        //$$ {
-        //$$     super.handleMouseInput();
-        //$$     if (Mouse.hasWheel() && Mouse.getEventDWheel() != 0) {
-        //$$         Point mouse = MouseUtils.getMousePos();
-        //$$         int wheel = Mouse.getEventDWheel();
-        //$$         invokeHandlers(Scrollable.class, e -> e.scroll(mouse, wheel));
-        //$$     }
-        //$$ }
-        //#endif
 
         @Override
-        //#if MC>=11400
         public void onClose() {
-        //#else
-        //$$ public void onGuiClosed() {
-        //#endif
             invokeAll(com.replaymod.gui.function.Closeable.class, com.replaymod.gui.function.Closeable::close);
             active = false;
             if (enabledRepeatedKeyEvents) {
@@ -386,11 +285,7 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
         }
 
         @Override
-        //#if MC>=11400
         public void init() {
-        //#else
-        //$$ public void initGui() {
-        //#endif
             active = false;
             if (enabledRepeatedKeyEvents) {
                 com.replaymod.gui.versions.MCVer.Keyboard.enableRepeatEvents(true);

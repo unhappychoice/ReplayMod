@@ -2,57 +2,28 @@ package com.replaymod.recording.packet;
 
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
+import com.replaymod.gui.utils.Consumer;
 import com.replaymod.replaystudio.replay.ReplayFile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.client.resources.DownloadingPackFinder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-//#if MC>=11400
-import net.minecraft.util.text.TranslationTextComponent;
-//#else
-//$$ import net.minecraft.client.gui.GuiYesNoCallback;
-//$$ import net.minecraft.client.resources.I18n;
-//#endif
-
-//#if MC>=10800
-import com.replaymod.gui.utils.Consumer;
-//#else
-//$$ import net.minecraft.client.gui.GuiScreenWorking;
-//$$ import net.minecraft.util.HttpUtil;
-//#endif
-
-//#if MC>=10800
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.CResourcePackStatusPacket;
 import net.minecraft.network.play.client.CResourcePackStatusPacket.Action;
 import net.minecraft.network.play.server.SSendResourcePackPacket;
-//#endif
-
-//#if MC>=10800
-//#if MC>=11400
-import java.util.concurrent.CompletableFuture;
-//#else
-//$$ import com.google.common.util.concurrent.ListenableFuture;
-//#endif
-import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.network.NetworkManager;
-//#else
-//$$ import com.replaymod.core.mixin.ResourcePackRepositoryAccessor;
-//$$ import net.minecraft.client.multiplayer.ServerData.ServerResourceMode;
-//$$ import net.minecraft.client.multiplayer.ServerList;
-//$$ import net.minecraft.client.resources.FileResourcePack;
-//$$ import net.minecraft.network.play.server.S3FPacketCustomPayload;
-//$$ import org.apache.commons.io.Charsets;
-//#endif
+import net.minecraft.util.text.TranslationTextComponent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static com.replaymod.core.versions.MCVer.*;
 
@@ -101,13 +72,8 @@ public class ResourcePackRecorder {
         }
     }
 
-    //#if MC>=10800
     public CResourcePackStatusPacket makeStatusPacket(String hash, Action action) {
-        //#if MC>=11002
         return new CResourcePackStatusPacket(action);
-        //#else
-        //$$ return new CPacketResourcePackStatus(hash, action);
-        //#endif
     }
 
 
@@ -143,32 +109,21 @@ public class ResourcePackRecorder {
                 netManager.sendPacket(makeStatusPacket(hash, Action.DECLINED));
             } else {
                 // Lambdas MUST NOT be used with methods that need re-obfuscation in FG prior to 2.2 (will result in AbstractMethodError)
-                //#if MC>=11400
                 mc.execute(() -> mc.displayGuiScreen(new ConfirmScreen(result -> {
-                //#else
-                //$$ //noinspection Convert2Lambda
-                //$$ mc.addScheduledTask(() -> mc.displayGuiScreen(new GuiYesNo(new GuiYesNoCallback() {
-                //$$     @Override
-                //$$     public void confirmClicked(boolean result, int id) {
-                //#endif
-                        if (serverData != null) {
-                            serverData.setResourceMode(result ? ServerData.ServerResourceMode.ENABLED : ServerData.ServerResourceMode.DISABLED);
-                        }
-                        if (result) {
-                            netManager.sendPacket(makeStatusPacket(hash, Action.ACCEPTED));
-                            downloadResourcePackFuture(requestId, url, hash);
-                        } else {
-                            netManager.sendPacket(makeStatusPacket(hash, Action.DECLINED));
-                        }
-
-                        ServerList.saveSingleServer(serverData);
-                        mc.displayGuiScreen(null);
+                    if (serverData != null) {
+                        serverData.setResourceMode(result ? ServerData.ServerResourceMode.ENABLED : ServerData.ServerResourceMode.DISABLED);
                     }
-                //#if MC>=11400
-                , new TranslationTextComponent("multiplayer.texturePrompt.line1"), new TranslationTextComponent("multiplayer.texturePrompt.line2"))));
-                //#else
-                //$$ }, I18n.format("multiplayer.texturePrompt.line1"), I18n.format("multiplayer.texturePrompt.line2"), 0)));
-                //#endif
+                    if (result) {
+                        netManager.sendPacket(makeStatusPacket(hash, Action.ACCEPTED));
+                        downloadResourcePackFuture(requestId, url, hash);
+                    } else {
+                        netManager.sendPacket(makeStatusPacket(hash, Action.DECLINED));
+                    }
+
+                    ServerList.saveSingleServer(serverData);
+                    mc.displayGuiScreen(null);
+                }
+                        , new TranslationTextComponent("multiplayer.texturePrompt.line1"), new TranslationTextComponent("multiplayer.texturePrompt.line2"))));
             }
         }
 
@@ -181,12 +136,7 @@ public class ResourcePackRecorder {
                 throwable -> mc.getConnection().sendPacket(makeStatusPacket(hash, Action.FAILED_DOWNLOAD)));
     }
 
-    private
-    //#if MC>=11400
-    CompletableFuture<?>
-    //#else
-    //$$ ListenableFuture<?>
-    //#endif
+    private CompletableFuture<?>
     downloadResourcePack(final int requestId, String url, String hash) {
         DownloadingPackFinder packFinder = mc.getPackFinder();
         ((IDownloadingPackFinder) packFinder).setRequestCallback(file -> recordResourcePack(file, requestId));
@@ -196,79 +146,5 @@ public class ResourcePackRecorder {
     public interface IDownloadingPackFinder {
         void setRequestCallback(Consumer<File> callback);
     }
-    //#else
-    //$$ public synchronized S3FPacketCustomPayload handleResourcePack(S3FPacketCustomPayload packet) {
-    //$$     final int requestId = nextRequestId++;
-    //$$     final String url = new String(packet.func_149168_d(), Charsets.UTF_8);
-    //$$
-    //$$     ServerData serverData = mc.getCurrentServerData();
-    //$$     ServerResourceMode resourceMode = serverData == null ? ServerResourceMode.PROMPT : serverData.getResourceMode();
-    //$$     if (resourceMode == ServerResourceMode.ENABLED) {
-    //$$         downloadResourcePack(requestId, url);
-    //$$         mc.getResourcePackRepository().obtainResourcePack(url);
-    //$$     } else if (resourceMode == ServerResourceMode.PROMPT) {
-    //$$         // Lambdas MUST NOT be used with methods that need re-obfuscation in FG prior to 2.2 (will result in AbstractMethodError)
-    //$$         //noinspection Convert2Lambda
-    //$$         mc.displayGuiScreen(new GuiYesNo(new GuiYesNoCallback() {
-    //$$             @Override
-    //$$             public void confirmClicked(boolean result, int id) {
-    //$$                 if (serverData != null) {
-    //$$                     serverData.setResourceMode(ServerResourceMode.ENABLED);
-    //$$                     ServerList.func_147414_b(serverData);
-    //$$                 }
-    //$$
-    //$$                 mc.displayGuiScreen(null);
-    //$$
-    //$$                 if (result) {
-    //$$                     downloadResourcePack(requestId, url);
-    //$$                 }
-    //$$             }
-    //$$         }, I18n.format("multiplayer.texturePrompt.line1"), I18n.format("multiplayer.texturePrompt.line2"), 0));
-    //$$     }
-    //$$
-    //$$     return new S3FPacketCustomPayload(packet.func_149169_c(), ("replay://" + requestId).getBytes(Charsets.UTF_8));
-    //$$ }
-    //$$
-    //$$ private void downloadResourcePack(final int requestId, String url) {
-    //$$     final ResourcePackRepository repo = mc.getResourcePackRepository();
-    //$$     final ResourcePackRepositoryAccessor acc = (ResourcePackRepositoryAccessor) repo;
-    //$$
-    //$$     String fileName = url.substring(url.lastIndexOf("/") + 1);
-    //$$
-    //$$     if (fileName.contains("?")) {
-    //$$         fileName = fileName.substring(0, fileName.indexOf("?"));
-    //$$     }
-    //$$
-    //$$     if (!fileName.endsWith(".zip")) {
-    //$$         return;
-    //$$     }
-    //$$
-    //$$     fileName = fileName.replaceAll("\\W", "");
-    //$$
-    //$$     File file = new File(acc.getCacheDir(), fileName);
-    //$$
-    //$$     HashMap<String, String> hashmap = new HashMap<>();
-    //$$     hashmap.put("X-Minecraft-Username", mc.getSession().getUsername());
-    //$$     hashmap.put("X-Minecraft-UUID", mc.getSession().getPlayerID());
-    //$$     hashmap.put("X-Minecraft-Version", "1.7.10");
-    //$$
-    //$$     GuiScreenWorking guiScreen = new GuiScreenWorking();
-    //$$     Minecraft.getMinecraft().displayGuiScreen(guiScreen);
-    //$$     repo.func_148529_f();
-    //$$     acc.setActive(true);
-    //$$     // Lambdas MUST NOT be used with methods that need re-obfuscation in FG prior to 2.2 (will result in AbstractMethodError)
-    //$$     //noinspection Convert2Lambda
-    //$$     HttpUtil.downloadResourcePack(file, url, new HttpUtil.DownloadListener() {
-    //$$         public void onDownloadComplete(File file) {
-    //$$             if (acc.isActive()) {
-    //$$                 acc.setActive(false);
-    //$$                 acc.setPack(new FileResourcePack(file));
-    //$$                 Minecraft.getMinecraft().scheduleResourcesRefresh();
-    //$$                 recordResourcePack(file, requestId);
-    //$$             }
-    //$$         }
-    //$$     }, hashmap, 50*1024*1024, guiScreen, Minecraft.getMinecraft().getProxy());
-    //$$ }
-    //#endif
 
 }

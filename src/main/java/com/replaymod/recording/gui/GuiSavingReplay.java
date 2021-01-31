@@ -2,15 +2,7 @@ package com.replaymod.recording.gui;
 
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
-import com.replaymod.recording.Setting;
-import com.replaymod.replay.gui.screen.GuiReplayViewer;
-import com.replaymod.replaystudio.replay.ReplayMetaData;
-import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
-import com.replaymod.gui.container.AbstractGuiScreen;
-import com.replaymod.gui.container.GuiContainer;
-import com.replaymod.gui.container.GuiPanel;
-import com.replaymod.gui.container.GuiScreen;
-import com.replaymod.gui.container.VanillaGuiScreen;
+import com.replaymod.gui.container.*;
 import com.replaymod.gui.element.GuiButton;
 import com.replaymod.gui.element.GuiLabel;
 import com.replaymod.gui.element.GuiTextField;
@@ -21,6 +13,10 @@ import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.layout.VerticalLayout;
 import com.replaymod.gui.utils.Colors;
+import com.replaymod.recording.Setting;
+import com.replaymod.replay.gui.screen.GuiReplayViewer;
+import com.replaymod.replaystudio.replay.ReplayMetaData;
+import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import net.minecraft.client.Minecraft;
@@ -148,7 +144,8 @@ public class GuiSavingReplay {
             } catch (IOException e) {
                 logger.error("Deleting replay file:", e);
                 CrashReport crashReport = CrashReport.makeCrashReport(e, "Deleting replay file");
-                core.runLater(() -> Utils.error(logger, VanillaGuiScreen.wrap(mc.currentScreen), crashReport, () -> {}));
+                core.runLater(() -> Utils.error(logger, VanillaGuiScreen.wrap(mc.currentScreen), crashReport, () -> {
+                }));
             }
             return;
         }
@@ -163,7 +160,8 @@ public class GuiSavingReplay {
         } catch (IOException e) {
             logger.error("Renaming replay file:", e);
             CrashReport crashReport = CrashReport.makeCrashReport(e, "Renaming replay file");
-            core.runLater(() -> Utils.error(logger, VanillaGuiScreen.wrap(mc.currentScreen), crashReport, () -> {}));
+            core.runLater(() -> Utils.error(logger, VanillaGuiScreen.wrap(mc.currentScreen), crashReport, () -> {
+            }));
         }
     }
 }

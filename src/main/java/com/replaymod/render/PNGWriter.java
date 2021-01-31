@@ -1,13 +1,13 @@
 package com.replaymod.render;
 
 import com.replaymod.core.versions.MCVer;
+import com.replaymod.gui.versions.Image;
 import com.replaymod.render.blend.Util.IOConsumer;
 import com.replaymod.render.frame.BitmapFrame;
 import com.replaymod.render.rendering.Channel;
 import com.replaymod.render.rendering.FrameConsumer;
 import com.replaymod.render.utils.ByteBufferPool;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.gui.versions.Image;
 import net.minecraft.crash.CrashReport;
 
 import java.io.IOException;

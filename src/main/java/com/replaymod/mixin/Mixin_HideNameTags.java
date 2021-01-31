@@ -10,15 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class Mixin_HideNameTags {
-    //#if MC>=11500
     @Inject(method = "renderName", at = @At("HEAD"), cancellable = true)
-    //#else
-    //#if MC>=11400
-    //$$ @Inject(method = "renderLabel(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At("HEAD"), cancellable = true)
-    //#else
-    //$$ @Inject(method = "renderLivingLabel", at = @At("HEAD"), cancellable = true)
-    //#endif
-    //#endif
     private void replayModRender_areAllNamesHidden(CallbackInfo ci) {
         EntityRendererHandler handler = ((EntityRendererHandler.IEntityRenderer) MCVer.getMinecraft().gameRenderer).replayModRender_getHandler();
         if (handler != null && !handler.getSettings().isRenderNameTags()) {

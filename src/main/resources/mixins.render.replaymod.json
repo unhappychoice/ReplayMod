@@ -18,34 +18,15 @@
     "Mixin_StabilizeCamera",
     "Mixin_Stereoscopic_Camera",
     "Mixin_Stereoscopic_HandRenderPass",
-    //#if MC>=10800
-    //#if MC>=11500
-    "Mixin_BlockOnChunkRebuilds",
-    //#else
-    //$$ "ChunkRenderDispatcherAccessor",
-    //$$ "MixinChunkRenderWorker",
-    //#endif
-    //#endif
-    //#if MC>=11400
-    "Mixin_PreserveDepthDuringHandRendering",
+            "Mixin_BlockOnChunkRebuilds",
+                            "Mixin_PreserveDepthDuringHandRendering",
     "Mixin_WindowsWorkaroundForTinyEXRNatives",
-    //#endif
-    "MainWindowAccessor",
+        "MainWindowAccessor",
     "WorldRendererAccessor",
-    //#if MC>=10904
-    "MixinParticleManager",
-    //#else
-    //$$ "MixinEffectRenderer",
-    //#endif
-    "MixinEntityRenderer",
-    //#if MC>=10800
-    "MixinGlStateManager",
-    //#endif
-    //#if MC>=10800
-    //#else
-    //$$ "MixinOpenGlHelper",
-    //#endif
-    "MixinRenderManager"
+        "MixinParticleManager",
+                "MixinEntityRenderer",
+        "MixinGlStateManager",
+                        "MixinRenderManager"
   ],
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.6.11",

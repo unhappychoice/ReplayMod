@@ -1,4 +1,3 @@
-//#if MC>=10904
 package com.replaymod.mixin;
 
 import net.minecraft.client.renderer.ItemRenderer;
@@ -11,4 +10,3 @@ public interface ItemRendererAccessor {
     @Accessor
     ItemColors getItemColors();
 }
-//#endif

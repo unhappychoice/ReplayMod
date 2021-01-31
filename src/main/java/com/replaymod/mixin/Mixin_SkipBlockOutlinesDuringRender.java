@@ -12,7 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldRenderer.class)
 public abstract class Mixin_SkipBlockOutlinesDuringRender {
-    @Shadow @Final private Minecraft mc;
+    @Shadow
+    @Final
+    private Minecraft mc;
 
     @Inject(method = "drawSelectionBox", at = @At("HEAD"), cancellable = true)
     private void replayModRender_drawSelectionBox(CallbackInfo ci) {

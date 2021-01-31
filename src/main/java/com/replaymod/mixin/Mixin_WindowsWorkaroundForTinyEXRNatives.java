@@ -1,4 +1,3 @@
-//#if MC>=11400
 package com.replaymod.mixin;
 
 import org.lwjgl.system.Library;
@@ -23,13 +22,13 @@ import java.util.regex.Pattern;
  * It appears like natives on Windows cannot be loaded if one of their dependencies has already been loaded by a
  * different class loader. In our case we cannot load tinyexr (on the knot class loader) because lwjgl has already
  * been loaded on the system class loader.
- *
+ * <p>
  * If we force the tinyexr native to load on the system class loader (by calling `Library.loadSystem(absPath)`),
  * it'll load but we'll get an error when we call any of the native methods.
- *
+ * <p>
  * We can't really load TinyEXR itself via the system class loader because Java does not provide any methods for
  * modifying the system class path at runtime and we'd have to use JVM-specific hacks.
- *
+ * <p>
  * Strangely, if we use System.loadLibrary instead of System.load, then it all just works. This mixin implements
  * that workaround by finding MC's natives folder, extracting the dll from our jar into that folder and then replacing
  * the context class passed to Library.loadSystem (which it uses to find dlls in jars) with Library (which is on the
@@ -78,4 +77,3 @@ public class Mixin_WindowsWorkaroundForTinyEXRNatives {
         return Library.class;
     }
 }
-//#endif

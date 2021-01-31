@@ -26,12 +26,15 @@ package com.replaymod.gui.element;
 
 public interface IGuiSlider<T extends IGuiSlider<T>> extends GuiElement<T> {
     T setText(String text);
+
     T setI18nText(String text, Object... args);
 
     T setValue(int value);
+
     int getValue();
 
     int getSteps();
+
     T setSteps(int steps);
 
     T onValueChanged(Runnable runnable);

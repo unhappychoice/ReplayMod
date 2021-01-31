@@ -1,23 +1,11 @@
-//#if MC>=10800
 package com.replaymod.render.blend.exporters;
 
 import com.replaymod.render.blend.BlendMeshBuilder;
 import com.replaymod.render.blend.Exporter;
 import com.replaymod.render.blend.data.DMesh;
 import com.replaymod.render.blend.data.DObject;
-import org.lwjgl.opengl.GL11;
-
-//#if MC>=11400
-//#if MC>=11500
-import net.minecraft.client.renderer.model.ModelRenderer.ModelBox;
-//#else
-//$$ import net.minecraft.client.model.Box;
-//#endif
 import net.minecraft.client.renderer.model.ModelRenderer;
-//#else
-//$$ import net.minecraft.client.model.ModelBox;
-//$$ import net.minecraft.client.model.ModelRenderer;
-//#endif
+import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 
@@ -70,11 +58,7 @@ public class ModelRendererExporter implements Exporter {
         }
         if (object == null) {
             object = new ModelBasedDObject(model, scale);
-            //#if MC>=11500
             object.id.name = "???"; // FIXME 1.15 can we somehow nicely derive this?
-            //#else
-            //$$ object.id.name = model.name;
-            //#endif
             object.setParent(parent);
         }
         object.lastFrame = frame;
@@ -84,17 +68,7 @@ public class ModelRendererExporter implements Exporter {
     private static DMesh generateMesh(ModelRenderer model, float scale) {
         DMesh mesh = new DMesh();
         BlendMeshBuilder builder = new BlendMeshBuilder(mesh);
-        //#if MC>=11500
         // FIXME 1.15
-        //#elseif MC>=10809
-        //$$ for (Box box : model.boxes) {
-        //$$     box.render(builder, scale);
-        //$$ }
-        //#else
-        //$$ for (ModelBox box : (java.util.List<ModelBox>) model.cubeList) {
-        //$$     box.render(builder, scale);
-        //$$ }
-        //#endif
         builder.maybeFinishDrawing();
         return mesh;
     }
@@ -126,4 +100,3 @@ public class ModelRendererExporter implements Exporter {
         }
     }
 }
-//#endif

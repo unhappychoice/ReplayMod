@@ -4,10 +4,7 @@
   "mixins": [],
   "server": [],
   "client": [
-    //#if MC<11400
-    //$$ "MixinMinecraft"
-    //#endif
-  ],
+              ],
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.6.11",
   "refmap": "mixins.replaymod.refmap.json"

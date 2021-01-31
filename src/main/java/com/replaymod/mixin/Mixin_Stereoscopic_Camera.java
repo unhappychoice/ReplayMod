@@ -1,9 +1,9 @@
 package com.replaymod.mixin;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.replaymod.render.capturer.StereoscopicOpenGlFrameCapturer;
 import com.replaymod.render.hooks.EntityRendererHandler;
 import net.minecraft.client.renderer.GameRenderer;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.util.math.vector.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

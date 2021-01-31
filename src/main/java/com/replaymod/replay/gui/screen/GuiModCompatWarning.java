@@ -1,8 +1,6 @@
 package com.replaymod.replay.gui.screen;
 
 import com.replaymod.core.utils.ModCompat;
-import com.replaymod.replaystudio.data.ModInfo;
-import com.replaymod.replaystudio.util.I18n;
 import com.replaymod.gui.container.AbstractGuiScreen;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.container.GuiVerticalList;
@@ -11,6 +9,8 @@ import com.replaymod.gui.element.GuiLabel;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.replaystudio.data.ModInfo;
+import com.replaymod.replaystudio.util.I18n;
 
 import java.util.Map;
 

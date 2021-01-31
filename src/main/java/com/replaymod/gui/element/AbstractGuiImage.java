@@ -28,9 +28,9 @@ import com.google.common.base.Preconditions;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.versions.Image;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.gui.versions.Image;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
 
@@ -84,11 +84,7 @@ public abstract class AbstractGuiImage<T extends AbstractGuiImage<T>>
     protected void finalize() throws Throwable {
         super.finalize();
         if (texture != null && copyOf == null) {
-            //#if MC>=11400
             getMinecraft().execute(new Finalizer(texture));
-            //#else
-            //$$ getMinecraft().addScheduledTask(new Finalizer(texture));
-            //#endif
         }
     }
 

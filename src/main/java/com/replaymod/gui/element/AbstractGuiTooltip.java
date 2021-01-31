@@ -27,11 +27,11 @@ package com.replaymod.gui.element;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.utils.StringUtils;
+import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Color;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.gui.versions.MCVer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 
@@ -82,7 +82,7 @@ public abstract class AbstractGuiTooltip<T extends AbstractGuiTooltip<T>> extend
                 width = w;
             }
         }
-        width+=4 * 2;
+        width += 4 * 2;
         return new Dimension(width, height);
     }
 
@@ -91,7 +91,7 @@ public abstract class AbstractGuiTooltip<T extends AbstractGuiTooltip<T>> extend
         return getMinSize();
     }
 
-    public T setText(String[]text) {
+    public T setText(String[] text) {
         this.text = text;
         return getThis();
     }

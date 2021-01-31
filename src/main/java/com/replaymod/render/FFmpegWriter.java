@@ -15,11 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.TeeOutputStream;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.Map;
@@ -49,12 +45,12 @@ public class FFmpegWriter implements FrameConsumer<BitmapFrame> {
         String fileName = settings.getOutputFile().getName();
 
         commandArgs = settings.getExportArguments()
-                    .replace("%WIDTH%", String.valueOf(settings.getVideoWidth()))
-                    .replace("%HEIGHT%", String.valueOf(settings.getVideoHeight()))
-                    .replace("%FPS%", String.valueOf(settings.getFramesPerSecond()))
-                    .replace("%FILENAME%", fileName)
-                    .replace("%BITRATE%", String.valueOf(settings.getBitRate()))
-                    .replace("%FILTERS%", settings.getVideoFilters());
+                .replace("%WIDTH%", String.valueOf(settings.getVideoWidth()))
+                .replace("%HEIGHT%", String.valueOf(settings.getVideoHeight()))
+                .replace("%FPS%", String.valueOf(settings.getFramesPerSecond()))
+                .replace("%FILENAME%", fileName)
+                .replace("%BITRATE%", String.valueOf(settings.getBitRate()))
+                .replace("%FILTERS%", settings.getVideoFilters());
 
         String executable = settings.getExportCommandOrDefault();
         LOGGER.info("Starting {} with args: {}", executable, commandArgs);
@@ -88,7 +84,7 @@ public class FFmpegWriter implements FrameConsumer<BitmapFrame> {
             try {
                 process.exitValue();
                 break;
-            } catch(IllegalThreadStateException ex) {
+            } catch (IllegalThreadStateException ex) {
                 if (rem > 0) {
                     try {
                         Thread.sleep(Math.min(TimeUnit.NANOSECONDS.toMillis(rem) + 1, 100));

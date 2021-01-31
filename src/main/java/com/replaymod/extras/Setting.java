@@ -13,6 +13,7 @@ public final class Setting<T> {
     public static final SettingsRegistry.MultipleChoiceSettingKeys<String> FULL_BRIGHTNESS = new SettingsRegistry.MultipleChoiceSettingKeys<>(
             "advanced", "fullBrightness", "replaymod.gui.settings.fullbrightness",
             FullBrightness.Type.Gamma.toString());
+
     static {
         FULL_BRIGHTNESS.setChoices(Arrays.stream(FullBrightness.Type.values()).map(Object::toString).collect(Collectors.toList()));
     }

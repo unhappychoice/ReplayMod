@@ -4,7 +4,6 @@ import com.replaymod.core.ReplayMod;
 import com.replaymod.core.SettingsRegistry;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.extras.Setting;
-import com.replaymod.render.RenderSettings;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.element.GuiButton;
@@ -13,6 +12,7 @@ import com.replaymod.gui.element.GuiLabel;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.layout.VerticalLayout;
 import com.replaymod.gui.popup.AbstractGuiPopup;
+import com.replaymod.render.RenderSettings;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 
 import java.net.URI;

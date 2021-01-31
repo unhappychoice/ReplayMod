@@ -32,13 +32,8 @@ import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import javax.swing.JFrame;
-import javax.swing.JProgressBar;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.TextArea;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,16 +46,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-//#if FABRIC>=1
-//$$ import net.fabricmc.loader.api.FabricLoader;
-//#else
-//#if MC>=11400
-//#else
-//$$ import net.minecraft.launchwrapper.Launch;
-//$$ import java.net.URLClassLoader;
-//$$ import java.util.LinkedHashSet;
-//#endif
-//#endif
 
 public class ModCoreInstaller {
 
@@ -73,11 +58,6 @@ public class ModCoreInstaller {
 
     private static boolean isInitalized() {
         try {
-            //#if MC<11400
-            //$$ LinkedHashSet<String> objects = new LinkedHashSet<>();
-            //$$ objects.add(className);
-            //$$ Launch.classLoader.clearNegativeEntries(objects);
-            //#endif
             return Class.forName(className) != null;
         } catch (ClassNotFoundException ignored) {
         }
@@ -169,12 +149,7 @@ public class ModCoreInstaller {
         try {
             URL url = file.toURI().toURL();
             ClassLoader classLoader = ModCoreInstaller.class.getClassLoader();
-            //#if MC>=11400
             Method method = classLoader.getClass().getDeclaredMethod("addURL", URL.class);
-            //#else
-            //$$ Launch.classLoader.addURL(url);
-            //$$ Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            //#endif
             method.setAccessible(true);
             method.invoke(classLoader, url);
         } catch (Exception e) {

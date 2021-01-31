@@ -8,7 +8,8 @@ import java.io.IOException;
 public class DPackedFile {
     public byte[] data;
 
-    public DPackedFile() {}
+    public DPackedFile() {
+    }
 
     public DPackedFile(byte[] data) {
         this.data = data;

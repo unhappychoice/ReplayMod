@@ -27,33 +27,44 @@ package com.replaymod.gui.element;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import net.minecraft.util.ResourceLocation;
-//#if MC>=10904
 import net.minecraft.util.SoundEvent;
-//#endif
 
 public interface IGuiTexturedButton<T extends IGuiTexturedButton<T>> extends IGuiClickable<T> {
     ResourceLocation getTexture();
+
     ReadableDimension getTextureTotalSize();
+
     T setTexture(ResourceLocation resourceLocation, int size);
+
     T setTexture(ResourceLocation resourceLocation, int width, int height);
 
     ReadableDimension getTextureSize();
+
     T setTextureSize(int size);
+
     T setTextureSize(int width, int height);
 
     ReadablePoint getTextureNormal();
+
     ReadablePoint getTextureHover();
+
     ReadablePoint getTextureDisabled();
+
     T setTexturePosH(int x, int y);
+
     T setTexturePosV(int x, int y);
+
     T setTexturePosH(ReadablePoint pos);
+
     T setTexturePosV(ReadablePoint pos);
+
     T setTexturePos(int normalX, int normalY, int hoverX, int hoverY);
+
     T setTexturePos(ReadablePoint normal, ReadablePoint hover);
+
     T setTexturePos(int normalX, int normalY, int hoverX, int hoverY, int disabledX, int disabledY);
+
     T setTexturePos(ReadablePoint normal, ReadablePoint hover, ReadablePoint disabled);
 
-    //#if MC>=10904
     T setSound(SoundEvent sound);
-    //#endif
 }

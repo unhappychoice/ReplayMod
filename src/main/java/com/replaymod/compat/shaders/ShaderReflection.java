@@ -1,11 +1,7 @@
-//#if MC>=10800
 package com.replaymod.compat.shaders;
 
 import net.minecraft.client.Minecraft;
-
-//#if MC>=11400
 import net.minecraft.client.renderer.ActiveRenderInfo;
-//#endif
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -42,9 +38,7 @@ public class ShaderReflection {
             shaders_isShadowPass.setAccessible(true);
 
             shaders_beginRender = shadersClass.getDeclaredMethod("beginRender", Minecraft.class,
-                    //#if MC>=11400
                     ActiveRenderInfo.class,
-                    //#endif
                     float.class, long.class);
             shaders_beginRender.setAccessible(true);
 
@@ -63,4 +57,3 @@ public class ShaderReflection {
         }
     }
 }
-//#endif

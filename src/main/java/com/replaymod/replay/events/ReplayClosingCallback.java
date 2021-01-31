@@ -1,7 +1,7 @@
 package com.replaymod.replay.events;
 
-import com.replaymod.replay.ReplayHandler;
 import com.replaymod.gui.utils.Event;
+import com.replaymod.replay.ReplayHandler;
 
 import java.io.IOException;
 

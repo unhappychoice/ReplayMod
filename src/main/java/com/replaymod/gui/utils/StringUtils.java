@@ -32,14 +32,14 @@ import java.util.List;
 
 public class StringUtils {
     public static String[] splitStringInMultipleRows(String string, int maxWidth) {
-        if(string == null) return new String[0];
+        if (string == null) return new String[0];
         FontRenderer fontRenderer = MCVer.getFontRenderer();
         List<String> rows = new ArrayList<>();
         String remaining = string;
-        while(remaining.length() > 0) {
+        while (remaining.length() > 0) {
             String[] split = remaining.split(" ");
             String b = "";
-            for(String sp : split) {
+            for (String sp : split) {
                 b += sp + " ";
                 if (fontRenderer.getStringWidth(b.trim()) > maxWidth) {
                     b = b.substring(0, b.trim().length() - (sp.length()));
@@ -50,7 +50,7 @@ public class StringUtils {
             rows.add(trimmed);
             try {
                 remaining = remaining.substring(trimmed.length() + 1);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 break;
             }
         }

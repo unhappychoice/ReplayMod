@@ -36,12 +36,14 @@ import com.replaymod.gui.element.GuiElement;
 public interface IGuiTimelineTime<T extends IGuiTimelineTime<T, U>, U extends IGuiTimeline<U>> extends GuiElement<T> {
     /**
      * Returns the timeline of which the time is drawn.
+     *
      * @return The timeline or {@code null} if not yet set
      */
     U getTimeline();
 
     /**
      * Set the timeline of which the time should be drawn.
+     *
      * @param timeline The timeline
      * @return {@code this}, for chaining
      */

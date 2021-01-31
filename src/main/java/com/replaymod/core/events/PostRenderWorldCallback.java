@@ -1,7 +1,7 @@
 package com.replaymod.core.events;
 
-import com.replaymod.gui.utils.Event;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.replaymod.gui.utils.Event;
 
 public interface PostRenderWorldCallback {
     Event<PostRenderWorldCallback> EVENT = Event.create((listeners) ->

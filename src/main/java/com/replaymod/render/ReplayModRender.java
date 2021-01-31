@@ -3,13 +3,13 @@ package com.replaymod.render;
 import com.replaymod.core.Module;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
+import com.replaymod.gui.container.VanillaGuiScreen;
+import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.render.utils.RenderJob;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replay.events.ReplayClosedCallback;
 import com.replaymod.replay.events.ReplayOpenedCallback;
 import com.replaymod.replaystudio.replay.ReplayFile;
-import com.replaymod.gui.container.VanillaGuiScreen;
-import com.replaymod.gui.utils.EventRegistrations;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ReportedException;
 import org.apache.commons.io.FileUtils;
@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReplayModRender extends EventRegistrations implements Module {
-    { instance = this; }
+    {
+        instance = this;
+    }
+
     public static ReplayModRender instance;
 
     private ReplayMod core;
@@ -67,7 +70,10 @@ public class ReplayModRender extends EventRegistrations implements Module {
         return renderQueue;
     }
 
-    { on(ReplayOpenedCallback.EVENT, this::onReplayOpened); }
+    {
+        on(ReplayOpenedCallback.EVENT, this::onReplayOpened);
+    }
+
     private void onReplayOpened(ReplayHandler replayHandler) {
         replayFile = replayHandler.getReplayFile();
         try {
@@ -77,7 +83,10 @@ public class ReplayModRender extends EventRegistrations implements Module {
         }
     }
 
-    { on(ReplayClosedCallback.EVENT, replayHandler -> onReplayClosed()); }
+    {
+        on(ReplayClosedCallback.EVENT, replayHandler -> onReplayClosed());
+    }
+
     private void onReplayClosed() {
         renderQueue.clear();
         replayFile = null;
@@ -90,7 +99,8 @@ public class ReplayModRender extends EventRegistrations implements Module {
             e.printStackTrace();
             VanillaGuiScreen screen = VanillaGuiScreen.wrap(getCore().getMinecraft().currentScreen);
             CrashReport report = CrashReport.makeCrashReport(e, "Reading timeline");
-            Utils.error(LOGGER, screen, report, () -> {});
+            Utils.error(LOGGER, screen, report, () -> {
+            });
         }
     }
 }

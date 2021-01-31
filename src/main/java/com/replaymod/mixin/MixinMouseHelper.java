@@ -1,4 +1,3 @@
-//#if MC>=11400
 package com.replaymod.mixin;
 
 import com.replaymod.replay.InputReplayTimer;
@@ -33,11 +32,7 @@ public abstract class MixinMouseHelper {
             long _p0, double _p1, double _p2,
             CallbackInfo ci,
             double _l1,
-            //#if MC>=11400
             float yOffsetAccumulated
-            //#else
-            //$$ double yOffsetAccumulated
-            //#endif
     ) {
         if (ReplayModReplay.instance.getReplayHandler() != null) {
             InputReplayTimer.handleScroll((int) (yOffsetAccumulated * 120));
@@ -45,4 +40,3 @@ public abstract class MixinMouseHelper {
         }
     }
 }
-//#endif

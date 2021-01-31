@@ -16,10 +16,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientLoginNetHandler.class)
 public abstract class MixinNetHandlerLoginClient {
 
-    @Final @Shadow
+    @Final
+    @Shadow
     private NetworkManager networkManager;
 
-    @Inject(method = "handleLoginSuccess", at=@At("HEAD"))
+    @Inject(method = "handleLoginSuccess", at = @At("HEAD"))
     public void replayModRecording_initiateRecording(CallbackInfo cb) {
         initiateRecording(null);
     }
@@ -29,7 +30,7 @@ public abstract class MixinNetHandlerLoginClient {
      * We cannot use the {@link FMLNetworkEvent.ClientConnectedToServerEvent}
      * as it only fires after the forge handshake.
      */
-    @Inject(method = "handleCustomPayloadLogin", at=@At("HEAD"))
+    @Inject(method = "handleCustomPayloadLogin", at = @At("HEAD"))
     public void replayModRecording_initiateRecording(SCustomPayloadLoginPacket packetIn, CallbackInfo cb) {
         initiateRecording(packetIn);
     }

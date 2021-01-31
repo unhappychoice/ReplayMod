@@ -6,21 +6,21 @@ import com.google.common.collect.Ordering;
 import com.google.common.primitives.Longs;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.replaymod.core.utils.WrappedTimer;
+import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.mixin.TimerAccessor;
-import com.replaymod.core.utils.WrappedTimer;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replaystudio.pathing.path.Keyframe;
 import com.replaymod.replaystudio.pathing.path.Path;
 import com.replaymod.replaystudio.pathing.path.Timeline;
-import com.replaymod.gui.utils.EventRegistrations;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Timer;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
 
-import static com.replaymod.core.versions.MCVer.*;
+import static com.replaymod.core.versions.MCVer.getMinecraft;
 
 /**
  * Plays a timeline.
@@ -50,13 +50,13 @@ public abstract class AbstractTimelinePlayer extends EventRegistrations {
 
         Iterator<Keyframe> iter = Iterables.concat(Iterables.transform(timeline.getPaths(),
                 new Function<Path, Iterable<Keyframe>>() {
-            @Nullable
-            @Override
-            public Iterable<Keyframe> apply(@Nullable Path input) {
-                assert input != null;
-                return input.getKeyframes();
-            }
-        })).iterator();
+                    @Nullable
+                    @Override
+                    public Iterable<Keyframe> apply(@Nullable Path input) {
+                        assert input != null;
+                        return input.getKeyframes();
+                    }
+                })).iterator();
         if (!iter.hasNext()) {
             lastTimestamp = 0;
         } else {
@@ -81,13 +81,8 @@ public abstract class AbstractTimelinePlayer extends EventRegistrations {
 
         //noinspection ConstantConditions
         TimerAccessor timerA = (TimerAccessor) timer;
-        //#if MC>=11200
         timerA.setTickLength(WrappedTimer.DEFAULT_MS_PER_TICK);
         timer.renderPartialTicks = timer.ticksThisFrame = 0;
-        //#else
-        //$$ timer.timerSpeed = 1;
-        //$$ timer.elapsedPartialTicks = timer.elapsedTicks = 0;
-        //#endif
         return future = settableFuture = SettableFuture.create();
     }
 
@@ -99,7 +94,10 @@ public abstract class AbstractTimelinePlayer extends EventRegistrations {
         return future != null && !future.isDone();
     }
 
-    { on(ReplayTimer.UpdatedCallback.EVENT, this::onTick); }
+    {
+        on(ReplayTimer.UpdatedCallback.EVENT, this::onTick);
+    }
+
     public void onTick() {
         if (future.isDone()) {
             MinecraftAccessor mcA = (MinecraftAccessor) mc;

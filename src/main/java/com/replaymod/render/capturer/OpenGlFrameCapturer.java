@@ -16,12 +16,7 @@ import org.lwjgl.opengl.GL12;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-//#if MC>=10800
 import static com.mojang.blaze3d.platform.GlStateManager.*;
-//#else
-//$$ import static com.replaymod.core.versions.MCVer.GlStateManager.*;
-//#endif
-
 import static com.replaymod.core.versions.MCVer.resizeMainWindow;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
@@ -87,9 +82,7 @@ public abstract class OpenGlFrameCapturer<F extends Frame, D extends CaptureData
         frameBuffer().bindFramebuffer(true);
 
         clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
-                //#if MC>=11400
                 , false
-                //#endif
         );
         enableTexture();
 
