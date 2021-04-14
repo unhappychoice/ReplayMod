@@ -36,7 +36,7 @@ buildscript {
         if (fabric) {
             classpath 'fabric-loom:fabric-loom.gradle.plugin:0.6-SNAPSHOT'
         } else if (mcVersion >= 11400) {
-            classpath('net.minecraftforge.gradle:ForgeGradle:3.+'){
+            classpath('net.minecraftforge.gradle:ForgeGradle:4.1.+'){
                 exclude group: 'trove', module: 'trove' // preprocessor/idea requires more recent one
             }
         } else if (mcVersion >= 10800) {
@@ -51,7 +51,7 @@ buildscript {
     }
 }
 
-def FG3 = !fabric && mcVersion >= 11400
+def FG4 = !fabric && mcVersion >= 11400
 def FABRIC = fabric
 
 def jGuiVersion = project.name
@@ -64,7 +64,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 if (mcVersion >= 10800) {
     if (FABRIC) {
         apply plugin: 'fabric-loom'
-    } else if (FG3) {
+    } else if (FG4) {
         apply plugin: 'net.minecraftforge.gradle'
     } else {
         apply plugin: 'net.minecraftforge.gradle.forge'
@@ -130,7 +130,7 @@ if (FABRIC) {
     }
 } else {
     minecraft {
-        if (FG3) {
+        if (FG4) {
             runs {
                 client {
                     workingDirectory rootProject.file('run')
@@ -149,7 +149,7 @@ if (FABRIC) {
             runDir = "../../run"
         }
 
-        if (!FG3) {
+        if (!FG4) {
             version = [
                     11202: '1.12.2-14.23.0.2486',
                     11201: '1.12.1-14.22.0.2444',
@@ -164,7 +164,7 @@ if (FABRIC) {
             ][mcVersion]
         }
         mappings = [
-                11404: "snapshot_20190719-1.14.3",
+                11604: "snapshot_20210309-1.16.4",
                 11202: "snapshot_20170615",
                 11201: "snapshot_20170615",
                 11200: "snapshot_20170615",
@@ -276,9 +276,9 @@ dependencies {
         }
     }
 
-    if (FG3) {
+    if (FG4) {
         minecraft 'net.minecraftforge:forge:' + [
-                11404: '1.14.4-28.1.113',
+                11604: '1.16.4-35.1.37',
         ][mcVersion]
     }
 
@@ -431,8 +431,14 @@ task configureRelocation() {
     }
 }
 
-tasks.removeByName('shadowJar') // we want to base our shadowed jar on the reobfJar output, not the sourceSet output
-task shadowJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+// tasks.removeByName('shadowJar') // we want to base our shadowed jar on the reobfJar output, not the sourceSet output
+tasks.whenTaskAdded {task ->
+    if(task.name.contains('shadowJar')) {
+        task.enabled = false
+    }
+}
+
+task shadowJarCustom(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     from { (FABRIC ? tasks.remapJar : tasks.jar).archiveFile.get() }
     dependsOn { FABRIC ? tasks.remapJar : (mcVersion >= 10800 ? tasks.reobfJar : tasks.reobf) }
 
@@ -478,7 +484,7 @@ task shadowJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar)
         exclude(dependency('.*spongepowered:mixin:.*'))
     }
 }
-tasks.assemble.dependsOn tasks.shadowJar
+tasks.assemble.dependsOn tasks.shadowJarCustom
 
 jar {
     classifier = 'raw'
@@ -531,7 +537,7 @@ sourceSets {
 
 if (FABRIC) {
     // not required, fabric manages those by itself just fine
-} else if (FG3) {
+} else if (FG4) {
     task copySrg(dependsOn: 'createMcpToSrg') {
         doLast {
             def tsrg = file(project.tasks.createMcpToSrg.output).readLines()
@@ -562,7 +568,7 @@ if (FABRIC) {
     compileJava.dependsOn copySrg
 }
 
-if (!FABRIC && !FG3) {
+if (!FABRIC && !FG4) {
     if (mcVersion <= 10710) {
         reobf.addExtraSrgFile project.mixinSrg
     } else {
@@ -597,7 +603,7 @@ compileJava.doLast {
 }
 */
 
-if (!FG3 && !FABRIC) { // FIXME
+if (!FG4 && !FABRIC) { // FIXME
 task runIntegrationTest(type: JavaExec, dependsOn: ["makeStart", "jar"]) {
     main = 'GradleStart'
     standardOutput = System.out
