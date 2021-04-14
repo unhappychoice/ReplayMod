@@ -52,7 +52,7 @@ public abstract class Mixin_ForceChunkLoading implements IForceChunkLoading {
         try {
             do {
                 // Determine which chunks shall be visible
-                setupTerrain(camera_1, frustum_1, boolean_1, frame++, boolean_2);
+                setupTerrain(camera_1, frustum_1, boolean_1, this.frame++, boolean_2);
 
                 // Schedule all chunks which need rebuilding (we schedule even important rebuilds because we wait for
                 // all of them anyway and this way we can take advantage of threading)
