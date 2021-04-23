@@ -1,6 +1,6 @@
 package de.johni0702.minecraft.gui.utils;
 
-//#if MC<=11302
+//#if FABRIC<1
 //$$ import de.johni0702.minecraft.gui.versions.forge.EventsAdapter;
 //$$ import net.minecraftforge.common.MinecraftForge;
 //#endif

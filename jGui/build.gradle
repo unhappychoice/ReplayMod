@@ -18,6 +18,7 @@ buildscript {
                 name = "forge"
                 url = "https://files.minecraftforge.net/maven"
             }
+            maven { url "https://maven.tterrag.com/" }
         }
         maven {
             name = "sonatype"
@@ -96,7 +97,9 @@ if (FABRIC) {
     }
 } else {
     minecraft {
-        if (!FG4) {
+        if (FG4) {
+            mappings channel: 'snapshot', version: '20210309-1.16.4'
+        } else {
             version = [
                     11200: '1.12.2-14.23.0.2486',
                     10904: '1.9.4-12.17.0.1976',
@@ -104,15 +107,16 @@ if (FABRIC) {
                     10800: '1.8-11.14.4.1563',
                     10710: '1.7.10-10.13.4.1558-1.7.10',
             ][mcVersion]
+
+            mappings = [
+                    11604: "snapshot_20210309-1.16.4",
+                    11200: 'snapshot_20170615',
+                    10904: 'snapshot_20160518',
+                    10809: 'stable_22',
+                    10800: 'snapshot_nodoc_20141130',
+                    10710: 'stable_12',
+            ][mcVersion]
         }
-        mappings = [
-                11604: "snapshot_20210309-1.16.4",
-                11200: 'snapshot_20170615',
-                10904: 'snapshot_20160518',
-                10809: 'stable_22',
-                10800: 'snapshot_nodoc_20141130',
-                10710: 'stable_12',
-        ][mcVersion]
     }
 }
 
