@@ -471,21 +471,26 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
 
     }
 
-    private Packet deserializePacket(byte[] bytes) throws IOException, IllegalAccessException, InstantiationException {
-        ByteBuf bb = Unpooled.wrappedBuffer(bytes);
-        PacketByteBuf pb = new PacketByteBuf(bb);
+    private Packet deserializePacket(byte[] bytes) {
+        try {
+            ByteBuf bb = Unpooled.wrappedBuffer(bytes);
+            PacketByteBuf pb = new PacketByteBuf(bb);
 
-        int i = pb.readVarInt();
+            int i = pb.readVarInt();
 
-        NetworkState state = loginPhase ? NetworkState.LOGIN : NetworkState.PLAY;
-        //#if MC>=10800
-        Packet p = state.getPacketHandler(NetworkSide.CLIENTBOUND, i);
-        //#else
-        //$$ Packet p = Packet.generatePacket(state.func_150755_b(), i);
-        //#endif
-        p.read(pb);
+            NetworkState state = loginPhase ? NetworkState.LOGIN : NetworkState.PLAY;
+            //#if MC>=10800
+            Packet p = state.getPacketHandler(NetworkSide.CLIENTBOUND, i);
+            //#else
+            //$$ Packet p = Packet.generatePacket(state.func_150755_b(), i);
+            //#endif
+            p.read(pb);
 
-        return p;
+            return p;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**

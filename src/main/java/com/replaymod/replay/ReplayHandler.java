@@ -72,14 +72,11 @@ import net.minecraft.entity.LivingEntity;
 //#if MC>=10800
 import net.minecraft.network.NetworkSide;
 //#if MC>=11400
-//#else
-//#if MC>=11400
 //$$ import net.minecraftforge.fml.network.NetworkHooks;
 //#else
 //$$ import com.mojang.authlib.GameProfile;
 //$$ import net.minecraft.client.network.NetHandlerPlayClient;
 //$$ import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
-//#endif
 //#endif
 //#else
 //$$ import cpw.mods.fml.client.FMLClientHandler;
@@ -308,7 +305,7 @@ public class ReplayHandler {
         channel.pipeline().addLast("packet_handler", networkManager);
         channel.pipeline().fireChannelActive();
 
-        //#if MC>=11400 && MC<11400
+        //#if FABRIC<1 && MC>=11400
         //$$ NetworkHooks.registerClientLoginChannel(networkManager);
         //#endif
     }

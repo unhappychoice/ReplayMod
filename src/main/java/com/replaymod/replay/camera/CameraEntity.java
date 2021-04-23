@@ -36,6 +36,10 @@ import net.minecraft.util.math.Box;
 //$$ import net.minecraftforge.common.MinecraftForge;
 //$$ import net.minecraftforge.eventbus.api.EventPriority;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
+//$$ import com.replaymod.replay.events.ReplayChatMessageEvent;
+//$$ import net.minecraft.util.math.RayTraceResult;
+//$$ import net.minecraft.util.text.ITextComponent;
+//$$ import net.minecraft.world.World;
 //#endif
 
 //#if MC>=11400
@@ -429,6 +433,7 @@ public class CameraEntity
         return super.isInvisible();
     }
 
+    //#if FABRIC>=1
     @Override
     public Identifier getSkinTexture() {
         Entity view = this.client.getCameraEntity();
@@ -437,6 +442,16 @@ public class CameraEntity
         }
         return super.getSkinTexture();
     }
+    //#else
+    //$$ @Override
+    //$$ public ResourceLocation getLocationSkin() {
+    //$$     Entity view = this.mc.getRenderViewEntity();
+    //$$     if (view != this && view instanceof PlayerEntity) {
+    //$$         return Utils.getResourceLocationForPlayerUUID(view.getUniqueID());
+    //$$     }
+    //$$     return super.getLocationSkin();
+    //$$ }
+    //#endif
 
     //#if MC>=10800
     @Override
@@ -643,18 +658,19 @@ public class CameraEntity
                 && !e.isInvisible();
     }
 
-    //#if MC<11400
-    //#if MC>=11102
+    //#if FABRIC<1
+    //#if MC>=11300
+    //$$ @Override
+    //$$ public void sendMessage(ITextComponent component, UUID senderUUID) {
+    //$$     if (MinecraftForge.EVENT_BUS.post(new ReplayChatMessageEvent(this))) return;
+    //$$     super.sendMessage(component, senderUUID);
+    //$$ }
+    //#endif
+    //#if MC<=11200
     //$$ @Override
     //$$ public void sendMessage(ITextComponent message) {
     //$$     if (MinecraftForge.EVENT_BUS.post(new ReplayChatMessageEvent(this))) return;
     //$$     super.sendMessage(message);
-    //$$ }
-    //#else
-    //$$ @Override
-    //$$ public void addChatMessage(ITextComponent message) {
-    //$$     if (MinecraftForge.EVENT_BUS.post(new ReplayChatMessageEvent(this))) return;
-    //$$     super.addChatMessage(message);
     //$$ }
     //#endif
     //#endif

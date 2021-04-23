@@ -19,8 +19,7 @@ import net.minecraft.entity.effect.StatusEffects;
 public class FullBrightness extends EventRegistrations implements Extra {
     private ReplayMod core;
     private ReplayModReplay module;
-
-    private final IGuiImage indicator = new GuiImage().setTexture(ReplayMod.TEXTURE, 90, 20, 19, 16).setSize(19, 16);
+    private IGuiImage indicator;
 
     private MinecraftClient mc;
     private boolean active;
@@ -34,6 +33,7 @@ public class FullBrightness extends EventRegistrations implements Extra {
     public void register(final ReplayMod mod) throws Exception {
         this.core = mod;
         this.module = ReplayModReplay.instance;
+        this.indicator = new GuiImage().setTexture(ReplayMod.TEXTURE, 90, 20, 19, 16).setSize(19, 16);
         this.mc = mod.getMinecraft();
 
         mod.getKeyBindingRegistry().registerKeyBinding("replaymod.input.lighting", Keyboard.KEY_Z, new Runnable() {

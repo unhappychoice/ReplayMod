@@ -104,12 +104,17 @@ public class PacketListener extends ChannelInboundHandlerAdapter {
     private long lastSentPacket;
     private long timePassedWhilePaused;
     private volatile boolean serverWasPaused;
-    //#if MC>=11400
+    //#if FABRIC>1
     private NetworkState connectionState = NetworkState.LOGIN;
     private boolean loginPhase = true;
     //#else
+    //#if MC>=11600
+    //$$ private ProtocolType connectionState = ProtocolType.PLAY;
+    //$$ private boolean loginPhase = false;
+    //#else
     //$$ private EnumConnectionState connectionState = EnumConnectionState.PLAY;
     //$$ private boolean loginPhase = false;
+    //#endif
     //#endif
 
     /**

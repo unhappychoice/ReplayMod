@@ -185,11 +185,20 @@ public class Utils {
         //#if MC>=10800
         PlayerListEntry info = getMinecraft().getNetworkHandler().getPlayerListEntry(uuid);
         Identifier skinLocation;
+
+        //#if FABRIC>=1
         if (info != null && info.hasSkinTexture()) {
             skinLocation = info.getSkinTexture();
         } else {
             skinLocation = DefaultSkinHelper.getTexture(uuid);
         }
+        //#else
+        //$$ if (info != null && info.hasLocationSkin()) {
+        //$$    skinLocation = info.getLocationSkin();
+        //$$ } else {
+        //$$    skinLocation = DefaultPlayerSkin.getDefaultSkin(uuid);
+        //$$ }
+        //#endif
         return skinLocation;
         //#else
         //$$ EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByUUID(uuid);
