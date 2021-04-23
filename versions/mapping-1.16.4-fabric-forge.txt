@@ -1,0 +1,6 @@
+net.minecraft.util.Identifier net.minecraft.util.ResourceLocation
+
+net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket getChannel() getChannelName()
+net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket getData() getBufferData()
+
+net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket net.minecraft.network.play.server.SCustomPayloadPlayPacket
