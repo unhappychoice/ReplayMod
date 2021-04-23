@@ -19,11 +19,12 @@ pluginManagement {
 }
 
 val jGuiVersions = listOf(
-        "1.7.10",
+        /*"1.7.10",
         "1.8",
         "1.8.9",
         "1.9.4",
         "1.12",
+         */
         "1.14.4",
         "1.15.2",
         "1.16.1",
@@ -31,7 +32,7 @@ val jGuiVersions = listOf(
         "1.16.4"
 )
 val replayModVersions = listOf(
-        "1.7.10",
+        /*"1.7.10",
         "1.8",
         "1.8.9",
         "1.9.4",
@@ -41,6 +42,7 @@ val replayModVersions = listOf(
         "1.12",
         "1.12.1",
         "1.12.2",
+         */
         "1.14.4",
         "1.15.2",
         "1.16.1",
@@ -66,7 +68,13 @@ jGuiVersions.forEach { version ->
 replayModVersions.forEach { version ->
     include(":$version")
     project(":$version").apply {
+        System.out.println(version)
+
         projectDir = file("versions/$version")
-        buildFileName = "../../build.gradle"
+        if (version.contains("-forge")) {
+            buildFileName = "../../build.forge.gradle"
+        } else {
+            buildFileName = "../../build.gradle"
+        }
     }
 }

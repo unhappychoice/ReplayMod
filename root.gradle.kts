@@ -37,7 +37,7 @@ subprojects {
     }
 
     afterEvaluate {
-        val projectShadowJar = project.tasks.findByName("shadowJar")
+        val projectShadowJar = project.tasks.findByName("jarCustom")
         if (projectShadowJar != null && projectShadowJar.hasProperty("archivePath") && project.name != "core") {
             shadowJar.dependsOn(projectShadowJar)
             shadowJar.from(projectShadowJar.withGroovyBuilder { getProperty("archivePath") })
@@ -173,7 +173,7 @@ val doRelease by tasks.registering {
     }
 }
 
-defaultTasks("shadowJar")
+defaultTasks("jarCustom")
 
 preprocess {
     "1.16.4"(11604, "yarn") {

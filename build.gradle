@@ -32,13 +32,11 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
         if (fabric) {
             classpath 'fabric-loom:fabric-loom.gradle.plugin:0.6-SNAPSHOT'
         } else if (mcVersion >= 11400) {
-            classpath('net.minecraftforge.gradle:ForgeGradle:4.1.+'){
-                exclude group: 'trove', module: 'trove' // preprocessor/idea requires more recent one
-            }
+            classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
         } else if (mcVersion >= 10800) {
             classpath('com.github.ReplayMod:ForgeGradle:' + (
                     mcVersion >= 11200 ? 'b64de9c' : // FG 2.3
@@ -57,6 +55,7 @@ def FABRIC = fabric
 def jGuiVersion = project.name
 if (['1.10.2', '1.11', '1.11.2'].contains(jGuiVersion)) jGuiVersion = '1.9.4'
 if (['1.12.1', '1.12.2'].contains(jGuiVersion)) jGuiVersion = '1.12'
+if (['1.16.4-forge'].contains(jGuiVersion)) jGuiVersion = '1.16.4-forge'
 def jGui = project.evaluationDependsOn(":jGui:$jGuiVersion")
 
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -129,12 +128,40 @@ if (FABRIC) {
         }
     }
 } else {
-    minecraft {
-        if (FG4) {
+    if (FG4) {
+        minecraft {
             runs {
                 client {
-                    workingDirectory rootProject.file('run')
-                    property 'forge.logging.console.level', 'info'
+                    workingDirectory project.file('run')
+                    property 'forge.logging.markers', 'REGISTRIES'
+                    property 'forge.logging.console.level', 'debug'
+                    arg "-mixin.config=replaymod.mixins.json"
+                    mods {
+                        replaymod {
+                            source sourceSets.main
+                        }
+                    }
+                }
+
+                server {
+                    workingDirectory project.file('run')
+                    property 'forge.logging.markers', 'REGISTRIES'
+                    property 'forge.logging.console.level', 'debug'
+                    arg "-mixin.config=replaymod.mixins.json"
+                    mods {
+                        replaymod {
+                            source sourceSets.main
+                        }
+                    }
+                }
+
+                data {
+                    workingDirectory project.file('run')
+                    property 'forge.logging.markers', 'REGISTRIES'
+                    property 'forge.logging.console.level', 'debug'
+                    arg "-mixin.config=replaymod.mixins.json"
+                    args '--mod', 'replaymod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
                     mods {
                         replaymod {
                             source sourceSets.main
@@ -142,14 +169,16 @@ if (FABRIC) {
                     }
                 }
             }
-        } else {
+
+            mappings channel: "snapshot", version: "20210309-1.16.4"
+        }
+    } else {
+        minecraft {
             if (mcVersion >= 10800) {
                 coreMod = 'com.replaymod.core.LoadingPlugin'
             }
             runDir = "../../run"
-        }
 
-        if (!FG4) {
             version = [
                     11202: '1.12.2-14.23.0.2486',
                     11201: '1.12.1-14.22.0.2444',
@@ -162,20 +191,20 @@ if (FABRIC) {
                     10800: '1.8-11.14.4.1563',
                     10710: '1.7.10-10.13.4.1558-1.7.10',
             ][mcVersion]
+
+            mappings = [
+                    11202: "snapshot_20170615",
+                    11201: "snapshot_20170615",
+                    11200: "snapshot_20170615",
+                    11102: "snapshot_20161220",
+                    11100: "snapshot_20161111",
+                    11002: "snapshot_20160518",
+                    10904: "snapshot_20160518",
+                    10809: "stable_22",
+                    10800: "snapshot_nodoc_20141130",
+                    10710: "stable_12",
+            ][mcVersion]
         }
-        mappings = [
-                11604: "snapshot_20210309-1.16.4",
-                11202: "snapshot_20170615",
-                11201: "snapshot_20170615",
-                11200: "snapshot_20170615",
-                11102: "snapshot_20161220",
-                11100: "snapshot_20161111",
-                11002: "snapshot_20160518",
-                10904: "snapshot_20160518",
-                10809: "stable_22",
-                10800: "snapshot_nodoc_20141130",
-                10710: "stable_12",
-        ][mcVersion]
     }
 }
 
@@ -432,13 +461,14 @@ task configureRelocation() {
 }
 
 // tasks.removeByName('shadowJar') // we want to base our shadowed jar on the reobfJar output, not the sourceSet output
-tasks.whenTaskAdded {task ->
+tasks.whenTaskAdded { task ->
     if(task.name.contains('shadowJar')) {
+        System.out.println(task + "is disabled")
         task.enabled = false
     }
 }
 
-task shadowJarCustom(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+task jarCustom(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     from { (FABRIC ? tasks.remapJar : tasks.jar).archiveFile.get() }
     dependsOn { FABRIC ? tasks.remapJar : (mcVersion >= 10800 ? tasks.reobfJar : tasks.reobf) }
 
@@ -457,7 +487,7 @@ task shadowJarCustom(type: com.github.jengelman.gradle.plugins.shadow.tasks.Shad
 
     from project.configurations.shade
     configurations = [project.configurations.shadow]
-    exclude 'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'module-info.class'
+    exclude 'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'assets/*', 'module-info.class'
 
     dependsOn tasks.configureRelocation
     inputs.file(configureRelocationOutput)
@@ -484,7 +514,7 @@ task shadowJarCustom(type: com.github.jengelman.gradle.plugins.shadow.tasks.Shad
         exclude(dependency('.*spongepowered:mixin:.*'))
     }
 }
-tasks.assemble.dependsOn tasks.shadowJarCustom
+tasks.assemble.dependsOn tasks.jarCustom
 
 jar {
     classifier = 'raw'
