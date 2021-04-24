@@ -3,14 +3,14 @@ package com.replaymod.replay.gui.screen;
 import com.replaymod.core.utils.ModCompat;
 import com.replaymod.replaystudio.data.ModInfo;
 import com.replaymod.replaystudio.util.I18n;
-import de.johni0702.minecraft.gui.container.AbstractGuiScreen;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.container.GuiVerticalList;
-import de.johni0702.minecraft.gui.element.GuiButton;
-import de.johni0702.minecraft.gui.element.GuiLabel;
-import de.johni0702.minecraft.gui.layout.CustomLayout;
-import de.johni0702.minecraft.gui.layout.HorizontalLayout;
-import de.johni0702.minecraft.gui.layout.VerticalLayout;
+import com.replaymod.gui.container.AbstractGuiScreen;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.GuiVerticalList;
+import com.replaymod.gui.element.GuiButton;
+import com.replaymod.gui.element.GuiLabel;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.layout.VerticalLayout;
 
 import java.util.Map;
 

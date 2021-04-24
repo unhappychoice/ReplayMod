@@ -7,7 +7,7 @@ import com.replaymod.render.rendering.Channel;
 import com.replaymod.render.rendering.FrameConsumer;
 import com.replaymod.render.utils.ByteBufferPool;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.versions.Image;
+import com.replaymod.gui.versions.Image;
 import net.minecraft.util.crash.CrashReport;
 
 import java.io.IOException;

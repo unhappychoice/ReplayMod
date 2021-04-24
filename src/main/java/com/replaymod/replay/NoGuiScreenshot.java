@@ -3,7 +3,7 @@ package com.replaymod.replay;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.replaymod.core.ReplayMod;
-import de.johni0702.minecraft.gui.versions.Image;
+import com.replaymod.gui.versions.Image;
 import net.minecraft.client.MinecraftClient;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.util.ScreenshotUtils;

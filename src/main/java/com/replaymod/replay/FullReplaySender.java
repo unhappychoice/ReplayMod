@@ -5,14 +5,14 @@ import com.github.steveice10.packetlib.tcp.io.ByteBufNetOutput;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import com.replaymod.core.ReplayMod;
-import com.replaymod.core.mixin.MinecraftAccessor;
-import com.replaymod.core.mixin.TimerAccessor;
+import com.replaymod.mixin.MinecraftAccessor;
+import com.replaymod.mixin.TimerAccessor;
 import com.replaymod.core.utils.Restrictions;
 import com.replaymod.replay.camera.CameraEntity;
 import com.replaymod.replaystudio.io.ReplayInputStream;
 import com.replaymod.replaystudio.replay.ReplayFile;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
-import de.johni0702.minecraft.gui.versions.callbacks.PreTickCallback;
+import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.gui.versions.callbacks.PreTickCallback;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
@@ -64,7 +64,6 @@ import org.apache.commons.io.IOUtils;
 //#endif
 
 //#if MC>=11400
-import com.replaymod.core.versions.MCVer;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;

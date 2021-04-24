@@ -2,9 +2,9 @@ package com.replaymod.core.versions.forge;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.replaymod.core.events.*;
+import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.replay.events.RenderHotbarCallback;
 import com.replaymod.replay.events.RenderSpectatorCrosshairCallback;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;

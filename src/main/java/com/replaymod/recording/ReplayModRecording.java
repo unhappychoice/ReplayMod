@@ -7,7 +7,7 @@ import com.replaymod.core.utils.Restrictions;
 import com.replaymod.core.versions.MCVer.Keyboard;
 import com.replaymod.recording.handler.ConnectionEventHandler;
 import com.replaymod.recording.handler.GuiHandler;
-import com.replaymod.recording.mixin.NetworkManagerAccessor;
+import com.replaymod.mixin.NetworkManagerAccessor;
 import com.replaymod.recording.packet.PacketListener;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;

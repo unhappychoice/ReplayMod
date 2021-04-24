@@ -4,11 +4,11 @@ import com.replaymod.core.utils.Utils;
 import com.replaymod.editor.ReplayModEditor;
 import com.replaymod.editor.gui.GuiEditReplay;
 import com.replaymod.replay.gui.screen.GuiReplayViewer;
-import de.johni0702.minecraft.gui.container.AbstractGuiScreen;
-import de.johni0702.minecraft.gui.container.GuiScreen;
-import de.johni0702.minecraft.gui.element.GuiButton;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
-import de.johni0702.minecraft.gui.versions.callbacks.InitScreenCallback;
+import com.replaymod.gui.container.AbstractGuiScreen;
+import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.element.GuiButton;
+import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.gui.versions.callbacks.InitScreenCallback;
 import net.minecraft.util.crash.CrashReport;
 
 import java.io.IOException;

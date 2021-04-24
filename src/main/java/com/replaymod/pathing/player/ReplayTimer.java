@@ -1,7 +1,7 @@
 package com.replaymod.pathing.player;
 
 import com.replaymod.core.utils.WrappedTimer;
-import de.johni0702.minecraft.gui.utils.Event;
+import com.replaymod.gui.utils.Event;
 import net.minecraft.client.render.RenderTickCounter;
 
 /**

@@ -1,13 +1,14 @@
 package com.replaymod.replay.gui.screen;
 
 import com.google.common.util.concurrent.SettableFuture;
+import com.replaymod.gui.element.GuiTextField;
 import com.replaymod.render.gui.GuiRenderQueue;
 import com.replaymod.render.rendering.VideoRenderer;
 import com.replaymod.render.utils.RenderJob;
 import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
-import de.johni0702.minecraft.gui.GuiRenderer;
-import de.johni0702.minecraft.gui.RenderInfo;
-import de.johni0702.minecraft.gui.versions.Image;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.versions.Image;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.util.Formatting;
 import com.replaymod.core.ReplayMod;
@@ -20,20 +21,19 @@ import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.replay.Setting;
 import com.replaymod.replaystudio.replay.ReplayFile;
 import com.replaymod.replaystudio.replay.ReplayMetaData;
-import de.johni0702.minecraft.gui.container.AbstractGuiContainer;
-import de.johni0702.minecraft.gui.container.GuiContainer;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.container.GuiScreen;
-import de.johni0702.minecraft.gui.element.*;
-import de.johni0702.minecraft.gui.element.advanced.AbstractGuiResourceLoadingList;
-import de.johni0702.minecraft.gui.function.Typeable;
-import de.johni0702.minecraft.gui.layout.CustomLayout;
-import de.johni0702.minecraft.gui.layout.HorizontalLayout;
-import de.johni0702.minecraft.gui.layout.VerticalLayout;
-import de.johni0702.minecraft.gui.popup.AbstractGuiPopup;
-import de.johni0702.minecraft.gui.popup.GuiYesNoPopup;
-import de.johni0702.minecraft.gui.utils.Colors;
-import de.johni0702.minecraft.gui.utils.Consumer;
+import com.replaymod.gui.container.AbstractGuiContainer;
+import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.element.advanced.AbstractGuiResourceLoadingList;
+import com.replaymod.gui.function.Typeable;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.gui.popup.AbstractGuiPopup;
+import com.replaymod.gui.popup.GuiYesNoPopup;
+import com.replaymod.gui.utils.Colors;
+import com.replaymod.gui.utils.Consumer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
@@ -64,7 +64,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.replaymod.replay.ReplayModReplay.LOGGER;
-import static de.johni0702.minecraft.gui.versions.MCVer.getFontRenderer;
+import static com.replaymod.gui.versions.MCVer.getFontRenderer;
 
 //#if MC>=11400
 import net.minecraft.text.TranslatableText;
@@ -81,7 +81,7 @@ public class GuiReplayViewer extends GuiScreen {
         }
     });
 
-    public final GuiButton loadButton = new GuiButton().onClick(new Runnable() {
+    public final com.replaymod.gui.element.GuiButton loadButton = new com.replaymod.gui.element.GuiButton().onClick(new Runnable() {
         private boolean loading = false;
 
         @Override
@@ -114,7 +114,7 @@ public class GuiReplayViewer extends GuiScreen {
         }
     }).setSize(150, 20);
 
-    public final GuiButton folderButton = new GuiButton().onClick(new Runnable() {
+    public final com.replaymod.gui.element.GuiButton folderButton = new com.replaymod.gui.element.GuiButton().onClick(new Runnable() {
         @Override
         public void run() {
             try {
@@ -127,14 +127,14 @@ public class GuiReplayViewer extends GuiScreen {
         }
     }).setSize(150, 20).setI18nLabel("replaymod.gui.viewer.replayfolder");
 
-    public final GuiButton renameButton = new GuiButton().onClick(new Runnable() {
+    public final com.replaymod.gui.element.GuiButton renameButton = new com.replaymod.gui.element.GuiButton().onClick(new Runnable() {
         @Override
         public void run() {
             final File file = list.getSelected().get(0).file;
             String name = Utils.fileNameToReplayName(file.getName());
-            final GuiTextField nameField = new GuiTextField().setSize(200, 20).setFocused(true).setText(name);
+            final com.replaymod.gui.element.GuiTextField nameField = new com.replaymod.gui.element.GuiTextField().setSize(200, 20).setFocused(true).setText(name);
             final GuiYesNoPopup popup = GuiYesNoPopup.open(GuiReplayViewer.this,
-                    new GuiLabel().setI18nText("replaymod.gui.viewer.rename.name").setColor(Colors.BLACK),
+                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.viewer.rename.name").setColor(Colors.BLACK),
                     nameField
             ).setYesI18nLabel("replaymod.gui.rename").setNoI18nLabel("replaymod.gui.cancel");
             ((VerticalLayout) popup.getInfo().getLayout()).setSpacing(7);
@@ -176,12 +176,12 @@ public class GuiReplayViewer extends GuiScreen {
             });
         }
     }).setSize(73, 20).setI18nLabel("replaymod.gui.rename").setDisabled();
-    public final GuiButton deleteButton = new GuiButton().onClick(() -> {
+    public final com.replaymod.gui.element.GuiButton deleteButton = new com.replaymod.gui.element.GuiButton().onClick(() -> {
         for (GuiReplayEntry entry : list.getSelected()) {
             String name = entry.name.getText();
             GuiYesNoPopup.open(GuiReplayViewer.this,
-                    new GuiLabel().setI18nText("replaymod.gui.viewer.delete.linea").setColor(Colors.BLACK),
-                    new GuiLabel().setI18nText("replaymod.gui.viewer.delete.lineb", name + Formatting.RESET).setColor(Colors.BLACK)
+                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.viewer.delete.linea").setColor(Colors.BLACK),
+                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.viewer.delete.lineb", name + Formatting.RESET).setColor(Colors.BLACK)
             ).setYesI18nLabel("replaymod.gui.delete").setNoI18nLabel("replaymod.gui.cancel").onAccept(() -> {
                 try {
                     FileUtils.forceDelete(entry.file);
@@ -193,20 +193,20 @@ public class GuiReplayViewer extends GuiScreen {
         }
     }).setSize(73, 20).setI18nLabel("replaymod.gui.delete").setDisabled();
 
-    public final GuiButton settingsButton = new GuiButton(this)
+    public final com.replaymod.gui.element.GuiButton settingsButton = new com.replaymod.gui.element.GuiButton(this)
             .setSize(20, 20)
             .setTexture(ReplayMod.TEXTURE, ReplayMod.TEXTURE_SIZE).setSpriteUV(20, 0)
-            .setTooltip(new GuiTooltip().setI18nText("replaymod.gui.settings"))
+            .setTooltip(new com.replaymod.gui.element.GuiTooltip().setI18nText("replaymod.gui.settings"))
             .onClick(() -> new GuiReplaySettings(toMinecraft(), getMod().getCore().getSettingsRegistry()).display());
 
-    public final GuiButton cancelButton = new GuiButton().onClick(new Runnable() {
+    public final com.replaymod.gui.element.GuiButton cancelButton = new com.replaymod.gui.element.GuiButton().onClick(new Runnable() {
         @Override
         public void run() {
             getMinecraft().openScreen(null);
         }
     }).setSize(73, 20).setI18nLabel("replaymod.gui.cancel");
 
-    public final List<GuiButton> replaySpecificButtons = new ArrayList<>();
+    public final List<com.replaymod.gui.element.GuiButton> replaySpecificButtons = new ArrayList<>();
     { replaySpecificButtons.addAll(Arrays.asList(renameButton)); }
     public final GuiPanel editorButton = new GuiPanel();
 
@@ -226,7 +226,7 @@ public class GuiReplayViewer extends GuiScreen {
             throw new CrashException(CrashReport.create(e, "Getting replay folder"));
         }
 
-        setTitle(new GuiLabel().setI18nText("replaymod.gui.replayviewer"));
+        setTitle(new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.replayviewer"));
 
         setLayout(new CustomLayout<GuiScreen>() {
             @Override
@@ -257,12 +257,12 @@ public class GuiReplayViewer extends GuiScreen {
             Set<RenderJob> jobs = selected.stream().flatMap(entry -> entry.renderQueue.stream()).collect(Collectors.toSet());
             String[] tooltipLines = jobs.stream().map(RenderJob::getName).toArray(String[]::new);
             loadButton.setI18nLabel("replaymod.gui.viewer.bulkrender", jobs.size());
-            loadButton.setTooltip(new GuiTooltip().setText(tooltipLines));
+            loadButton.setTooltip(new com.replaymod.gui.element.GuiTooltip().setText(tooltipLines));
             loadButton.setEnabled(!jobs.isEmpty());
 
             String[] compatError = VideoRenderer.checkCompat();
             if (compatError != null) {
-                loadButton.setDisabled().setTooltip(new GuiTooltip().setText(compatError));
+                loadButton.setDisabled().setTooltip(new com.replaymod.gui.element.GuiTooltip().setText(compatError));
             }
         } else {
             loadButton.setI18nLabel("replaymod.gui.load");
@@ -271,7 +271,7 @@ public class GuiReplayViewer extends GuiScreen {
         }
     }
 
-    private static final GuiImage DEFAULT_THUMBNAIL = new GuiImage().setTexture(Utils.DEFAULT_THUMBNAIL);
+    private static final com.replaymod.gui.element.GuiImage DEFAULT_THUMBNAIL = new com.replaymod.gui.element.GuiImage().setTexture(Utils.DEFAULT_THUMBNAIL);
 
     public static class GuiSelectReplayPopup extends AbstractGuiPopup<GuiSelectReplayPopup> {
         public static GuiSelectReplayPopup openGui(GuiContainer container, File folder) {
@@ -285,9 +285,9 @@ public class GuiReplayViewer extends GuiScreen {
 
         private final GuiReplayList list = new GuiReplayList(popup);
 
-        private final GuiButton acceptButton = new GuiButton(popup).setI18nLabel("gui.done").setSize(50, 20).setDisabled();
+        private final com.replaymod.gui.element.GuiButton acceptButton = new com.replaymod.gui.element.GuiButton(popup).setI18nLabel("gui.done").setSize(50, 20).setDisabled();
 
-        private final GuiButton cancelButton = new GuiButton(popup).setI18nLabel("gui.cancel").setSize(50, 20);
+        private final com.replaymod.gui.element.GuiButton cancelButton = new com.replaymod.gui.element.GuiButton(popup).setI18nLabel("gui.cancel").setSize(50, 20);
 
 
         public GuiSelectReplayPopup(GuiContainer container, File folder) {
@@ -334,11 +334,11 @@ public class GuiReplayViewer extends GuiScreen {
             return list;
         }
 
-        public GuiButton getAcceptButton() {
+        public com.replaymod.gui.element.GuiButton getAcceptButton() {
             return acceptButton;
         }
 
-        public GuiButton getCancelButton() {
+        public com.replaymod.gui.element.GuiButton getCancelButton() {
             return cancelButton;
         }
 
@@ -352,7 +352,7 @@ public class GuiReplayViewer extends GuiScreen {
         private File folder = null;
 
         // Not actually a child of this element, we just use it for text manipulation
-        private final GuiTextField filterTextField = new GuiTextField()
+        private final com.replaymod.gui.element.GuiTextField filterTextField = new GuiTextField()
                 .setFocused(true);
 
         public GuiReplayList(GuiContainer container) {
@@ -474,14 +474,14 @@ public class GuiReplayViewer extends GuiScreen {
 
     public static class GuiReplayEntry extends AbstractGuiContainer<GuiReplayEntry> implements Comparable<GuiReplayEntry> {
         public final File file;
-        public final GuiLabel name = new GuiLabel();
-        public final GuiLabel server = new GuiLabel().setColor(Colors.LIGHT_GRAY);
-        public final GuiLabel date = new GuiLabel().setColor(Colors.LIGHT_GRAY);
+        public final com.replaymod.gui.element.GuiLabel name = new com.replaymod.gui.element.GuiLabel();
+        public final com.replaymod.gui.element.GuiLabel server = new com.replaymod.gui.element.GuiLabel().setColor(Colors.LIGHT_GRAY);
+        public final com.replaymod.gui.element.GuiLabel date = new com.replaymod.gui.element.GuiLabel().setColor(Colors.LIGHT_GRAY);
         public final GuiPanel infoPanel = new GuiPanel(this).setLayout(new VerticalLayout().setSpacing(2))
                 .addElements(null, name, server, date);
-        public final GuiLabel version = new GuiLabel(this).setColor(Colors.RED);
-        public final GuiImage thumbnail;
-        public final GuiLabel duration = new GuiLabel();
+        public final com.replaymod.gui.element.GuiLabel version = new com.replaymod.gui.element.GuiLabel(this).setColor(Colors.RED);
+        public final com.replaymod.gui.element.GuiImage thumbnail;
+        public final com.replaymod.gui.element.GuiLabel duration = new com.replaymod.gui.element.GuiLabel();
         public final GuiPanel durationPanel = new GuiPanel().setBackgroundColor(Colors.HALF_TRANSPARENT)
                 .addElements(null, duration).setLayout(new CustomLayout<GuiPanel>() {
                     @Override
@@ -495,7 +495,7 @@ public class GuiReplayViewer extends GuiScreen {
                         return new Dimension(dimension.getWidth() + 2, dimension.getHeight() + 2);
                     }
                 });
-        public final GuiImage renderQueueIcon = new GuiImage()
+        public final com.replaymod.gui.element.GuiImage renderQueueIcon = new com.replaymod.gui.element.GuiImage()
                 .setSize(10, 10)
                 .setTexture(ReplayMod.TEXTURE, 40, 0, 20, 20);
 
@@ -523,16 +523,16 @@ public class GuiReplayViewer extends GuiScreen {
             dateMillis = metaData.getDate();
             date.setText(new SimpleDateFormat().format(new Date(dateMillis)));
             if (thumbImage == null) {
-                thumbnail = new GuiImage(DEFAULT_THUMBNAIL).setSize(30 * 16 / 9, 30);
+                thumbnail = new com.replaymod.gui.element.GuiImage(DEFAULT_THUMBNAIL).setSize(30 * 16 / 9, 30);
                 addElements(null, thumbnail);
             } else {
-                thumbnail = new GuiImage(this).setTexture(thumbImage).setSize(30 * 16 / 9, 30);
+                thumbnail = new com.replaymod.gui.element.GuiImage(this).setTexture(thumbImage).setSize(30 * 16 / 9, 30);
             }
             duration.setText(Utils.convertSecondsToShortString(metaData.getDuration() / 1000));
             addElements(null, durationPanel);
 
             if (!renderQueue.isEmpty()) {
-                renderQueueIcon.setTooltip(new GuiTooltip()
+                renderQueueIcon.setTooltip(new com.replaymod.gui.element.GuiTooltip()
                         .setText(renderQueue.stream().map(RenderJob::getName).toArray(String[]::new)));
                 addElements(null, renderQueueIcon);
             }

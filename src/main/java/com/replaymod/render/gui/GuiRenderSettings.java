@@ -6,29 +6,29 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonSyntaxException;
 import com.replaymod.core.ReplayMod;
+import com.replaymod.gui.element.GuiTextField;
 import com.replaymod.render.RenderSettings;
 import com.replaymod.render.ReplayModRender;
 import com.replaymod.render.FFmpegWriter;
 import com.replaymod.render.rendering.VideoRenderer;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replaystudio.pathing.path.Timeline;
-import de.johni0702.minecraft.gui.container.AbstractGuiScreen;
-import de.johni0702.minecraft.gui.container.GuiContainer;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.container.GuiScreen;
-import de.johni0702.minecraft.gui.container.GuiVerticalList;
-import de.johni0702.minecraft.gui.element.*;
-import de.johni0702.minecraft.gui.element.advanced.GuiColorPicker;
-import de.johni0702.minecraft.gui.element.advanced.GuiDropdownMenu;
-import de.johni0702.minecraft.gui.layout.CustomLayout;
-import de.johni0702.minecraft.gui.layout.GridLayout;
-import de.johni0702.minecraft.gui.layout.HorizontalLayout;
-import de.johni0702.minecraft.gui.layout.VerticalLayout;
-import de.johni0702.minecraft.gui.popup.AbstractGuiPopup;
-import de.johni0702.minecraft.gui.popup.GuiFileChooserPopup;
-import de.johni0702.minecraft.gui.utils.Colors;
-import de.johni0702.minecraft.gui.utils.Consumer;
-import de.johni0702.minecraft.gui.utils.Utils;
+import com.replaymod.gui.container.AbstractGuiScreen;
+import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.container.GuiVerticalList;
+import com.replaymod.gui.element.advanced.GuiColorPicker;
+import com.replaymod.gui.element.advanced.GuiDropdownMenu;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.layout.GridLayout;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.gui.popup.AbstractGuiPopup;
+import com.replaymod.gui.popup.GuiFileChooserPopup;
+import com.replaymod.gui.utils.Colors;
+import com.replaymod.gui.utils.Consumer;
+import com.replaymod.gui.utils.Utils;
 import de.johni0702.minecraft.gui.utils.lwjgl.Color;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
@@ -78,9 +78,9 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
             }).setMinSize(new Dimension(0, 20)).setValues(RenderSettings.RenderMethod.getSupported());
 
     {
-        for (Map.Entry<RenderSettings.RenderMethod, IGuiClickable> entry :
+        for (Map.Entry<RenderSettings.RenderMethod, com.replaymod.gui.element.IGuiClickable> entry :
                 renderMethodDropdown.getDropdownEntries().entrySet()) {
-            entry.getValue().setTooltip(new GuiTooltip().setText(entry.getKey().getDescription()));
+            entry.getValue().setTooltip(new com.replaymod.gui.element.GuiTooltip().setText(entry.getKey().getDescription()));
         }
     }
 
@@ -104,9 +104,9 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
                 }
             }).setMinSize(new Dimension(0, 20)).setValues(RenderSettings.EncodingPreset.getSupported());
 
-    public final GuiNumberField videoWidth = new GuiNumberField().setSize(50, 20).setMinValue(1).setValidateOnFocusChange(true);
-    public final GuiNumberField videoHeight = new GuiNumberField().setSize(50, 20).setMinValue(1).setValidateOnFocusChange(true);
-    public final GuiSlider frameRateSlider = new GuiSlider().onValueChanged(new Runnable() {
+    public final com.replaymod.gui.element.GuiNumberField videoWidth = new com.replaymod.gui.element.GuiNumberField().setSize(50, 20).setMinValue(1).setValidateOnFocusChange(true);
+    public final com.replaymod.gui.element.GuiNumberField videoHeight = new com.replaymod.gui.element.GuiNumberField().setSize(50, 20).setMinValue(1).setValidateOnFocusChange(true);
+    public final com.replaymod.gui.element.GuiSlider frameRateSlider = new com.replaymod.gui.element.GuiSlider().onValueChanged(new Runnable() {
         @Override
         public void run() {
             frameRateSlider.setText(I18n.translate("replaymod.gui.rendersettings.framerate")
@@ -115,13 +115,13 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
     }).setSize(122, 20).setSteps(110);
     public final GuiPanel videoResolutionPanel = new GuiPanel()
             .setLayout(new HorizontalLayout(HorizontalLayout.Alignment.RIGHT).setSpacing(2))
-            .addElements(new HorizontalLayout.Data(0.5), videoWidth, new GuiLabel().setText("*"), videoHeight);
+            .addElements(new HorizontalLayout.Data(0.5), videoWidth, new com.replaymod.gui.element.GuiLabel().setText("*"), videoHeight);
 
-    public final GuiNumberField bitRateField = new GuiNumberField().setValue(10).setSize(50, 20).setValidateOnFocusChange(true);
+    public final com.replaymod.gui.element.GuiNumberField bitRateField = new com.replaymod.gui.element.GuiNumberField().setValue(10).setSize(50, 20).setValidateOnFocusChange(true);
     public final GuiDropdownMenu<String> bitRateUnit = new GuiDropdownMenu<String>()
             .setSize(50, 20).setValues("bps", "kbps", "mbps").setSelected("mbps");
 
-    public final GuiButton outputFileButton = new GuiButton().setMinSize(new Dimension(0, 20)).onClick(new Runnable() {
+    public final com.replaymod.gui.element.GuiButton outputFileButton = new com.replaymod.gui.element.GuiButton().setMinSize(new Dimension(0, 20)).onClick(new Runnable() {
         @Override
         public void run() {
             GuiFileChooserPopup popup = GuiFileChooserPopup.openSaveGui(GuiRenderSettings.this, "replaymod.gui.save",
@@ -140,34 +140,34 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
 
     public final GuiPanel mainPanel = new GuiPanel()
             .addElements(new GridLayout.Data(1, 0.5),
-                    new GuiLabel().setI18nText("replaymod.gui.rendersettings.renderer"), renderMethodDropdown,
-                    new GuiLabel().setI18nText("replaymod.gui.rendersettings.presets"), encodingPresetDropdown,
-                    new GuiLabel().setI18nText("replaymod.gui.rendersettings.customresolution"), videoResolutionPanel,
-                    new GuiLabel().setI18nText("replaymod.gui.rendersettings.bitrate"), new GuiPanel().addElements(null,
+                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.renderer"), renderMethodDropdown,
+                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.presets"), encodingPresetDropdown,
+                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.customresolution"), videoResolutionPanel,
+                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.bitrate"), new GuiPanel().addElements(null,
                             new GuiPanel().addElements(null, bitRateField, bitRateUnit).setLayout(new HorizontalLayout()),
                             frameRateSlider).setLayout(new HorizontalLayout(HorizontalLayout.Alignment.RIGHT).setSpacing(3)),
-                    new GuiLabel().setI18nText("replaymod.gui.rendersettings.outputfile"), outputFileButton)
+                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.outputfile"), outputFileButton)
             .setLayout(new GridLayout().setCellsEqualSize(false).setColumns(2).setSpacingX(5).setSpacingY(5));
 
-    public final GuiCheckbox nametagCheckbox = new GuiCheckbox()
+    public final com.replaymod.gui.element.GuiCheckbox nametagCheckbox = new com.replaymod.gui.element.GuiCheckbox()
             .setI18nLabel("replaymod.gui.rendersettings.nametags");
 
     public final GuiPanel stabilizePanel = new GuiPanel().setLayout(new HorizontalLayout().setSpacing(10));
-    public final GuiCheckbox stabilizeYaw = new GuiCheckbox(stabilizePanel)
+    public final com.replaymod.gui.element.GuiCheckbox stabilizeYaw = new com.replaymod.gui.element.GuiCheckbox(stabilizePanel)
             .setI18nLabel("replaymod.gui.yaw");
-    public final GuiCheckbox stabilizePitch = new GuiCheckbox(stabilizePanel)
+    public final com.replaymod.gui.element.GuiCheckbox stabilizePitch = new com.replaymod.gui.element.GuiCheckbox(stabilizePanel)
             .setI18nLabel("replaymod.gui.pitch");
-    public final GuiCheckbox stabilizeRoll = new GuiCheckbox(stabilizePanel)
+    public final com.replaymod.gui.element.GuiCheckbox stabilizeRoll = new com.replaymod.gui.element.GuiCheckbox(stabilizePanel)
             .setI18nLabel("replaymod.gui.roll");
 
-    public final GuiCheckbox chromaKeyingCheckbox = new GuiCheckbox()
+    public final com.replaymod.gui.element.GuiCheckbox chromaKeyingCheckbox = new com.replaymod.gui.element.GuiCheckbox()
             .setI18nLabel("replaymod.gui.rendersettings.chromakey");
     public final GuiColorPicker chromaKeyingColor = new GuiColorPicker().setSize(30, 15);
 
     public static final int MIN_SPHERICAL_FOV = 120;
     public static final int MAX_SPHERICAL_FOV = 360;
     public static final int SPHERICAL_FOV_STEP_SIZE = 5;
-    public final GuiSlider sphericalFovSlider = new GuiSlider()
+    public final com.replaymod.gui.element.GuiSlider sphericalFovSlider = new com.replaymod.gui.element.GuiSlider()
             .onValueChanged(new Runnable() {
                 @Override
                 public void run() {
@@ -178,13 +178,13 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
                 }
             }).setSize(200, 20).setSteps((MAX_SPHERICAL_FOV - MIN_SPHERICAL_FOV) / SPHERICAL_FOV_STEP_SIZE);
 
-    public final GuiCheckbox injectSphericalMetadata = new GuiCheckbox()
+    public final com.replaymod.gui.element.GuiCheckbox injectSphericalMetadata = new com.replaymod.gui.element.GuiCheckbox()
             .setI18nLabel("replaymod.gui.rendersettings.sphericalmetadata");
 
-    public final GuiCheckbox depthMap = new GuiCheckbox()
+    public final com.replaymod.gui.element.GuiCheckbox depthMap = new com.replaymod.gui.element.GuiCheckbox()
             .setI18nLabel("replaymod.gui.rendersettings.depthmap");
 
-    public final GuiCheckbox cameraPathExport = new GuiCheckbox()
+    public final com.replaymod.gui.element.GuiCheckbox cameraPathExport = new com.replaymod.gui.element.GuiCheckbox()
             .setI18nLabel("replaymod.gui.rendersettings.camerapath");
 
     public final GuiDropdownMenu<RenderSettings.AntiAliasing> antiAliasingDropdown = new GuiDropdownMenu<RenderSettings.AntiAliasing>()
@@ -194,18 +194,18 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
             .addElements(null, nametagCheckbox, new GuiPanel().setLayout(
                     new GridLayout().setCellsEqualSize(false).setColumns(2).setSpacingX(5).setSpacingY(15))
                     .addElements(new GridLayout.Data(0, 0.5),
-                            new GuiLabel().setI18nText("replaymod.gui.rendersettings.stabilizecamera"), stabilizePanel,
+                            new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.stabilizecamera"), stabilizePanel,
                             chromaKeyingCheckbox, chromaKeyingColor,
                             injectSphericalMetadata, sphericalFovSlider,
-                            depthMap, new GuiLabel(),
-                            cameraPathExport, new GuiLabel(),
-                            new GuiLabel().setI18nText("replaymod.gui.rendersettings.antialiasing"), antiAliasingDropdown));
+                            depthMap, new com.replaymod.gui.element.GuiLabel(),
+                            cameraPathExport, new com.replaymod.gui.element.GuiLabel(),
+                            new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.antialiasing"), antiAliasingDropdown));
 
-    public final GuiTextField exportCommand = new GuiTextField().setI18nHint("replaymod.gui.rendersettings.command")
+    public final com.replaymod.gui.element.GuiTextField exportCommand = new com.replaymod.gui.element.GuiTextField().setI18nHint("replaymod.gui.rendersettings.command")
             .setSize(55, 20).setMaxLength(100).onTextChanged((old) -> updateInputs());
-    public final GuiTextField exportArguments = new GuiTextField().setI18nHint("replaymod.gui.rendersettings.arguments")
+    public final com.replaymod.gui.element.GuiTextField exportArguments = new GuiTextField().setI18nHint("replaymod.gui.rendersettings.arguments")
             .setMinSize(new Dimension(245, 20)).setMaxLength(500).onTextChanged((old) -> updateInputs());
-    public final GuiButton exportReset = new GuiButton().setLabel("X")
+    public final com.replaymod.gui.element.GuiButton exportReset = new com.replaymod.gui.element.GuiButton().setLabel("X")
             .setSize(20, 20)
             .onClick(() -> {
                 exportCommand.setText("");
@@ -216,7 +216,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
     public final GuiPanel commandlinePanel = new GuiPanel().setLayout(new VerticalLayout().setSpacing(10))
             .addElements(null,
                     new GuiPanel().setLayout(new HorizontalLayout().setSpacing(5)).addElements(null, exportCommand, exportArguments, exportReset),
-                    new GuiLabel(new GuiPanel().setLayout(new CustomLayout<GuiPanel>() {
+                    new com.replaymod.gui.element.GuiLabel(new GuiPanel().setLayout(new CustomLayout<GuiPanel>() {
                         @Override
                         protected void layout(GuiPanel container, int width, int height) {
                             size(container.getChildren().iterator().next(), width, height);
@@ -230,10 +230,10 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
 
 
     public final GuiPanel buttonPanel = new GuiPanel(contentPanel).setLayout(new HorizontalLayout().setSpacing(4));
-    public final GuiButton queueButton = new GuiButton(buttonPanel)
+    public final com.replaymod.gui.element.GuiButton queueButton = new com.replaymod.gui.element.GuiButton(buttonPanel)
             .setSize(100, 20)
             .setI18nLabel("replaymod.gui.rendersettings.addtoqueue");
-    public final GuiButton renderButton = new GuiButton(buttonPanel).onClick(() -> ReplayMod.instance.runLaterWithoutLock(new Runnable() {
+    public final com.replaymod.gui.element.GuiButton renderButton = new com.replaymod.gui.element.GuiButton(buttonPanel).onClick(() -> ReplayMod.instance.runLaterWithoutLock(new Runnable() {
         @Override
         public void run() {
             // Closing this GUI ensures that settings are saved
@@ -267,7 +267,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
             }
         }
     })).setSize(100, 20).setI18nLabel("replaymod.gui.render");
-    public final GuiButton cancelButton = new GuiButton(buttonPanel)
+    public final com.replaymod.gui.element.GuiButton cancelButton = new com.replaymod.gui.element.GuiButton(buttonPanel)
             .onClick(this::close)
             .setSize(100, 20)
             .setI18nLabel("replaymod.gui.cancel");
@@ -292,9 +292,9 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
 
         settingsList.getListPanel().setLayout(new VerticalLayout().setSpacing(10))
                 .addElements(new VerticalLayout.Data(0.5),
-                        new GuiLabel().setI18nText("replaymod.gui.rendersettings.video"), mainPanel, new GuiPanel(),
-                        new GuiLabel().setI18nText("replaymod.gui.rendersettings.advanced"), advancedPanel, new GuiPanel(),
-                        new GuiLabel().setI18nText("replaymod.gui.rendersettings.commandline"), commandlinePanel);
+                        new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.video"), mainPanel, new GuiPanel(),
+                        new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.advanced"), advancedPanel, new GuiPanel(),
+                        new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.rendersettings.commandline"), commandlinePanel);
 
         videoWidth.onTextChanged(new Consumer<String>() {
             @Override
@@ -358,16 +358,16 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
             videoWidth.setTextColor(Colors.WHITE);
             videoHeight.setTextColor(Colors.WHITE);
         } else {
-            queueButton.setDisabled().setTooltip(new GuiTooltip().setI18nText(resolutionError));
+            queueButton.setDisabled().setTooltip(new com.replaymod.gui.element.GuiTooltip().setI18nText(resolutionError));
             videoWidth.setTextColor(Colors.RED);
             videoHeight.setTextColor(Colors.RED);
         }
 
         String[] compatError = VideoRenderer.checkCompat();
         if (resolutionError != null) {
-            renderButton.setDisabled().setTooltip(new GuiTooltip().setI18nText(resolutionError));
+            renderButton.setDisabled().setTooltip(new com.replaymod.gui.element.GuiTooltip().setI18nText(resolutionError));
         } else if (compatError != null) {
-            renderButton.setDisabled().setTooltip(new GuiTooltip().setText(compatError));
+            renderButton.setDisabled().setTooltip(new com.replaymod.gui.element.GuiTooltip().setText(compatError));
         } else {
             renderButton.setEnabled().setTooltip(null);
         }
@@ -386,10 +386,10 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
             case CUBIC:
             case EQUIRECTANGULAR:
             case ODS:
-                stabilizePanel.invokeAll(IGuiCheckbox.class, GuiElement::setEnabled);
+                stabilizePanel.invokeAll(com.replaymod.gui.element.IGuiCheckbox.class, com.replaymod.gui.element.GuiElement::setEnabled);
                 break;
             default:
-                stabilizePanel.invokeAll(IGuiCheckbox.class, GuiElement::setDisabled);
+                stabilizePanel.invokeAll(com.replaymod.gui.element.IGuiCheckbox.class, com.replaymod.gui.element.GuiElement::setDisabled);
         }
 
         // Enable/Disable Spherical FOV slider
@@ -400,7 +400,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
                 && renderMethod.isSpherical()) {
             injectSphericalMetadata.setEnabled().setTooltip(null);
         } else {
-            injectSphericalMetadata.setDisabled().setTooltip(new GuiTooltip().setColor(Colors.RED)
+            injectSphericalMetadata.setDisabled().setTooltip(new com.replaymod.gui.element.GuiTooltip().setColor(Colors.RED)
                     .setI18nText("replaymod.gui.rendersettings.sphericalmetadata.error"));
         }
 
@@ -421,7 +421,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
         if (isEXR || isPNG) {
             depthMap.setEnabled().setTooltip(null);
         } else {
-            depthMap.setDisabled().setTooltip(new GuiTooltip().setColor(Colors.RED)
+            depthMap.setDisabled().setTooltip(new com.replaymod.gui.element.GuiTooltip().setColor(Colors.RED)
                     .setI18nText("replaymod.gui.rendersettings.depthmap.only_exr_or_png"));
         }
 

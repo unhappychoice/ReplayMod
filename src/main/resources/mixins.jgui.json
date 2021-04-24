@@ -6,13 +6,13 @@
   "client": [
     //#if FABRIC>=1
     //#if MC>=11400
-    "Mixin_RenderHudCallback",
-    "MixinGameRenderer",
-    "MixinScreen",
-    "MixinMouseListener",
-    "MixinKeyboardListener",
+    "com.replaymod.gui.versions.mixin.Mixin_RenderHudCallback",
+    "com.replaymod.gui.versions.mixin.MixinGameRenderer",
+    "com.replaymod.gui.versions.mixin.MixinScreen",
+    "com.replaymod.gui.versions.mixin.MixinMouseListener",
+    "com.replaymod.gui.versions.mixin.MixinKeyboardListener",
     // Note: MixinMinecraft actually belongs one line down in the 1.13 part but see its source file for why it isn't
-    "MixinMinecraft"
+    "com.replaymod.gui.versions.mixin.MixinMinecraft"
     //#endif
     //#endif
   ],

@@ -12,7 +12,7 @@
     "MixinCamera",
     "MixinInGameHud",
     //#endif
-    "EntityLivingBaseAccessor",
+    "com.replaymod.mixin.Mixin_EntityLivingBaseAccessor",
     //#if MC>=11400
     "Mixin_ShowSpectatedHand_NoOF",
     "Mixin_ShowSpectatedHand_OF",
@@ -22,7 +22,7 @@
     "EntityPlayerAccessor",
     "FirstPersonRendererAccessor",
     //#if MC>=10904
-    "MixinParticleManager",
+    "com.replaymod.mixin.Mixin_ParticleManager",
     //#endif
     //#if MC>=10800
     "MixinGuiSpectator",
@@ -35,10 +35,10 @@
     //$$ "MixinEntityRenderer",
     //$$ "MixinFMLClientHandler",
     //#endif
-    "MixinKeyboardListener",
-    "MixinPlayerControllerMP",
-    "MixinRenderItem",
-    "MixinRenderLivingBase",
+    "com.replaymod.mixin.Mixin_KeyboardListener",
+    "com.replaymod.mixin.Mixin_PlayerControllerMP",
+    "com.replaymod.mixin.Mixin_RenderItem",
+    "com.replaymod.mixin.Mixin_RenderLivingBase",
     "MixinTileEntityEndPortalRenderer",
     "MixinWorldClient"
   ],

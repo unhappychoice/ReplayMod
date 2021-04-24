@@ -2,11 +2,12 @@ package com.replaymod.extras.youtube;
 
 import com.replaymod.core.ReplayMod;
 import com.replaymod.extras.Extra;
+import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.render.gui.GuiRenderingDone;
-import de.johni0702.minecraft.gui.container.AbstractGuiScreen;
-import de.johni0702.minecraft.gui.element.GuiButton;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
-import de.johni0702.minecraft.gui.versions.callbacks.InitScreenCallback;
+import com.replaymod.gui.container.AbstractGuiScreen;
+import com.replaymod.gui.element.GuiButton;
+import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.gui.versions.callbacks.InitScreenCallback;
 import net.minecraft.client.gui.screen.Screen;
 
 public class YoutubeUpload extends EventRegistrations implements Extra {
@@ -17,7 +18,7 @@ public class YoutubeUpload extends EventRegistrations implements Extra {
 
     { on(InitScreenCallback.EVENT, ((screen, buttons) -> onGuiOpen(screen))); }
     private void onGuiOpen(Screen vanillaGui) {
-        AbstractGuiScreen<?> abstractScreen = de.johni0702.minecraft.gui.container.GuiScreen.from(vanillaGui);
+        AbstractGuiScreen<?> abstractScreen = GuiScreen.from(vanillaGui);
         if (abstractScreen instanceof GuiRenderingDone) {
             GuiRenderingDone gui = (GuiRenderingDone) abstractScreen;
             // Check if there already is a youtube button

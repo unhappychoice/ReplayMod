@@ -1,7 +1,7 @@
 package com.replaymod.replay.events;
 
 import com.replaymod.replay.ReplayHandler;
-import de.johni0702.minecraft.gui.utils.Event;
+import com.replaymod.gui.utils.Event;
 
 import java.io.IOException;
 

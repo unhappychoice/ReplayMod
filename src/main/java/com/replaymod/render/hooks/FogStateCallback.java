@@ -1,6 +1,6 @@
 package com.replaymod.render.hooks;
 
-import de.johni0702.minecraft.gui.utils.Event;
+import com.replaymod.gui.utils.Event;
 
 public interface FogStateCallback {
     Event<FogStateCallback> EVENT = Event.create((listeners) ->

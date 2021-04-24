@@ -17,22 +17,22 @@ import com.replaymod.simplepathing.SPTimeline;
 import com.replaymod.simplepathing.SPTimeline.SPPath;
 import com.replaymod.simplepathing.Setting;
 import com.replaymod.simplepathing.properties.ExplicitInterpolationProperty;
-import de.johni0702.minecraft.gui.container.AbstractGuiContainer;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.element.GuiButton;
-import de.johni0702.minecraft.gui.element.GuiLabel;
-import de.johni0702.minecraft.gui.element.GuiNumberField;
-import de.johni0702.minecraft.gui.element.GuiTooltip;
-import de.johni0702.minecraft.gui.element.IGuiClickable;
-import de.johni0702.minecraft.gui.element.IGuiLabel;
-import de.johni0702.minecraft.gui.element.advanced.GuiDropdownMenu;
-import de.johni0702.minecraft.gui.function.Typeable;
-import de.johni0702.minecraft.gui.layout.GridLayout;
-import de.johni0702.minecraft.gui.layout.HorizontalLayout;
-import de.johni0702.minecraft.gui.layout.VerticalLayout;
-import de.johni0702.minecraft.gui.popup.AbstractGuiPopup;
-import de.johni0702.minecraft.gui.utils.Colors;
-import de.johni0702.minecraft.gui.utils.Consumer;
+import com.replaymod.gui.container.AbstractGuiContainer;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.element.GuiButton;
+import com.replaymod.gui.element.GuiLabel;
+import com.replaymod.gui.element.GuiNumberField;
+import com.replaymod.gui.element.GuiTooltip;
+import com.replaymod.gui.element.IGuiClickable;
+import com.replaymod.gui.element.IGuiLabel;
+import com.replaymod.gui.element.advanced.GuiDropdownMenu;
+import com.replaymod.gui.function.Typeable;
+import com.replaymod.gui.layout.GridLayout;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.gui.popup.AbstractGuiPopup;
+import com.replaymod.gui.utils.Colors;
+import com.replaymod.gui.utils.Consumer;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import net.minecraft.client.resource.language.I18n;
 import org.apache.logging.log4j.LogManager;
@@ -47,7 +47,7 @@ import com.replaymod.core.versions.MCVer.Keyboard;
 //$$ import org.lwjgl.input.Keyboard;
 //#endif
 
-import static de.johni0702.minecraft.gui.utils.Utils.link;
+import static com.replaymod.gui.utils.Utils.link;
 
 public abstract class GuiEditKeyframe<T extends GuiEditKeyframe<T>> extends AbstractGuiPopup<T> implements Typeable {
     private static GuiNumberField newGuiNumberField() {

@@ -4,12 +4,12 @@ import com.replaymod.core.ReplayMod;
 import com.replaymod.render.RenderSettings;
 import com.replaymod.render.gui.GuiRenderSettings;
 import com.replaymod.replay.ReplayModReplay;
-import de.johni0702.minecraft.gui.container.GuiContainer;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.element.GuiLabel;
-import de.johni0702.minecraft.gui.function.Loadable;
-import de.johni0702.minecraft.gui.layout.GridLayout;
-import de.johni0702.minecraft.gui.layout.VerticalLayout;
+import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.element.GuiLabel;
+import com.replaymod.gui.function.Loadable;
+import com.replaymod.gui.layout.GridLayout;
+import com.replaymod.gui.layout.VerticalLayout;
 import net.minecraft.util.crash.CrashReport;
 
 import java.io.File;

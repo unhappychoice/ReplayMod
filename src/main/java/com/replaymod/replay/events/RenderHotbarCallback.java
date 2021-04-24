@@ -1,6 +1,6 @@
 package com.replaymod.replay.events;
 
-import de.johni0702.minecraft.gui.utils.Event;
+import com.replaymod.gui.utils.Event;
 
 public interface RenderHotbarCallback {
     Event<RenderHotbarCallback> EVENT = Event.create((listeners) ->

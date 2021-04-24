@@ -1,13 +1,14 @@
 package com.replaymod.replay.handler;
 
 import com.replaymod.core.gui.GuiReplayButton;
+import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.replay.Setting;
-import de.johni0702.minecraft.gui.container.VanillaGuiScreen;
-import de.johni0702.minecraft.gui.element.GuiTooltip;
-import de.johni0702.minecraft.gui.layout.CustomLayout;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.container.VanillaGuiScreen;
+import com.replaymod.gui.element.GuiTooltip;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.utils.EventRegistrations;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.versions.callbacks.InitScreenCallback;
+import com.replaymod.gui.versions.callbacks.InitScreenCallback;
 import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.replay.gui.screen.GuiReplayViewer;
 import net.minecraft.client.gui.screen.GameMenuScreen;
@@ -236,11 +237,11 @@ public class GuiHandler extends EventRegistrations {
                     .onClick(() -> new GuiReplayViewer(mod).display())
                     .setTooltip(new GuiTooltip().setI18nText("replaymod.gui.replayviewer"));
 
-            vanillaGui.setLayout(new CustomLayout<de.johni0702.minecraft.gui.container.GuiScreen>(vanillaGui.getLayout()) {
+            vanillaGui.setLayout(new CustomLayout<GuiScreen>(vanillaGui.getLayout()) {
                 private Point pos;
 
                 @Override
-                protected void layout(de.johni0702.minecraft.gui.container.GuiScreen container, int width, int height) {
+                protected void layout(GuiScreen container, int width, int height) {
                     if (pos == null) {
                         // Delaying computation so we can take into account buttons
                         // added after our callback.

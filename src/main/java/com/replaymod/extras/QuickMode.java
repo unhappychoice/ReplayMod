@@ -6,9 +6,9 @@ import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.replay.events.ReplayOpenedCallback;
 import com.replaymod.replay.gui.overlay.GuiReplayOverlay;
-import de.johni0702.minecraft.gui.element.GuiImage;
-import de.johni0702.minecraft.gui.layout.HorizontalLayout;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.element.GuiImage;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.utils.EventRegistrations;
 
 public class QuickMode extends EventRegistrations implements Extra {
     private ReplayModReplay module;

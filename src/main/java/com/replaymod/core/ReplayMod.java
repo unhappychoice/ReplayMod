@@ -19,7 +19,7 @@ import com.replaymod.replaystudio.studio.ReplayStudio;
 import com.replaymod.replaystudio.us.myles.ViaVersion.api.protocol.ProtocolVersion;
 import com.replaymod.replaystudio.util.I18n;
 import com.replaymod.simplepathing.ReplayModSimplePathing;
-import de.johni0702.minecraft.gui.container.GuiScreen;
+import com.replaymod.gui.container.GuiScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.Option;
 import net.minecraft.resource.DirectoryResourcePack;

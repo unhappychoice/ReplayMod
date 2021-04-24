@@ -3,7 +3,7 @@ package com.replaymod.simplepathing.preview;
 import com.replaymod.core.KeyBindingRegistry;
 import com.replaymod.core.SettingsRegistry;
 import com.replaymod.core.events.SettingsChangedCallback;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.core.versions.MCVer.Keyboard;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replay.events.ReplayClosedCallback;

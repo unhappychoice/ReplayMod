@@ -4,7 +4,7 @@
   "mixins": [],
   "server": [],
   "client": [
-    "MixinRender"
+    "com.replaymod.mixin.MixinRender"
   ],
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.6.11",

@@ -6,21 +6,21 @@ import com.replaymod.recording.Setting;
 import com.replaymod.replay.gui.screen.GuiReplayViewer;
 import com.replaymod.replaystudio.replay.ReplayMetaData;
 import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
-import de.johni0702.minecraft.gui.container.AbstractGuiScreen;
-import de.johni0702.minecraft.gui.container.GuiContainer;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.container.GuiScreen;
-import de.johni0702.minecraft.gui.container.VanillaGuiScreen;
-import de.johni0702.minecraft.gui.element.GuiButton;
-import de.johni0702.minecraft.gui.element.GuiLabel;
-import de.johni0702.minecraft.gui.element.GuiTextField;
-import de.johni0702.minecraft.gui.element.GuiTooltip;
-import de.johni0702.minecraft.gui.element.advanced.GuiProgressBar;
-import de.johni0702.minecraft.gui.function.Focusable;
-import de.johni0702.minecraft.gui.layout.CustomLayout;
-import de.johni0702.minecraft.gui.layout.HorizontalLayout;
-import de.johni0702.minecraft.gui.layout.VerticalLayout;
-import de.johni0702.minecraft.gui.utils.Colors;
+import com.replaymod.gui.container.AbstractGuiScreen;
+import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.container.VanillaGuiScreen;
+import com.replaymod.gui.element.GuiButton;
+import com.replaymod.gui.element.GuiLabel;
+import com.replaymod.gui.element.GuiTextField;
+import com.replaymod.gui.element.GuiTooltip;
+import com.replaymod.gui.element.advanced.GuiProgressBar;
+import com.replaymod.gui.function.Focusable;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.gui.utils.Colors;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import net.minecraft.client.MinecraftClient;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.replaymod.core.versions.MCVer.getMinecraft;
-import static de.johni0702.minecraft.gui.utils.Utils.link;
+import static com.replaymod.gui.utils.Utils.link;
 
 public class GuiSavingReplay {
 

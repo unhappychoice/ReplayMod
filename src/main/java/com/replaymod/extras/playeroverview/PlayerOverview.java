@@ -10,7 +10,7 @@ import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.replay.camera.CameraEntity;
 import com.replaymod.replay.events.ReplayClosedCallback;
 import com.replaymod.replay.events.ReplayOpenedCallback;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.utils.EventRegistrations;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 

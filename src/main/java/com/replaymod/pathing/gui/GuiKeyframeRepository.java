@@ -1,7 +1,5 @@
 package com.replaymod.pathing.gui;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
@@ -15,25 +13,25 @@ import com.replaymod.replaystudio.pathing.path.Path;
 import com.replaymod.replaystudio.pathing.path.Timeline;
 import com.replaymod.replaystudio.pathing.serialize.TimelineSerialization;
 import com.replaymod.replaystudio.replay.ReplayFile;
-import de.johni0702.minecraft.gui.GuiRenderer;
-import de.johni0702.minecraft.gui.RenderInfo;
-import de.johni0702.minecraft.gui.container.AbstractGuiClickableContainer;
-import de.johni0702.minecraft.gui.container.GuiContainer;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.container.GuiScreen;
-import de.johni0702.minecraft.gui.container.GuiVerticalList;
-import de.johni0702.minecraft.gui.element.GuiButton;
-import de.johni0702.minecraft.gui.element.GuiElement;
-import de.johni0702.minecraft.gui.element.GuiLabel;
-import de.johni0702.minecraft.gui.element.GuiTextField;
-import de.johni0702.minecraft.gui.function.Closeable;
-import de.johni0702.minecraft.gui.function.Typeable;
-import de.johni0702.minecraft.gui.layout.CustomLayout;
-import de.johni0702.minecraft.gui.layout.GridLayout;
-import de.johni0702.minecraft.gui.layout.VerticalLayout;
-import de.johni0702.minecraft.gui.popup.GuiYesNoPopup;
-import de.johni0702.minecraft.gui.utils.Colors;
-import de.johni0702.minecraft.gui.utils.Consumer;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.container.AbstractGuiClickableContainer;
+import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.container.GuiVerticalList;
+import com.replaymod.gui.element.GuiButton;
+import com.replaymod.gui.element.GuiElement;
+import com.replaymod.gui.element.GuiLabel;
+import com.replaymod.gui.element.GuiTextField;
+import com.replaymod.gui.function.Closeable;
+import com.replaymod.gui.function.Typeable;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.layout.GridLayout;
+import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.gui.popup.GuiYesNoPopup;
+import com.replaymod.gui.utils.Colors;
+import com.replaymod.gui.utils.Consumer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
@@ -50,8 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.johni0702.minecraft.gui.versions.MCVer.getClipboardString;
-import static de.johni0702.minecraft.gui.versions.MCVer.setClipboardString;
+import static com.replaymod.gui.versions.MCVer.getClipboardString;
+import static com.replaymod.gui.versions.MCVer.setClipboardString;
 
 /**
  * Gui for loading and saving {@link Timeline Timelines}.

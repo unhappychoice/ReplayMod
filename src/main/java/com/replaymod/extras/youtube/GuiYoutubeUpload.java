@@ -7,26 +7,25 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
+import com.replaymod.gui.element.GuiTextField;
 import com.replaymod.render.RenderSettings;
-import de.johni0702.minecraft.gui.GuiRenderer;
-import de.johni0702.minecraft.gui.RenderInfo;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.container.GuiScreen;
-import de.johni0702.minecraft.gui.element.*;
-import de.johni0702.minecraft.gui.element.advanced.GuiDropdownMenu;
-import de.johni0702.minecraft.gui.element.advanced.GuiProgressBar;
-import de.johni0702.minecraft.gui.element.advanced.GuiTextArea;
-import de.johni0702.minecraft.gui.layout.CustomLayout;
-import de.johni0702.minecraft.gui.layout.VerticalLayout;
-import de.johni0702.minecraft.gui.popup.GuiFileChooserPopup;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.element.advanced.GuiDropdownMenu;
+import com.replaymod.gui.element.advanced.GuiProgressBar;
+import com.replaymod.gui.element.advanced.GuiTextArea;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.gui.popup.GuiFileChooserPopup;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.versions.Image;
+import com.replaymod.gui.versions.Image;
 import joptsimple.internal.Strings;
 import net.minecraft.client.resource.language.I18n;
 import org.apache.commons.io.IOUtils;
 
 //#if MC>=11400
-import net.minecraft.util.Util;
 //#else
 //$$ import org.lwjgl.Sys;
 //#endif
@@ -69,13 +68,13 @@ public class GuiYoutubeUpload extends GuiScreen {
                     uploadButton.setTooltip(null);
                 } else {
                     uploadButton.setDisabled();
-                    uploadButton.setTooltip(new GuiTooltip().setI18nText(problem));
+                    uploadButton.setTooltip(new com.replaymod.gui.element.GuiTooltip().setI18nText(problem));
                 }
             }
         }
     };
 
-    public final GuiTextField nameField = new GuiTextField().setI18nHint("replaymod.gui.videotitle")
+    public final com.replaymod.gui.element.GuiTextField nameField = new com.replaymod.gui.element.GuiTextField().setI18nHint("replaymod.gui.videotitle")
             .onTextChanged(s -> inputValidation.run());
 
     public final GuiTextArea descriptionField = new GuiTextArea().setMaxCharCount(Integer.MAX_VALUE)
@@ -84,7 +83,7 @@ public class GuiYoutubeUpload extends GuiScreen {
         descriptionField.setText(new String[]{I18n.translate("replaymod.gui.videodescription")});
     }
 
-    public final GuiTextField tagsField = new GuiTextField().setI18nHint("replaymod.gui.videotags");
+    public final com.replaymod.gui.element.GuiTextField tagsField = new GuiTextField().setI18nHint("replaymod.gui.videotags");
 
     {
         nameField.setNext(descriptionField)
@@ -112,7 +111,7 @@ public class GuiYoutubeUpload extends GuiScreen {
     public final GuiDropdownMenu<VideoVisibility> visibilityDropdown = new GuiDropdownMenu<VideoVisibility>()
             .setSize(200, 20).setValues(VideoVisibility.values()).setSelected(VideoVisibility.PUBLIC);
 
-    public final GuiButton thumbnailButton = new GuiButton().onClick(new Runnable() {
+    public final com.replaymod.gui.element.GuiButton thumbnailButton = new com.replaymod.gui.element.GuiButton().onClick(new Runnable() {
         @Override
         public void run() {
             GuiFileChooserPopup.openLoadGui(
@@ -139,11 +138,11 @@ public class GuiYoutubeUpload extends GuiScreen {
         }
     }).setSize(200, 20).setI18nLabel("replaymod.gui.videothumbnail");
 
-    public final GuiImage thumbnail = new GuiImage().setSize(200, 112).setTexture(Utils.DEFAULT_THUMBNAIL);
+    public final com.replaymod.gui.element.GuiImage thumbnail = new com.replaymod.gui.element.GuiImage().setSize(200, 112).setTexture(Utils.DEFAULT_THUMBNAIL);
 
-    public final GuiButton uploadButton = new GuiButton(this).setSize(98, 20);
+    public final com.replaymod.gui.element.GuiButton uploadButton = new com.replaymod.gui.element.GuiButton(this).setSize(98, 20);
 
-    public final GuiButton closeButton = new GuiButton(this).onClick(new Runnable() {
+    public final com.replaymod.gui.element.GuiButton closeButton = new com.replaymod.gui.element.GuiButton(this).onClick(new Runnable() {
         @Override
         public void run() {
             previousScreen.display();
@@ -181,7 +180,7 @@ public class GuiYoutubeUpload extends GuiScreen {
     }
 
     private void setState(boolean uploading) {
-        invokeAll(GuiElement.class, e -> e.setEnabled(!uploading));
+        invokeAll(com.replaymod.gui.element.GuiElement.class, e -> e.setEnabled(!uploading));
         uploadButton.setEnabled();
         if (uploading) {
             uploadButton.onClick(() -> {

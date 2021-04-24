@@ -9,7 +9,7 @@ import com.replaymod.recording.ServerInfoExt;
 import com.replaymod.recording.Setting;
 import com.replaymod.recording.gui.GuiRecordingControls;
 import com.replaymod.recording.gui.GuiRecordingOverlay;
-import com.replaymod.recording.mixin.NetworkManagerAccessor;
+import com.replaymod.mixin.NetworkManagerAccessor;
 import com.replaymod.recording.packet.PacketListener;
 import com.replaymod.replaystudio.replay.ReplayFile;
 import com.replaymod.replaystudio.replay.ReplayMetaData;

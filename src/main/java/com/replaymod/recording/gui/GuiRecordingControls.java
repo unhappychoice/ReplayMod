@@ -4,14 +4,15 @@ import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.editor.gui.MarkerProcessor;
+import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.recording.packet.PacketListener;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.container.VanillaGuiScreen;
-import de.johni0702.minecraft.gui.element.GuiButton;
-import de.johni0702.minecraft.gui.layout.CustomLayout;
-import de.johni0702.minecraft.gui.layout.HorizontalLayout;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
-import de.johni0702.minecraft.gui.versions.callbacks.InitScreenCallback;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.VanillaGuiScreen;
+import com.replaymod.gui.element.GuiButton;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.gui.versions.callbacks.InitScreenCallback;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -93,9 +94,9 @@ public class GuiRecordingControls extends EventRegistrations {
                         .<Function<Integer, Integer>>map(it -> (height) -> it.y)
                         .orElse((height) -> height / 4 + 120 - 16);
         VanillaGuiScreen vanillaGui = VanillaGuiScreen.wrap(guiScreen);
-        vanillaGui.setLayout(new CustomLayout<de.johni0702.minecraft.gui.container.GuiScreen>(vanillaGui.getLayout()) {
+        vanillaGui.setLayout(new CustomLayout<GuiScreen>(vanillaGui.getLayout()) {
             @Override
-            protected void layout(de.johni0702.minecraft.gui.container.GuiScreen container, int width, int height) {
+            protected void layout(GuiScreen container, int width, int height) {
                 pos(panel, width / 2 - 100, yPos.apply(height) + 16 + 8);
             }
         }).addElements(null, panel);

@@ -1,6 +1,6 @@
 package com.replaymod.core.versions.scheduler;
 
-import com.replaymod.core.mixin.MinecraftAccessor;
+import com.replaymod.mixin.MinecraftAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.thread.ReentrantThreadExecutor;

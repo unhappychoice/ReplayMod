@@ -1,7 +1,7 @@
 package com.replaymod.render.capturer;
 
 import com.replaymod.render.rendering.Channel;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.render.RenderSettings;
 import com.replaymod.render.frame.CubicOpenGlFrame;
 import com.replaymod.render.frame.ODSOpenGlFrame;

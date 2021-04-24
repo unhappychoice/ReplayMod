@@ -19,7 +19,7 @@ import net.minecraft.text.TranslatableText;
 //#endif
 
 //#if MC>=10800
-import de.johni0702.minecraft.gui.utils.Consumer;
+import com.replaymod.gui.utils.Consumer;
 //#else
 //$$ import net.minecraft.client.gui.GuiScreenWorking;
 //$$ import net.minecraft.util.HttpUtil;

@@ -26,7 +26,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.replaymod.render.RenderSettings;
 import com.replaymod.render.metadata.MetadataInjector;
-import de.johni0702.minecraft.gui.utils.NonNull;
+import com.replaymod.gui.utils.NonNull;
 import net.minecraft.client.MinecraftClient;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FileUtils;

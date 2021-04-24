@@ -1,6 +1,6 @@
 package com.replaymod.core.events;
 
-import de.johni0702.minecraft.gui.utils.Event;
+import com.replaymod.gui.utils.Event;
 
 public interface KeyBindingEventCallback {
     Event<KeyBindingEventCallback> EVENT = Event.create((listeners) ->

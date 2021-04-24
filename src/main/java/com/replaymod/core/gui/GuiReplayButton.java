@@ -1,9 +1,9 @@
 package com.replaymod.core.gui;
 
 import com.replaymod.core.ReplayMod;
-import de.johni0702.minecraft.gui.GuiRenderer;
-import de.johni0702.minecraft.gui.RenderInfo;
-import de.johni0702.minecraft.gui.element.GuiButton;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.element.GuiButton;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 
 public class GuiReplayButton extends GuiButton {

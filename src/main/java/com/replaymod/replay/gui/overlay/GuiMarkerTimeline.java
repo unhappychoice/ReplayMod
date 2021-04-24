@@ -7,11 +7,11 @@ import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.replay.camera.CameraEntity;
 import com.replaymod.replaystudio.data.Marker;
 import com.replaymod.replaystudio.util.Location;
-import de.johni0702.minecraft.gui.GuiRenderer;
-import de.johni0702.minecraft.gui.RenderInfo;
-import de.johni0702.minecraft.gui.element.advanced.AbstractGuiTimeline;
-import de.johni0702.minecraft.gui.function.Draggable;
-import de.johni0702.minecraft.gui.function.Typeable;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.element.advanced.AbstractGuiTimeline;
+import com.replaymod.gui.function.Draggable;
+import com.replaymod.gui.function.Typeable;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static de.johni0702.minecraft.gui.utils.Utils.clamp;
+import static com.replaymod.gui.utils.Utils.clamp;
 
 public class GuiMarkerTimeline extends AbstractGuiTimeline<GuiMarkerTimeline> implements Draggable, Typeable {
     protected static final int TEXTURE_MARKER_X = 109;

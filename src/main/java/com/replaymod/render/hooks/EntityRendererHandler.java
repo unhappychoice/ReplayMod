@@ -6,7 +6,7 @@ import com.replaymod.render.RenderSettings;
 import com.replaymod.render.capturer.CaptureData;
 import com.replaymod.render.capturer.RenderInfo;
 import com.replaymod.render.capturer.WorldRenderer;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.utils.EventRegistrations;
 import net.minecraft.client.MinecraftClient;
 
 //#if MC>=11500

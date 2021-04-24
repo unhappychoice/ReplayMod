@@ -1,7 +1,7 @@
 package com.replaymod.replay.camera;
 
 import com.replaymod.replay.ReplayModReplay;
-import com.replaymod.replay.mixin.EntityPlayerAccessor;
+import com.replaymod.mixin.EntityPlayerAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.entity.Entity;

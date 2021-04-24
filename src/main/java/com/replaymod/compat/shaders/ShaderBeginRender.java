@@ -3,7 +3,7 @@ package com.replaymod.compat.shaders;
 
 import com.replaymod.core.events.PreRenderCallback;
 import com.replaymod.render.hooks.EntityRendererHandler;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.utils.EventRegistrations;
 import net.minecraft.client.MinecraftClient;
 
 import java.lang.reflect.InvocationTargetException;

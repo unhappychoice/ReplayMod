@@ -1,6 +1,6 @@
 package com.replaymod.compat.optifine;
 
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.render.events.ReplayRenderCallback;
 import net.minecraft.client.MinecraftClient;

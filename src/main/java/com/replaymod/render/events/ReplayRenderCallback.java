@@ -1,7 +1,7 @@
 package com.replaymod.render.events;
 
 import com.replaymod.render.rendering.VideoRenderer;
-import de.johni0702.minecraft.gui.utils.Event;
+import com.replaymod.gui.utils.Event;
 
 public interface ReplayRenderCallback {
     interface Pre {

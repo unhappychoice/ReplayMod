@@ -1,7 +1,7 @@
 package com.replaymod.core;
 
 import com.mojang.bridge.launcher.Launcher;
-import com.replaymod.core.mixin.MinecraftAccessor;
+import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.core.versions.forge.EventsAdapter;
 import com.replaymod.extras.modcore.ModCoreInstaller;
 import net.minecraft.resources.IResourcePack;
@@ -37,9 +37,9 @@ public class ReplayModBackend {
         eventsAdapter.register();
         // config = new Configuration(event.getSuggestedConfigurationFile());
         // config.load();
-        SettingsRegistry settingsRegistry = mod.getSettingsRegistry();
+        // SettingsRegistry settingsRegistry = mod.getSettingsRegistry();
         // settingsRegistry.backend.setConfiguration(config);
-        settingsRegistry.save(); // Save default values to disk
+        // settingsRegistry.save(); // Save default values to disk
     }
 
     public String getVersion() {

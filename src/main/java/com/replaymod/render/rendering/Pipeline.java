@@ -1,6 +1,6 @@
 package com.replaymod.render.rendering;
 
-import com.replaymod.core.mixin.MinecraftAccessor;
+import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.render.capturer.WorldRenderer;
 import com.replaymod.render.frame.BitmapFrame;

@@ -1,10 +1,10 @@
 package com.replaymod.recording.handler;
 
 import com.replaymod.core.events.PreRenderCallback;
-import com.replaymod.recording.mixin.IntegratedServerAccessor;
+import com.replaymod.mixin.IntegratedServerAccessor;
 import com.replaymod.recording.packet.PacketListener;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
-import de.johni0702.minecraft.gui.versions.callbacks.PreTickCallback;
+import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.gui.versions.callbacks.PreTickCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
@@ -41,7 +41,7 @@ import java.util.Collections;
 //#endif
 
 //#if MC>=10904
-import com.replaymod.recording.mixin.EntityLivingBaseAccessor;
+import com.replaymod.mixin.EntityLivingBaseAccessor;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;

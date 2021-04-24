@@ -6,14 +6,14 @@ import com.google.common.collect.Ordering;
 import com.google.common.primitives.Longs;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import com.replaymod.core.mixin.MinecraftAccessor;
-import com.replaymod.core.mixin.TimerAccessor;
+import com.replaymod.mixin.MinecraftAccessor;
+import com.replaymod.mixin.TimerAccessor;
 import com.replaymod.core.utils.WrappedTimer;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replaystudio.pathing.path.Keyframe;
 import com.replaymod.replaystudio.pathing.path.Path;
 import com.replaymod.replaystudio.pathing.path.Timeline;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.utils.EventRegistrations;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderTickCounter;
 

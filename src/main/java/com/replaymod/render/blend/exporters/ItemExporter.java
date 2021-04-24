@@ -29,7 +29,7 @@ import net.minecraft.client.render.model.BakedModel;
 //#endif
 
 //#if MC>=10904
-import com.replaymod.render.blend.mixin.ItemRendererAccessor;
+import com.replaymod.mixin.ItemRendererAccessor;
 //#endif
 
 import java.util.List;

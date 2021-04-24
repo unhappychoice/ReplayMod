@@ -2,10 +2,10 @@ package com.replaymod.recording.gui;
 
 import com.replaymod.core.SettingsRegistry;
 import com.replaymod.recording.Setting;
-import de.johni0702.minecraft.gui.GuiRenderer;
-import de.johni0702.minecraft.gui.MinecraftGuiRenderer;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
-import de.johni0702.minecraft.gui.versions.callbacks.RenderHudCallback;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.MinecraftGuiRenderer;
+import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.gui.versions.callbacks.RenderHudCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.resource.language.I18n;

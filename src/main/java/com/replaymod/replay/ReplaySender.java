@@ -1,7 +1,7 @@
 package com.replaymod.replay;
 
-import com.replaymod.core.mixin.MinecraftAccessor;
-import com.replaymod.core.mixin.TimerAccessor;
+import com.replaymod.mixin.MinecraftAccessor;
+import com.replaymod.mixin.TimerAccessor;
 import net.minecraft.client.MinecraftClient;
 
 import static com.replaymod.core.versions.MCVer.getMinecraft;

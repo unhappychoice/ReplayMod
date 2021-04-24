@@ -1,18 +1,18 @@
 package com.replaymod.core.gui;
 
-import de.johni0702.minecraft.gui.GuiRenderer;
-import de.johni0702.minecraft.gui.RenderInfo;
-import de.johni0702.minecraft.gui.container.AbstractGuiContainer;
-import de.johni0702.minecraft.gui.container.GuiPanel;
-import de.johni0702.minecraft.gui.container.GuiScreen;
-import de.johni0702.minecraft.gui.container.VanillaGuiScreen;
-import de.johni0702.minecraft.gui.element.GuiElement;
-import de.johni0702.minecraft.gui.layout.CustomLayout;
-import de.johni0702.minecraft.gui.layout.VerticalLayout;
-import de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.container.AbstractGuiContainer;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.container.VanillaGuiScreen;
+import com.replaymod.gui.element.GuiElement;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.gui.utils.EventRegistrations;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.versions.callbacks.InitScreenCallback;
+import com.replaymod.gui.versions.callbacks.InitScreenCallback;
 
 import static com.replaymod.core.versions.MCVer.getMinecraft;
 

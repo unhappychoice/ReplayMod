@@ -1,6 +1,7 @@
 package com.replaymod.core.versions;
 
-import com.replaymod.core.mixin.GuiScreenAccessor;
+import com.replaymod.mixin.GuiScreenAccessor;
+import com.replaymod.core.MinecraftMethodAccessor;
 import com.replaymod.replaystudio.protocol.PacketTypeRegistry;
 import com.replaymod.replaystudio.us.myles.ViaVersion.api.protocol.ProtocolVersion;
 import com.replaymod.replaystudio.us.myles.ViaVersion.packets.State;
@@ -13,7 +14,7 @@ import net.minecraft.resource.ResourcePackSource;
 //#endif
 
 //#if MC>=11400
-import com.replaymod.render.mixin.MainWindowAccessor;
+import com.replaymod.mixin.MainWindowAccessor;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -47,7 +48,7 @@ import org.lwjgl.glfw.GLFW;
 //#endif
 
 //#if MC>=10904
-import com.replaymod.render.blend.mixin.ParticleAccessor;
+import com.replaymod.mixin.ParticleAccessor;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.util.math.Vec3d;
 //#endif
@@ -248,22 +249,6 @@ public class MCVer {
         ((MinecraftMethodAccessor) getMinecraft()).replayModProcessKeyBinds();
     }
     //#endif
-
-    public interface MinecraftMethodAccessor {
-        //#if MC>=11400
-        void replayModProcessKeyBinds();
-        //#else
-        //#if MC>=10904
-        //$$ void replayModRunTickMouse();
-        //$$ void replayModRunTickKeyboard();
-        //#else
-        //$$ void replayModSetEarlyReturnFromRunTick(boolean earlyReturn);
-        //#endif
-        //#endif
-        //#if MC>=11400
-        void replayModExecuteTaskQueue();
-        //#endif
-    }
 
     //#if MC>=10800 && MC<11500
     //$$ public interface ChunkRenderWorkerAccessor {

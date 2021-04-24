@@ -1,6 +1,6 @@
 package com.replaymod.core.utils;
 
-import com.replaymod.core.mixin.TimerAccessor;
+import com.replaymod.mixin.TimerAccessor;
 import net.minecraft.client.render.RenderTickCounter;
 
 public class WrappedTimer extends RenderTickCounter {

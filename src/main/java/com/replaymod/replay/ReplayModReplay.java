@@ -7,7 +7,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.replaymod.core.KeyBindingRegistry;
 import com.replaymod.core.Module;
 import com.replaymod.core.ReplayMod;
-import com.replaymod.core.mixin.MinecraftAccessor;
+import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.core.utils.ModCompat;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.core.versions.MCVer.Keyboard;

@@ -1,11 +1,11 @@
 package com.replaymod.render.rendering;
 
-import com.replaymod.core.mixin.MinecraftAccessor;
-import com.replaymod.core.mixin.TimerAccessor;
+import com.replaymod.mixin.MinecraftAccessor;
+import com.replaymod.core.MinecraftMethodAccessor;
+import com.replaymod.mixin.TimerAccessor;
 import com.replaymod.core.utils.WrappedTimer;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.pathing.player.AbstractTimelinePlayer;
-import com.replaymod.pathing.player.ReplayTimer;
 import com.replaymod.pathing.properties.TimestampProperty;
 import com.replaymod.render.CameraPathExporter;
 import com.replaymod.render.PNGWriter;
@@ -20,8 +20,7 @@ import com.replaymod.render.gui.GuiRenderingDone;
 import com.replaymod.render.gui.GuiVideoRenderer;
 import com.replaymod.render.hooks.ForceChunkLoadingHook;
 import com.replaymod.render.metadata.MetadataInjector;
-import com.replaymod.render.mixin.MainWindowAccessor;
-import com.replaymod.render.mixin.WorldRendererAccessor;
+import com.replaymod.mixin.MainWindowAccessor;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replaystudio.pathing.path.Keyframe;
 import com.replaymod.replaystudio.pathing.path.Path;
@@ -29,7 +28,6 @@ import com.replaymod.replaystudio.pathing.path.Timeline;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import net.minecraft.client.MinecraftClient;
-import com.mojang.blaze3d.platform.GLX;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.Window;
@@ -70,9 +68,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.replaymod.core.versions.MCVer.*;
@@ -432,7 +428,7 @@ public class VideoRenderer implements RenderInfo {
             }
             break;
         }
-        ((MCVer.MinecraftMethodAccessor) mc).replayModExecuteTaskQueue();
+        ((MinecraftMethodAccessor) mc).replayModExecuteTaskQueue();
         //#else
         //$$ Queue<FutureTask<?>> scheduledTasks = ((MinecraftAccessor) mc).getScheduledTasks();
         //$$ //noinspection SynchronizationOnLocalVariableOrMethodParameter
