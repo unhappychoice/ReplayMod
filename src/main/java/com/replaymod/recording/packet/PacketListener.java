@@ -45,6 +45,10 @@ import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 //$$ import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 //#endif
 
+//#if FABRIC<1
+//$$ import net.minecraft.network.login.server.SCustomPayloadLoginPacket;
+//#endif
+
 //#if MC>=10904
 //#else
 //$$ import java.util.List;
@@ -104,8 +108,8 @@ public class PacketListener extends ChannelInboundHandlerAdapter {
     private boolean loginPhase = true;
     //#else
     //#if MC>=11600
-    //$$ private ProtocolType connectionState = ProtocolType.PLAY;
-    //$$ private boolean loginPhase = false;
+    //$$ private ProtocolType connectionState = ProtocolType.LOGIN;
+    //$$ private boolean loginPhase = true;
     //#else
     //$$ private EnumConnectionState connectionState = EnumConnectionState.PLAY;
     //$$ private boolean loginPhase = false;
@@ -362,6 +366,15 @@ public class PacketListener extends ChannelInboundHandlerAdapter {
                     //#endif
                 //$$     super.channelRead(ctx, msg);
                 //$$     return;
+                //$$ }
+                //#endif
+
+                //#if FABRIC<1
+                //$$ if (packet instanceof SCustomPayloadLoginPacket) {
+                //$$     PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
+                //$$     packet.writePacketData(buffer);
+                //$$     packet = new SCustomPayloadLoginPacket();
+                //$$     packet.readPacketData(buffer);
                 //$$ }
                 //#endif
 

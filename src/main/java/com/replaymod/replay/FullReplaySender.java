@@ -390,78 +390,83 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
 
         if (msg instanceof byte[]) {
             try {
-                Packet p = deserializePacket((byte[]) msg);
+                Packet deserialized = deserializePacket((byte[]) msg);
 
-                if (p != null) {
-                    p = processPacket(p);
-                    if (p != null) {
-                        super.channelRead(ctx, p);
-                    }
-
-                    // If we do not give minecraft time to tick, there will be dead entity artifacts left in the world
-                    // Therefore we have to remove all loaded, dead entities manually if we are in sync mode.
-                    // We do this after every SpawnX packet and after the destroy entities packet.
-                    if (!asyncMode && mc.world != null) {
-                        if (p instanceof PlayerSpawnS2CPacket
-                                || p instanceof EntitySpawnS2CPacket
-                                || p instanceof MobSpawnS2CPacket
-                                //#if MC<11600
-                                //$$ || p instanceof EntitySpawnGlobalS2CPacket
-                                //#endif
-                                || p instanceof PaintingSpawnS2CPacket
-                                || p instanceof ExperienceOrbSpawnS2CPacket
-                                || p instanceof EntitiesDestroyS2CPacket) {
-                            ClientWorld world = mc.world;
-                            //#if MC>=11400
-                            // Note: Not sure if it's still required but there's this really handy method anyway
-                            world.finishRemovingEntities();
-                            //#else
-                            //$$ Iterator<Entity> iter = world.loadedEntityList.iterator();
-                            //$$ while (iter.hasNext()) {
-                            //$$     Entity entity = iter.next();
-                            //$$     if (entity.isDead) {
-                            //$$         int chunkX = entity.chunkCoordX;
-                            //$$         int chunkY = entity.chunkCoordZ;
-                            //$$
-                                    //#if MC>=11400
-                                    //$$ if (entity.addedToChunk && world.getChunkProvider().provideChunk(chunkX, chunkY, false, false) != null) {
-                                    //#else
-                                    //#if MC>=10904
-                                    //$$ if (entity.addedToChunk && world.getChunkProvider().getLoadedChunk(chunkX, chunkY) != null) {
-                                    //#else
-                                    //$$ if (entity.addedToChunk && world.getChunkProvider().chunkExists(chunkX, chunkY)) {
-                                    //#endif
-                                    //#endif
-                            //$$             world.getChunkFromChunkCoords(chunkX, chunkY).removeEntity(entity);
-                            //$$         }
-                            //$$
-                            //$$         iter.remove();
-                            //$$         world.onEntityRemoved(entity);
-                            //$$     }
-                            //$$
-                            //$$ }
-                            //#endif
-                        }
-                    }
-
-                    //#if MC>=11400
-                    if (p instanceof ChunkDataS2CPacket) {
-                        Runnable doLightUpdates = () -> {
-                            if (mc.world != null) {
-                                LightingProvider provider = mc.world.getChunkManager().getLightingProvider();
-                                while (provider.hasUpdates()) {
-                                    provider.doLightUpdates(Integer.MAX_VALUE, true, true);
-                                }
-                            }
-                        };
-                        if (mc.isOnThread()) {
-                            doLightUpdates.run();
-                        } else {
-                            mc.send(doLightUpdates);
-                        }
-                    }
-                    //#endif
+                if (deserialized == null) {
+                    System.out.println("Failed to deserialize a packet to send. loginPhase: " + loginPhase);
+                    return;
                 }
+
+                Packet processed = processPacket(deserialized);
+
+                if (processed != null) {
+                    // System.out.println("Processing a packet. Class: " + processed.getClass().toString());
+                    super.channelRead(ctx, processed);
+                }
+
+                // If we do not give minecraft time to tick, there will be dead entity artifacts left in the world
+                // Therefore we have to remove all loaded, dead entities manually if we are in sync mode.
+                // We do this after every SpawnX packet and after the destroy entities packet.
+                if (!asyncMode && mc.world != null) {
+                    if (processed instanceof PlayerSpawnS2CPacket
+                            || processed instanceof EntitySpawnS2CPacket
+                            || processed instanceof MobSpawnS2CPacket
+                            //#if MC<11600
+                            //$$ || processed instanceof EntitySpawnGlobalS2CPacket
+                            //#endif
+                            || processed instanceof PaintingSpawnS2CPacket
+                            || processed instanceof ExperienceOrbSpawnS2CPacket
+                            || processed instanceof EntitiesDestroyS2CPacket) {
+                        ClientWorld world = mc.world;
+                        //#if MC>=11400
+                        // Note: Not sure if it's still required but there's this really handy method anyway
+                        world.finishRemovingEntities();
+                        //#else
+                        //$$ Iterator<Entity> iter = world.loadedEntityList.iterator();
+                        //$$ while (iter.hasNext()) {
+                        //$$     Entity entity = iter.next();
+                        //$$     if (entity.isDead) {
+                        //$$         int chunkX = entity.chunkCoordX;
+                        //$$         int chunkY = entity.chunkCoordZ;
+                        //$$
+                        //#if MC>=11400
+                        //$$ if (entity.addedToChunk && world.getChunkProvider().provideChunk(chunkX, chunkY, false, false) != null) {
+                        //#else
+                        //#if MC>=10904
+                        //$$ if (entity.addedToChunk && world.getChunkProvider().getLoadedChunk(chunkX, chunkY) != null) {
+                        //#else
+                        //$$ if (entity.addedToChunk && world.getChunkProvider().chunkExists(chunkX, chunkY)) {
+                        //#endif
+                        //#endif
+                        //$$             world.getChunkFromChunkCoords(chunkX, chunkY).removeEntity(entity);
+                        //$$         }
+                        //$$
+                        //$$         iter.remove();
+                        //$$         world.onEntityRemoved(entity);
+                        //$$     }
+                        //$$
+                        //$$ }
+                        //#endif
+                    }
+                }
+
+                //#if MC>=11400
+                if (processed instanceof ChunkDataS2CPacket) {
+                    Runnable doLightUpdates = () -> {
+                        if (mc.world != null) {
+                            LightingProvider provider = mc.world.getChunkManager().getLightingProvider();
+                            while (provider.hasUpdates()) {
+                                provider.doLightUpdates(Integer.MAX_VALUE, true, true);
+                            }
+                        }
+                    };
+                    if (mc.isOnThread()) {
+                        doLightUpdates.run();
+                    } else {
+                        mc.send(doLightUpdates);
+                    }
+                }
+                //#endif
             } catch (Exception e) {
                 // We'd rather not have a failure parsing one packet screw up the whole replay process
                 e.printStackTrace();

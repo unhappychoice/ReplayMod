@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetHandler.class)
 public abstract class MixinClientPlayNetHandler {
-
     @Shadow @Final
     private NetworkManager netManager;
 
@@ -30,7 +29,8 @@ public abstract class MixinClientPlayNetHandler {
         System.out.println("Injected ClientPlayNetHandler.handleTags");
         // PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
         ITagCollectionSupplier itagcollectionsupplier = packetIn.getTags();
-        boolean vanillaConnection = net.minecraftforge.fml.network.NetworkHooks.isVanillaConnection(netManager);
+        // boolean vanillaConnection = net.minecraftforge.fml.network.NetworkHooks.isVanillaConnection(netManager);
+        boolean vanillaConnection = false;
         net.minecraftforge.common.ForgeTagHandler.resetCachedTagCollections(true, vanillaConnection);
         itagcollectionsupplier = ITagCollectionSupplier.reinjectOptionalTags(itagcollectionsupplier);
         this.networkTagManager = itagcollectionsupplier;

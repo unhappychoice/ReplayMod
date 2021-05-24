@@ -40,6 +40,10 @@ import net.minecraft.network.ClientConnection;
 import java.io.IOException;
 import java.util.*;
 
+//#if FABRIC<1
+//$$ import io.netty.util.AttributeKey;
+//#endif
+
 //#if MC>=11600
 import net.minecraft.client.util.math.MatrixStack;
 //#endif
