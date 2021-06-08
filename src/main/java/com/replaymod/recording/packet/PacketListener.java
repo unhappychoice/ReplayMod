@@ -103,18 +103,8 @@ public class PacketListener extends ChannelInboundHandlerAdapter {
     private long lastSentPacket;
     private long timePassedWhilePaused;
     private volatile boolean serverWasPaused;
-    //#if FABRIC>1
     private NetworkState connectionState = NetworkState.LOGIN;
     private boolean loginPhase = true;
-    //#else
-    //#if MC>=11600
-    //$$ private ProtocolType connectionState = ProtocolType.LOGIN;
-    //$$ private boolean loginPhase = true;
-    //#else
-    //$$ private EnumConnectionState connectionState = EnumConnectionState.PLAY;
-    //$$ private boolean loginPhase = false;
-    //#endif
-    //#endif
 
     /**
      * Used to keep track of the last metadata save job submitted to the save service and
@@ -232,8 +222,7 @@ public class PacketListener extends ChannelInboundHandlerAdapter {
 
             //#if MC>=11400
             if (packet instanceof LoginSuccessS2CPacket) {
-                connectionState = NetworkState.PLAY;
-                loginPhase = false;
+                moveToPlayState();
             }
             //#endif
         } catch(Exception e) {
@@ -465,14 +454,7 @@ public class PacketListener extends ChannelInboundHandlerAdapter {
         //$$ }
         //#endif
 
-        //#if MC>=10800
-        Integer packetId = connectionState.getPacketId(NetworkSide.CLIENTBOUND, packet);
-        //#else
-        //$$ Integer packetId = (Integer) connectionState.func_150755_b().inverse().get(packet.getClass());
-        //#endif
-        if (packetId == null) {
-            throw new IOException("Unknown packet type:" + packet.getClass());
-        }
+        Integer packetId = getPacketId(packet);
         ByteBuf byteBuf = Unpooled.buffer();
         try {
             packet.write(new PacketByteBuf(byteBuf));
@@ -533,5 +515,34 @@ public class PacketListener extends ChannelInboundHandlerAdapter {
 
     public void setServerWasPaused() {
         this.serverWasPaused = true;
+    }
+
+    private Integer getPacketId(Packet packet) throws IOException {
+        //#if MC>=10800
+        Integer packetId = connectionState.getPacketId(NetworkSide.CLIENTBOUND, packet);
+        //#else
+        //$$ Integer packetId = (Integer) connectionState.func_150755_b().inverse().get(packet.getClass());
+        //#endif
+
+        if (packetId == null) {
+            /*
+               Retrying as the state is PLAY
+               TODO: Investigate packet order and refactor to be more consistent
+            */
+            packetId = NetworkState.PLAY.getPacketId(NetworkSide.CLIENTBOUND, packet);
+
+            if (packetId == null) {
+                throw new IOException("Unknown packet type:" + packet.getClass());
+            }
+
+            moveToPlayState();
+        }
+
+        return packetId;
+    }
+
+    private void moveToPlayState() {
+        connectionState = NetworkState.PLAY;
+        loginPhase = false;
     }
 }

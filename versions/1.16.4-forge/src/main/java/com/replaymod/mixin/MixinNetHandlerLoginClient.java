@@ -19,6 +19,11 @@ public abstract class MixinNetHandlerLoginClient {
     @Final @Shadow
     private NetworkManager networkManager;
 
+    @Inject(method = "handleLoginSuccess", at=@At("HEAD"))
+    public void replayModRecording_initiateRecording(CallbackInfo cb) {
+        initiateRecording(null);
+    }
+
     /**
      * Starts the recording right before switching into PLAY state.
      * We cannot use the {@link FMLNetworkEvent.ClientConnectedToServerEvent}
@@ -35,7 +40,7 @@ public abstract class MixinNetHandlerLoginClient {
             return; // already recording
         }
         ReplayModRecording.instance.initiateRecording(this.networkManager);
-        if (eventSender.getRecordingEventHandler() != null) {
+        if (eventSender.getRecordingEventHandler() != null && packet != null) {
             eventSender.getRecordingEventHandler().onPacket(packet);
         }
     }
