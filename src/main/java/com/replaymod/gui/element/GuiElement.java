@@ -28,34 +28,42 @@ import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public interface GuiElement<T extends GuiElement<T>> {
 
-    MinecraftClient getMinecraft();
+    Minecraft getMinecraft();
 
     GuiContainer getContainer();
+
     T setContainer(GuiContainer container);
 
     void layout(ReadableDimension size, RenderInfo renderInfo);
+
     void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo);
 
     ReadableDimension getMinSize();
+
     ReadableDimension getMaxSize();
 
     T setMaxSize(ReadableDimension maxSize);
 
     boolean isEnabled();
+
     T setEnabled(boolean enabled);
+
     T setEnabled();
+
     T setDisabled();
 
     GuiElement getTooltip(RenderInfo renderInfo);
+
     T setTooltip(GuiElement tooltip);
 
     /**
      * Returns the layer this element takes part in.
      * The standard layer is layer 0. Event handlers will be called for this layer.
+     *
      * @return The layer of this element
      */
     int getLayer();

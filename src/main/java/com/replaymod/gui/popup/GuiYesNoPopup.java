@@ -36,11 +36,6 @@ import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 
-//#if MC>=11400
-//#else
-//$$ import org.lwjgl.input.Keyboard;
-//#endif
-
 import java.util.function.Consumer;
 
 public class GuiYesNoPopup extends AbstractGuiPopup<GuiYesNoPopup> implements Typeable {
@@ -51,9 +46,12 @@ public class GuiYesNoPopup extends AbstractGuiPopup<GuiYesNoPopup> implements Ty
         return popup;
     }
 
-    private Consumer<Boolean> onClosed = (accepted) -> {};
-    private Runnable onAccept = () -> {};
-    private Runnable onReject = () -> {};
+    private Consumer<Boolean> onClosed = (accepted) -> {
+    };
+    private Runnable onAccept = () -> {
+    };
+    private Runnable onReject = () -> {
+    };
 
     private final com.replaymod.gui.element.GuiButton yesButton = new com.replaymod.gui.element.GuiButton().setSize(150, 20).onClick(new Runnable() {
         @Override
@@ -101,12 +99,12 @@ public class GuiYesNoPopup extends AbstractGuiPopup<GuiYesNoPopup> implements Ty
         return this;
     }
 
-    public GuiYesNoPopup setYesI18nLabel(String label, Object...args) {
+    public GuiYesNoPopup setYesI18nLabel(String label, Object... args) {
         yesButton.setI18nLabel(label, args);
         return this;
     }
 
-    public GuiYesNoPopup setNoI18nLabel(String label, Object...args) {
+    public GuiYesNoPopup setNoI18nLabel(String label, Object... args) {
         noButton.setI18nLabel(label, args);
         return this;
     }

@@ -4,16 +4,10 @@
   "mixins": [],
   "server": [],
   "client": [
-    //#if MC>=11500
-    "MixinChunkVisibility",
-    //#endif
-    //#if MC>=10800
-    "MixinShaderEntityRenderer",
+        "MixinChunkVisibility",
+            "MixinShaderEntityRenderer",
     "MixinShaderRenderChunk",
-    //#else
-    //$$ "MixinShaders",
-    //#endif
-    "MixinShadersRender"
+                "MixinShadersRender"
   ],
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.6.11",

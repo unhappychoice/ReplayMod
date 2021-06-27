@@ -24,6 +24,8 @@
  */
 package com.replaymod.gui.element.advanced;
 
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.AbstractGuiVerticalList;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.container.GuiPanel;
@@ -32,8 +34,6 @@ import com.replaymod.gui.element.GuiLabel;
 import com.replaymod.gui.function.*;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.VerticalLayout;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.utils.Colors;
 import com.replaymod.gui.utils.Consumer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
@@ -50,11 +50,6 @@ import java.util.function.Supplier;
 
 import static com.replaymod.gui.utils.Utils.DOUBLE_CLICK_INTERVAL;
 
-//#if MC>=11400
-
-//#else
-//$$ import org.lwjgl.input.Keyboard;
-//#endif
 
 public abstract class AbstractGuiResourceLoadingList
         <T extends AbstractGuiResourceLoadingList<T, U>, U extends com.replaymod.gui.element.GuiElement<U> & Comparable<U>>

@@ -32,7 +32,7 @@ import java.util.function.Function;
 public interface ComposedGuiElement<T extends ComposedGuiElement<T>> extends com.replaymod.gui.element.GuiElement<T> {
     Collection<GuiElement> getChildren();
 
-    default  <C, R> R forEach(Class<C> ofType, Function<C, R> function) {
+    default <C, R> R forEach(Class<C> ofType, Function<C, R> function) {
         return forEach((elem, elemLayer) -> elem.forEach(elemLayer, ofType, function));
     }
 
@@ -53,14 +53,14 @@ public interface ComposedGuiElement<T extends ComposedGuiElement<T>> extends com
 
     <C, R> R forEach(int layer, Class<C> ofType, BiFunction<ComposedGuiElement<?>, Integer, R> recurse, Function<C, R> function);
 
-    default  <C> void invokeAll(Class<C> ofType, Consumer<C> consumer) {
+    default <C> void invokeAll(Class<C> ofType, Consumer<C> consumer) {
         forEach((elem, elemLayer) -> {
             elem.invokeAll(elemLayer, ofType, consumer);
             return null;
         });
     }
 
-    default  <C> void invokeAll(int layer, Class<C> ofType, Consumer<C> consumer) {
+    default <C> void invokeAll(int layer, Class<C> ofType, Consumer<C> consumer) {
         forEach(layer, ofType, (elem, elemLayer) -> {
             elem.invokeAll(elemLayer, ofType, consumer);
             return null;
@@ -87,6 +87,7 @@ public interface ComposedGuiElement<T extends ComposedGuiElement<T>> extends com
      * Returns the highest layer this element or any of its children take part in.
      * Events will be called for this composed jgui element for all layers between
      * layer 0 (inclusive) and the returned maximum layer (inclusive).
+     *
      * @return Highest layer relevant to this element
      */
     int getMaxLayer();

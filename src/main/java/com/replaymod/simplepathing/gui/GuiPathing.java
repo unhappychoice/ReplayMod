@@ -7,6 +7,21 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.element.*;
+import com.replaymod.gui.element.advanced.GuiProgressBar;
+import com.replaymod.gui.element.advanced.GuiTimelineTime;
+import com.replaymod.gui.layout.CustomLayout;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.gui.popup.AbstractGuiPopup;
+import com.replaymod.gui.popup.GuiInfoPopup;
+import com.replaymod.gui.popup.GuiYesNoPopup;
+import com.replaymod.gui.utils.Colors;
 import com.replaymod.pathing.gui.GuiKeyframeRepository;
 import com.replaymod.pathing.player.RealtimeTimelinePlayer;
 import com.replaymod.pathing.properties.CameraProperties;
@@ -26,42 +41,13 @@ import com.replaymod.simplepathing.ReplayModSimplePathing;
 import com.replaymod.simplepathing.SPTimeline;
 import com.replaymod.simplepathing.SPTimeline.SPPath;
 import com.replaymod.simplepathing.Setting;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.RenderInfo;
-import com.replaymod.gui.container.GuiContainer;
-import com.replaymod.gui.container.GuiPanel;
-import com.replaymod.gui.container.GuiScreen;
-import com.replaymod.gui.element.GuiButton;
-import com.replaymod.gui.element.GuiElement;
-import com.replaymod.gui.element.GuiHorizontalScrollbar;
-import com.replaymod.gui.element.GuiLabel;
-import com.replaymod.gui.element.GuiTooltip;
-import com.replaymod.gui.element.advanced.GuiProgressBar;
-import com.replaymod.gui.element.advanced.GuiTimelineTime;
-import com.replaymod.gui.layout.CustomLayout;
-import com.replaymod.gui.layout.HorizontalLayout;
-import com.replaymod.gui.layout.VerticalLayout;
-import com.replaymod.gui.popup.AbstractGuiPopup;
-import com.replaymod.gui.popup.GuiInfoPopup;
-import com.replaymod.gui.popup.GuiYesNoPopup;
-import com.replaymod.gui.utils.Colors;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import de.johni0702.minecraft.gui.utils.lwjgl.WritablePoint;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.crash.CrashReport;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.crash.CrashReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-//#if MC>=11400
-//#else
-//$$ import org.lwjgl.input.Keyboard;
-//#if MC>=10800
-//$$ import net.minecraftforge.fml.common.Loader;
-//#else
-//$$ import cpw.mods.fml.common.Loader;
-//#endif
-//#endif
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -71,7 +57,7 @@ import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
 
 import static com.replaymod.core.utils.Utils.error;
-import static com.replaymod.core.versions.MCVer.*;
+import static com.replaymod.core.versions.MCVer.Keyboard;
 import static com.replaymod.simplepathing.ReplayModSimplePathing.LOGGER;
 
 
@@ -108,7 +94,7 @@ public class GuiPathing {
                 @Override
                 protected void close() {
                     super.close();
-                    getMinecraft().openScreen(null);
+                    getMinecraft().displayGuiScreen(null);
                 }
             }.open();
             screen.display();
@@ -135,7 +121,7 @@ public class GuiPathing {
                         label = "replaymod.gui.ingame.menu.removespeckeyframe";
                     }
                 }
-                tooltip.setText(I18n.translate(label) + " (" + mod.keyPositionKeyframe.getBoundKey() + ")");
+                tooltip.setText(I18n.format(label) + " (" + mod.keyPositionKeyframe.getBoundKey() + ")");
             }
             return tooltip;
         }
@@ -152,13 +138,13 @@ public class GuiPathing {
                 } else { // Remove time keyframe
                     label = "replaymod.gui.ingame.menu.removetimekeyframe";
                 }
-                tooltip.setText(I18n.translate(label) + " (" + mod.keyTimeKeyframe.getBoundKey() + ")");
+                tooltip.setText(I18n.format(label) + " (" + mod.keyTimeKeyframe.getBoundKey() + ")");
             }
             return tooltip;
         }
     }.setSize(20, 20).setTexture(ReplayMod.TEXTURE, ReplayMod.TEXTURE_SIZE).setTooltip(new GuiTooltip());
 
-    public final GuiKeyframeTimeline timeline = new GuiKeyframeTimeline(this){
+    public final GuiKeyframeTimeline timeline = new GuiKeyframeTimeline(this) {
         @Override
         public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
             if (player.isActive()) {
@@ -169,13 +155,16 @@ public class GuiPathing {
     }.setSize(Integer.MAX_VALUE, 20).setMarkers();
 
     public final GuiHorizontalScrollbar scrollbar = new GuiHorizontalScrollbar().setSize(Integer.MAX_VALUE, 9);
-    {scrollbar.onValueChanged(new Runnable() {
-        @Override
-        public void run() {
-            timeline.setOffset((int) (scrollbar.getPosition() * timeline.getLength()));
-            timeline.setZoom(scrollbar.getZoom());
-        }
-    }).setZoom(0.1);}
+
+    {
+        scrollbar.onValueChanged(new Runnable() {
+            @Override
+            public void run() {
+                timeline.setOffset((int) (scrollbar.getPosition() * timeline.getLength()));
+                timeline.setZoom(scrollbar.getZoom());
+            }
+        }).setZoom(0.1);
+    }
 
     public final GuiTimelineTime<GuiKeyframeTimeline> timelineTime = new GuiTimelineTime<GuiKeyframeTimeline>()
             .setTimeline(timeline);
@@ -270,7 +259,7 @@ public class GuiPathing {
                     timePath.setActive(!ignoreTimeKeyframes);
 
                     // Start from cursor time unless the control key is pressed (then start from beginning)
-                    int startTime = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)? 0 : GuiPathing.this.timeline.getCursorPosition();
+                    int startTime = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? 0 : GuiPathing.this.timeline.getCursorPosition();
                     ListenableFuture<Void> future = player.start(timeline, startTime);
                     overlay.setCloseable(false);
                     overlay.setMouseVisible(true);
@@ -414,6 +403,7 @@ public class GuiPathing {
 
     private int prevSpeed = -1;
     private int prevTime = -1;
+
     private void checkForAutoSync() {
         if (!mod.keySyncTime.isAutoActivating()) {
             prevSpeed = -1;
@@ -511,7 +501,8 @@ public class GuiPathing {
             timeline.getPaths().forEach(Path::updateAll);
             return timeline;
         } catch (Throwable t) {
-            error(LOGGER, replayHandler.getOverlay(), CrashReport.create(t, "Cloning timeline"), () -> {});
+            error(LOGGER, replayHandler.getOverlay(), CrashReport.makeCrashReport(t, "Cloning timeline"), () -> {
+            });
             return null;
         }
     }
@@ -577,7 +568,7 @@ public class GuiPathing {
                     if (!errorShown) {
                         String message = "Failed to load entity tracker, spectator keyframes will be broken.";
                         GuiReplayOverlay overlay = replayHandler.getOverlay();
-                        Utils.error(LOGGER, overlay, CrashReport.create(t, message), () -> {
+                        Utils.error(LOGGER, overlay, CrashReport.makeCrashReport(t, message), () -> {
                             popup.close();
                             thenRun.run();
                         });
@@ -597,7 +588,8 @@ public class GuiPathing {
 
     /**
      * Called when either one of the property buttons is pressed.
-     * @param path {@code TIME} for the time property button, {@code POSITION} for the place property button
+     *
+     * @param path           {@code TIME} for the time property button, {@code POSITION} for the place property button
      * @param neverSpectator when true, will insert a position keyframe even when currently spectating an entity
      */
     public void toggleKeyframe(SPPath path, boolean neverSpectator) {
@@ -610,7 +602,7 @@ public class GuiPathing {
         if (timeline.getPositionPath().getKeyframes().isEmpty() &&
                 timeline.getTimePath().getKeyframes().isEmpty() &&
                 time > 1000) {
-            String text = I18n.translate("replaymod.gui.ingame.first_keyframe_not_at_start_warning");
+            String text = I18n.format("replaymod.gui.ingame.first_keyframe_not_at_start_warning");
             GuiInfoPopup.open(overlay, text.split("\\\\n"));
         }
 
@@ -644,10 +636,10 @@ public class GuiPathing {
                     CameraEntity camera = replayHandler.getCameraEntity();
                     int spectatedId = -1;
                     if (!replayHandler.isCameraView() && !neverSpectator) {
-                        spectatedId = replayHandler.getOverlay().getMinecraft().getCameraEntity().getEntityId();
+                        spectatedId = replayHandler.getOverlay().getMinecraft().getRenderViewEntity().getEntityId();
                     }
-                    timeline.addPositionKeyframe(time, camera.getX(), camera.getY(), camera.getZ(),
-                            camera.yaw, camera.pitch, camera.roll, spectatedId);
+                    timeline.addPositionKeyframe(time, camera.getPosX(), camera.getPosY(), camera.getPosZ(),
+                            camera.rotationYaw, camera.rotationPitch, camera.roll, spectatedId);
                     mod.setSelected(path, time);
                 }
                 break;

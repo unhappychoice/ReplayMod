@@ -1,30 +1,19 @@
 package com.replaymod.replay.gui.screen;
 
 import com.google.common.util.concurrent.SettableFuture;
-import com.replaymod.gui.element.GuiTextField;
-import com.replaymod.render.gui.GuiRenderQueue;
-import com.replaymod.render.rendering.VideoRenderer;
-import com.replaymod.render.utils.RenderJob;
-import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.RenderInfo;
-import com.replaymod.gui.versions.Image;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.util.Formatting;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.SettingsRegistry;
 import com.replaymod.core.gui.GuiReplaySettings;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.core.versions.MCVer.Keyboard;
-import com.replaymod.replay.ReplayModReplay;
-import com.replaymod.replay.Setting;
-import com.replaymod.replaystudio.replay.ReplayFile;
-import com.replaymod.replaystudio.replay.ReplayMetaData;
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.AbstractGuiContainer;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.element.GuiTextField;
 import com.replaymod.gui.element.advanced.AbstractGuiResourceLoadingList;
 import com.replaymod.gui.function.Typeable;
 import com.replaymod.gui.layout.CustomLayout;
@@ -34,12 +23,24 @@ import com.replaymod.gui.popup.AbstractGuiPopup;
 import com.replaymod.gui.popup.GuiYesNoPopup;
 import com.replaymod.gui.utils.Colors;
 import com.replaymod.gui.utils.Consumer;
+import com.replaymod.gui.versions.Image;
+import com.replaymod.render.gui.GuiRenderQueue;
+import com.replaymod.render.rendering.VideoRenderer;
+import com.replaymod.render.utils.RenderJob;
+import com.replaymod.replay.ReplayModReplay;
+import com.replaymod.replay.Setting;
+import com.replaymod.replaystudio.replay.ReplayFile;
+import com.replaymod.replaystudio.replay.ReplayMetaData;
+import com.replaymod.replaystudio.us.myles.ViaVersion.api.Pair;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import net.minecraft.client.gui.screen.NoticeScreen;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashException;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.AlertScreen;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.ReportedException;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -50,27 +51,12 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.replaymod.replay.ReplayModReplay.LOGGER;
 import static com.replaymod.gui.versions.MCVer.getFontRenderer;
-
-//#if MC>=11400
-import net.minecraft.text.TranslatableText;
-//#else
-//$$ import net.minecraft.client.resources.I18n;
-//#endif
+import static com.replaymod.replay.ReplayModReplay.LOGGER;
 
 public class GuiReplayViewer extends GuiScreen {
     private final ReplayModReplay mod;
@@ -160,15 +146,10 @@ public class GuiReplayViewer extends GuiScreen {
                 } catch (IOException e) {
                     // We failed (might also be their OS)
                     e.printStackTrace();
-                    getMinecraft().openScreen(new NoticeScreen(
-                            //#if MC>=11400
+                    getMinecraft().displayGuiScreen(new AlertScreen(
                             GuiReplayViewer.this::display,
-                            new TranslatableText("replaymod.gui.viewer.delete.failed1"),
-                            new TranslatableText("replaymod.gui.viewer.delete.failed2")
-                            //#else
-                            //$$ I18n.format("replaymod.gui.viewer.delete.failed1"),
-                            //$$ I18n.format("replaymod.gui.viewer.delete.failed2")
-                            //#endif
+                            new TranslationTextComponent("replaymod.gui.viewer.delete.failed1"),
+                            new TranslationTextComponent("replaymod.gui.viewer.delete.failed2")
                     ));
                     return;
                 }
@@ -181,7 +162,7 @@ public class GuiReplayViewer extends GuiScreen {
             String name = entry.name.getText();
             GuiYesNoPopup.open(GuiReplayViewer.this,
                     new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.viewer.delete.linea").setColor(Colors.BLACK),
-                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.viewer.delete.lineb", name + Formatting.RESET).setColor(Colors.BLACK)
+                    new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.viewer.delete.lineb", name + TextFormatting.RESET).setColor(Colors.BLACK)
             ).setYesI18nLabel("replaymod.gui.delete").setNoI18nLabel("replaymod.gui.cancel").onAccept(() -> {
                 try {
                     FileUtils.forceDelete(entry.file);
@@ -202,12 +183,16 @@ public class GuiReplayViewer extends GuiScreen {
     public final com.replaymod.gui.element.GuiButton cancelButton = new com.replaymod.gui.element.GuiButton().onClick(new Runnable() {
         @Override
         public void run() {
-            getMinecraft().openScreen(null);
+            getMinecraft().displayGuiScreen(null);
         }
     }).setSize(73, 20).setI18nLabel("replaymod.gui.cancel");
 
     public final List<com.replaymod.gui.element.GuiButton> replaySpecificButtons = new ArrayList<>();
-    { replaySpecificButtons.addAll(Arrays.asList(renameButton)); }
+
+    {
+        replaySpecificButtons.addAll(Arrays.asList(renameButton));
+    }
+
     public final GuiPanel editorButton = new GuiPanel();
 
     public final GuiPanel upperButtonPanel = new GuiPanel().setLayout(new HorizontalLayout().setSpacing(5))
@@ -223,7 +208,7 @@ public class GuiReplayViewer extends GuiScreen {
         try {
             list.setFolder(mod.getCore().getReplayFolder().toFile());
         } catch (IOException e) {
-            throw new CrashException(CrashReport.create(e, "Getting replay folder"));
+            throw new ReportedException(CrashReport.makeCrashReport(e, "Getting replay folder"));
         }
 
         setTitle(new com.replaymod.gui.element.GuiLabel().setI18nText("replaymod.gui.replayviewer"));
@@ -447,9 +432,9 @@ public class GuiReplayViewer extends GuiScreen {
             if (!filter.isEmpty()) {
                 boolean anyMatches = getListPanel().calcMinSize().getHeight() > 0;
 
-                TextRenderer fontRenderer = getFontRenderer();
-                int filterTextWidth = fontRenderer.getWidth(filter);
-                int filterTextHeight = fontRenderer.fontHeight;
+                FontRenderer fontRenderer = getFontRenderer();
+                int filterTextWidth = fontRenderer.getStringWidth(filter);
+                int filterTextHeight = fontRenderer.FONT_HEIGHT;
                 renderer.drawRect(
                         size.getWidth() - 3 - 2 - filterTextWidth - 2,
                         size.getHeight() - 3 - 2 - filterTextHeight - 2,
@@ -507,7 +492,7 @@ public class GuiReplayViewer extends GuiScreen {
             this.file = file;
             this.renderQueue = renderQueue;
 
-            name.setText(Formatting.UNDERLINE + Utils.fileNameToReplayName(file.getName()));
+            name.setText(TextFormatting.UNDERLINE + Utils.fileNameToReplayName(file.getName()));
             if (!StringUtils.isEmpty(metaData.getCustomServerName())) {
                 server.setText(metaData.getCustomServerName());
             } else if (StringUtils.isEmpty(metaData.getServerName())

@@ -1,6 +1,5 @@
 package com.replaymod.render.capturer;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.replaymod.render.frame.OpenGlFrame;
 import com.replaymod.render.rendering.Channel;
 import com.replaymod.render.rendering.Frame;
@@ -93,13 +92,13 @@ public abstract class PboOpenGlFrameCapturer<F extends Frame, D extends Enum<D> 
         pbo.bind();
 
         int offset = captureData.ordinal() * getFrameWidth() * getFrameHeight() * 4;
-        frameBuffer().beginWrite(true);
+        frameBuffer().bindFramebuffer(true);
         GL11.glReadPixels(0, 0, getFrameWidth(), getFrameHeight(), GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, offset);
         if (withDepth) {
             offset += data.length * getFrameWidth() * getFrameHeight() * 4;
             GL11.glReadPixels(0, 0, getFrameWidth(), getFrameHeight(), GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, offset);
         }
-        frameBuffer().endWrite();
+        frameBuffer().unbindFramebuffer();
 
         pbo.unbind();
         return null;

@@ -1,8 +1,6 @@
 package com.replaymod.render.gui;
 
 import com.replaymod.core.ReplayMod;
-import com.replaymod.render.RenderSettings;
-import com.replaymod.render.FFmpegWriter;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.gui.container.GuiVerticalList;
@@ -12,9 +10,11 @@ import com.replaymod.gui.element.GuiLabel;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.layout.VerticalLayout;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.CrashException;
+import com.replaymod.render.FFmpegWriter;
+import com.replaymod.render.RenderSettings;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ReportedException;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -30,11 +30,11 @@ public class GuiExportFailed extends GuiScreen {
         // Check whether the user has configured some custom ffmpeg arguments
         if (settings.getEncodingPreset().getValue().equals(settings.getExportArguments())) {
             // If they haven't, then this is probably a faulty ffmpeg installation and there's nothing we can do
-            CrashReport crashReport = CrashReport.create(e, "Exporting video");
-            CrashReportSection details = crashReport.addElement("Export details");
-            details.add("Settings", settings::toString);
-            details.add("FFmpeg log", e::getLog);
-            throw new CrashException(crashReport);
+            CrashReport crashReport = CrashReport.makeCrashReport(e, "Exporting video");
+            CrashReportCategory details = crashReport.makeCategory("Export details");
+            details.addDetail("Settings", settings::toString);
+            details.addDetail("FFmpeg log", e::getLog);
+            throw new ReportedException(crashReport);
         } else {
             // If they have, ask them whether it was intentional
             GuiExportFailed gui = new GuiExportFailed(e, doRestart);
@@ -62,8 +62,8 @@ public class GuiExportFailed extends GuiScreen {
         setLayout(new CustomLayout<GuiScreen>() {
             @Override
             protected void layout(GuiScreen container, int width, int height) {
-                pos(info, width/2 - width(info)/2, (height/2 - height(info) - 30) / 2 + 30);
-                pos(logLabel, width/2 - width(logLabel)/2, height/2 + 4);
+                pos(info, width / 2 - width(info) / 2, (height / 2 - height(info) - 30) / 2 + 30);
+                pos(logLabel, width / 2 - width(logLabel) / 2, height / 2 + 4);
                 pos(logList, 10, y(logLabel) + height(logLabel) + 4);
                 size(logList, width - 10 - x(logList), height - 10 - y(logList));
             }
@@ -108,7 +108,7 @@ public class GuiExportFailed extends GuiScreen {
 
         abortButton.onClick(() -> {
             // Assume they know what they're doing
-            getMinecraft().openScreen(null);
+            getMinecraft().displayGuiScreen(null);
         });
     }
 }

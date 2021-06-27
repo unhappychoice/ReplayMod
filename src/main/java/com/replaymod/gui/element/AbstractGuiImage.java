@@ -28,16 +28,16 @@ import com.google.common.base.Preconditions;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.versions.Image;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.gui.versions.Image;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.util.ResourceLocation;
 
 public abstract class AbstractGuiImage<T extends AbstractGuiImage<T>>
         extends AbstractGuiElement<T> implements IGuiImage<T> {
-    private NativeImageBackedTexture texture;
-    private Identifier resourceLocation;
+    private DynamicTexture texture;
+    private ResourceLocation resourceLocation;
     private int u, v;
     private int uWidth, vHeight;
     private int textureWidth, textureHeight;
@@ -71,7 +71,7 @@ public abstract class AbstractGuiImage<T extends AbstractGuiImage<T>>
     public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
         super.draw(renderer, size, renderInfo);
         if (texture != null) {
-            renderer.bindTexture(texture.getGlId());
+            renderer.bindTexture(texture.getGlTextureId());
         } else {
             renderer.bindTexture(resourceLocation);
         }
@@ -84,11 +84,7 @@ public abstract class AbstractGuiImage<T extends AbstractGuiImage<T>>
     protected void finalize() throws Throwable {
         super.finalize();
         if (texture != null && copyOf == null) {
-            //#if MC>=11400
             getMinecraft().execute(new Finalizer(texture));
-            //#else
-            //$$ getMinecraft().addScheduledTask(new Finalizer(texture));
-            //#endif
         }
     }
 
@@ -102,7 +98,7 @@ public abstract class AbstractGuiImage<T extends AbstractGuiImage<T>>
         Preconditions.checkState(copyOf == null, "Cannot change texture of copy.");
         resourceLocation = null;
         if (texture != null) {
-            texture.clearGlId();
+            texture.deleteGlTexture();
         }
         texture = img.toTexture();
         textureWidth = uWidth = img.getWidth();
@@ -111,10 +107,10 @@ public abstract class AbstractGuiImage<T extends AbstractGuiImage<T>>
     }
 
     @Override
-    public T setTexture(Identifier resourceLocation) {
+    public T setTexture(ResourceLocation resourceLocation) {
         Preconditions.checkState(copyOf == null, "Cannot change texture of copy.");
         if (texture != null) {
-            texture.clearGlId();
+            texture.deleteGlTexture();
             texture = null;
         }
         this.resourceLocation = resourceLocation;
@@ -123,7 +119,7 @@ public abstract class AbstractGuiImage<T extends AbstractGuiImage<T>>
     }
 
     @Override
-    public T setTexture(Identifier resourceLocation, int u, int v, int width, int height) {
+    public T setTexture(ResourceLocation resourceLocation, int u, int v, int width, int height) {
         setTexture(resourceLocation);
         setUV(u, v);
         setUVSize(width, height);
@@ -171,15 +167,15 @@ public abstract class AbstractGuiImage<T extends AbstractGuiImage<T>>
      * alive after finalization when still unloading the texture.
      */
     private static final class Finalizer implements Runnable {
-        private final NativeImageBackedTexture texture;
+        private final DynamicTexture texture;
 
-        public Finalizer(NativeImageBackedTexture texture) {
+        public Finalizer(DynamicTexture texture) {
             this.texture = texture;
         }
 
         @Override
         public void run() {
-            texture.clearGlId();
+            texture.deleteGlTexture();
         }
     }
 }

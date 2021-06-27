@@ -1,4 +1,3 @@
-//#if MC>=10800
 package com.replaymod.render.blend.exporters;
 
 import com.replaymod.render.blend.BlendState;
@@ -13,13 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import static com.replaymod.render.ReplayModRender.LOGGER;
-import static com.replaymod.render.blend.Util.getGlModelViewMatrix;
-import static com.replaymod.render.blend.Util.glScaleToBlend;
-import static com.replaymod.render.blend.Util.glToBlend;
-import static com.replaymod.render.blend.Util.posFromMat;
-import static com.replaymod.render.blend.Util.rotFromMat;
-import static com.replaymod.render.blend.Util.scaleFromMat;
-import static com.replaymod.render.blend.Util.scaleMat3;
+import static com.replaymod.render.blend.Util.*;
 
 public class RenderState implements Exporter {
 
@@ -142,4 +135,3 @@ public class RenderState implements Exporter {
 
     }
 }
-//#endif

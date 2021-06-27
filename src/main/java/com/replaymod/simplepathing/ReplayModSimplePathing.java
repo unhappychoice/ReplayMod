@@ -5,8 +5,8 @@ import com.replaymod.core.Module;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.SettingsRegistry;
 import com.replaymod.core.events.SettingsChangedCallback;
-import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.core.versions.MCVer.Keyboard;
+import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.replay.events.ReplayClosedCallback;
@@ -23,8 +23,8 @@ import com.replaymod.simplepathing.SPTimeline.SPPath;
 import com.replaymod.simplepathing.gui.GuiPathing;
 import com.replaymod.simplepathing.preview.PathPreview;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashException;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.ReportedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +37,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReplayModSimplePathing extends EventRegistrations implements Module {
-    { instance = this; }
+    {
+        instance = this;
+    }
+
     public static ReplayModSimplePathing instance;
 
     private ReplayMod core;
@@ -143,7 +146,10 @@ public class ReplayModSimplePathing extends EventRegistrations implements Module
         });
     }
 
-    { on(ReplayOpenedCallback.EVENT, this::onReplayOpened); }
+    {
+        on(ReplayOpenedCallback.EVENT, this::onReplayOpened);
+    }
+
     private void onReplayOpened(ReplayHandler replayHandler) {
         ReplayFile replayFile = replayHandler.getReplayFile();
         try {
@@ -156,7 +162,7 @@ public class ReplayModSimplePathing extends EventRegistrations implements Module
                 }
             }
         } catch (IOException e) {
-            throw new CrashException(CrashReport.create(e, "Reading timeline"));
+            throw new ReportedException(CrashReport.makeCrashReport(e, "Reading timeline"));
         }
 
         guiPathing = new GuiPathing(core, this, replayHandler);
@@ -173,7 +179,10 @@ public class ReplayModSimplePathing extends EventRegistrations implements Module
         }.run();
     }
 
-    { on(ReplayClosingCallback.EVENT, replayHandler -> onReplayClosing()); }
+    {
+        on(ReplayClosingCallback.EVENT, replayHandler -> onReplayClosing());
+    }
+
     private void onReplayClosing() {
         saveService.shutdown();
         try {
@@ -184,7 +193,10 @@ public class ReplayModSimplePathing extends EventRegistrations implements Module
         saveService = null;
     }
 
-    { on(ReplayClosedCallback.EVENT, replayHandler -> onReplayClosed()); }
+    {
+        on(ReplayClosedCallback.EVENT, replayHandler -> onReplayClosed());
+    }
+
     private void onReplayClosed() {
         currentTimeline = null;
         guiPathing = null;
@@ -255,6 +267,7 @@ public class ReplayModSimplePathing extends EventRegistrations implements Module
     private final AtomicInteger lastSaveId = new AtomicInteger();
     private ExecutorService saveService;
     private Change lastChange;
+
     private void maybeSaveTimeline(ReplayFile replayFile) {
         SPTimeline spTimeline = currentTimeline;
         if (spTimeline == null || saveService == null) {
@@ -275,8 +288,8 @@ public class ReplayModSimplePathing extends EventRegistrations implements Module
             String serialized = serialization.serialize(Collections.singletonMap("", spTimeline.getTimeline()));
             timeline = serialization.deserialize(serialized).get("");
         } catch (Throwable t) {
-            CrashReport report = CrashReport.create(t, "Cloning timeline");
-            throw new CrashException(report);
+            CrashReport report = CrashReport.makeCrashReport(t, "Cloning timeline");
+            throw new ReportedException(report);
         }
 
         int id = lastSaveId.incrementAndGet();

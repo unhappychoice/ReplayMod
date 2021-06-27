@@ -1,7 +1,7 @@
 package com.replaymod.mixin;
 
 import com.replaymod.render.hooks.EntityRendererHandler;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.renderer.GameRenderer;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

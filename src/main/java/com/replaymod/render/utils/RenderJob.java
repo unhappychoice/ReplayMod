@@ -13,11 +13,7 @@ import com.replaymod.replaystudio.pathing.serialize.TimelineSerialization;
 import com.replaymod.replaystudio.replay.ReplayFile;
 import com.replaymod.simplepathing.SPTimeline;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,7 +80,8 @@ public class RenderJob {
                 return new GsonBuilder()
                         .registerTypeAdapter(Timeline.class, new TimelineTypeAdapter())
                         .create()
-                        .fromJson(reader, new TypeToken<List<RenderJob>>(){}.getType());
+                        .fromJson(reader, new TypeToken<List<RenderJob>>() {
+                        }.getType());
             }
         }
     }

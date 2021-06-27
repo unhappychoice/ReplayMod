@@ -1,23 +1,14 @@
 package com.replaymod.mixin;
 
-import net.minecraft.client.render.GameRenderer;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.replaymod.core.events.PreRenderHandCallback;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-//#if MC>=11600
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.util.math.MatrixStack;
-//#endif
-
-//#if MC>=11400
-import com.replaymod.core.events.PreRenderHandCallback;
-//#else
-//$$ import com.replaymod.core.versions.MCVer;
-//$$ import net.minecraftforge.client.ForgeHooksClient;
-//#endif
 
 @Pseudo
 @Mixin(targets = {
@@ -26,27 +17,14 @@ import com.replaymod.core.events.PreRenderHandCallback;
 }, remap = false)
 public abstract class MixinShadersRender {
 
-    @Inject(method = { "renderHand0", "renderHand1" }, at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = {"renderHand0", "renderHand1"}, at = @At("HEAD"), cancellable = true, remap = false)
     private static void replayModCompat_disableRenderHand0(
             GameRenderer er,
-            //#if MC>=11600
             MatrixStack stack,
-            Camera camera,
-            //#endif
+            ActiveRenderInfo camera,
             float partialTicks,
-            //#if MC<11600
-            //$$ int renderPass,
-            //#endif
             CallbackInfo ci) {
-        //#if MC>=11400
         if (PreRenderHandCallback.EVENT.invoker().preRenderHand()) {
-        //#else
-        //#if MC>=11400
-        //$$ if (ForgeHooksClient.renderFirstPersonHand(MCVer.getMinecraft().renderGlobal, partialTicks)) {
-        //#else
-        //$$ if (ForgeHooksClient.renderFirstPersonHand(MCVer.getMinecraft().renderGlobal, partialTicks, renderPass)) {
-        //#endif
-        //#endif
             ci.cancel();
         }
     }

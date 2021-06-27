@@ -34,26 +34,15 @@ import com.replaymod.gui.function.Focusable;
 import com.replaymod.gui.function.Tickable;
 import com.replaymod.gui.function.Typeable;
 import com.replaymod.gui.utils.Consumer;
-import de.johni0702.minecraft.gui.utils.lwjgl.Color;
-import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import com.replaymod.gui.versions.MCVer;
-import net.minecraft.client.font.TextRenderer;
+import de.johni0702.minecraft.gui.utils.lwjgl.*;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resource.language.I18n;
-
-//#if MC>=11400
-import net.minecraft.SharedConstants;
-//#else
-//$$ import net.minecraft.util.ChatAllowedCharacters;
-//$$ import org.lwjgl.input.Keyboard;
-//#endif
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.SharedConstants;
 
 import static com.replaymod.gui.utils.Utils.clamp;
-import static com.replaymod.gui.versions.MCVer.*;
+import static com.replaymod.gui.versions.MCVer.Keyboard;
 
 public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
         extends AbstractGuiElement<T> implements Clickable, Tickable, Typeable, IGuiTextField<T> {
@@ -105,7 +94,7 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
 
     @Override
     public T setI18nText(String text, Object... args) {
-        return setText(I18n.translate(text, args));
+        return setText(I18n.format(text, args));
     }
 
     @Override
@@ -161,10 +150,10 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
     private void updateCurrentOffset() {
         currentOffset = Math.min(currentOffset, cursorPos);
         String line = text.substring(currentOffset, cursorPos);
-        TextRenderer fontRenderer = MCVer.getFontRenderer();
-        int currentWidth = fontRenderer.getWidth(line);
-        if (currentWidth > size.getWidth() - 2*BORDER) {
-            currentOffset = cursorPos - fontRenderer.trimToWidth(line, size.getWidth() - 2*BORDER, true).length();
+        FontRenderer fontRenderer = MCVer.getFontRenderer();
+        int currentWidth = fontRenderer.getStringWidth(line);
+        if (currentWidth > size.getWidth() - 2 * BORDER) {
+            currentOffset = cursorPos - fontRenderer.getLineScrollOffset(line, size.getWidth() - 2 * BORDER, true).length();
         }
     }
 
@@ -178,11 +167,7 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
 
     @Override
     public T writeChar(char c) {
-        //#if MC>=11400
-        if (!SharedConstants.isValidChar(c)) {
-        //#else
-        //$$ if (!ChatAllowedCharacters.isAllowedCharacter(c)) {
-        //#endif
+        if (!SharedConstants.isAllowedCharacter(c)) {
             return getThis();
         }
 
@@ -211,6 +196,7 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
      * Return the amount of characters to the next word (excluding).
      * If this is the last word in the line, return the amount of characters remaining to till the end.
      * Everything except the Space character is considered part of a word.
+     *
      * @return Length in characters
      */
     protected int getNextWordLength() {
@@ -253,6 +239,7 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
      * Return the amount of characters to the previous word (including).
      * If this is the first word in the line, return the amount of characters till the start.
      * Everything except the Space character is considered part of a word.
+     *
      * @return Length in characters
      */
     protected int getPreviousWordLength() {
@@ -306,9 +293,9 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
         if (hovering && isFocused() && button == 0) {
             updateCurrentOffset();
             int mouseX = position.getX() - BORDER;
-            TextRenderer fontRenderer = MCVer.getFontRenderer();
+            FontRenderer fontRenderer = MCVer.getFontRenderer();
             String text = this.text.substring(currentOffset);
-            int textX = fontRenderer.trimToWidth(text, mouseX).length() + currentOffset;
+            int textX = fontRenderer.trimStringToWidth(text, mouseX).length() + currentOffset;
             setCursorPosition(textX);
             return true;
         }
@@ -354,8 +341,8 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
         super.draw(renderer, size, renderInfo);
 
         int width = size.getWidth(), height = size.getHeight();
-        TextRenderer fontRenderer = MCVer.getFontRenderer();
-        int posY = height / 2 - fontRenderer.fontHeight / 2;
+        FontRenderer fontRenderer = MCVer.getFontRenderer();
+        int posY = height / 2 - fontRenderer.FONT_HEIGHT / 2;
 
         // Draw black rect once pixel smaller than gray rect
         renderer.drawRect(0, 0, width, height, isFocused() ? ReadableColor.WHITE : BORDER_COLOR);
@@ -363,32 +350,32 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
 
         if (text.isEmpty() && !isFocused() && !Strings.isNullOrEmpty(hint)) {
             // Draw hint
-            String text = fontRenderer.trimToWidth(hint, width - 2*BORDER);
+            String text = fontRenderer.trimStringToWidth(hint, width - 2 * BORDER);
             renderer.drawString(BORDER, posY, textColorDisabled, text);
         } else {
             // Draw text
             String renderText = text.substring(currentOffset);
-            renderText = fontRenderer.trimToWidth(renderText, width - 2*BORDER);
+            renderText = fontRenderer.trimStringToWidth(renderText, width - 2 * BORDER);
             ReadableColor color = isEnabled() ? textColorEnabled : textColorDisabled;
-            int lineEnd = renderer.drawString(BORDER, height / 2 - fontRenderer.fontHeight / 2, color, renderText);
+            int lineEnd = renderer.drawString(BORDER, height / 2 - fontRenderer.FONT_HEIGHT / 2, color, renderText);
 
             // Draw selection
             int from = getSelectionFrom();
             int to = getSelectionTo();
             String leftStr = renderText.substring(0, clamp(from - currentOffset, 0, renderText.length()));
             String rightStr = renderText.substring(clamp(to - currentOffset, 0, renderText.length()));
-            int left = BORDER + fontRenderer.getWidth(leftStr);
-            int right = lineEnd - fontRenderer.getWidth(rightStr) - 1;
+            int left = BORDER + fontRenderer.getStringWidth(leftStr);
+            int right = lineEnd - fontRenderer.getStringWidth(rightStr) - 1;
             renderer.invertColors(right, height - 2, left, 2);
 
             // Draw cursor
             if (blinkCursorTick / 6 % 2 == 0 && focused) {
                 String beforeCursor = renderText.substring(0, cursorPos - currentOffset);
-                int posX = BORDER + fontRenderer.getWidth(beforeCursor);
+                int posX = BORDER + fontRenderer.getStringWidth(beforeCursor);
                 if (cursorPos == text.length()) {
                     renderer.drawString(posX, posY, CURSOR_COLOR, "_", true);
                 } else {
-                    renderer.drawRect(posX, posY - 1, 1, 1 + fontRenderer.fontHeight, CURSOR_COLOR);
+                    renderer.drawRect(posX, posY - 1, 1, 1 + fontRenderer.FONT_HEIGHT, CURSOR_COLOR);
                 }
             }
         }
@@ -572,7 +559,7 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
 
     @Override
     public T setI18nHint(String hint, Object... args) {
-        return setHint(I18n.translate(hint));
+        return setHint(I18n.format(hint));
     }
 
     @Override

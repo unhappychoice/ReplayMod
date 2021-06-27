@@ -24,22 +24,17 @@
  */
 package com.replaymod.gui.element.advanced;
 
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.OffsetGuiRenderer;
+import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.element.AbstractComposedGuiElement;
 import com.replaymod.gui.element.AbstractGuiElement;
 import com.replaymod.gui.element.GuiElement;
 import com.replaymod.gui.function.Clickable;
 import com.replaymod.gui.function.Draggable;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.OffsetGuiRenderer;
-import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.utils.Consumer;
-import de.johni0702.minecraft.gui.utils.lwjgl.Color;
-import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
+import de.johni0702.minecraft.gui.utils.lwjgl.*;
 
 import java.util.Collection;
 import java.util.Collections;

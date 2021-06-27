@@ -1,8 +1,8 @@
 package com.replaymod.replay.camera;
 
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector3f;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 
 import static net.minecraft.util.math.MathHelper.cos;
 import static net.minecraft.util.math.MathHelper.sin;
@@ -17,7 +17,7 @@ public class ClassicCameraController implements CameraController {
 
     private double MAX_SPEED = 10;
     private double THRESHOLD = MAX_SPEED / 20;
-    private double DECAY = MAX_SPEED/3;
+    private double DECAY = MAX_SPEED / 3;
 
     private Vector3f direction;
     private Vector3f dirBefore;
@@ -34,34 +34,34 @@ public class ClassicCameraController implements CameraController {
     public void update(float partialTicksPassed) {
         boolean forward = false, backward = false, left = false, right = false, up = false, down = false;
         speedup = false;
-        for(KeyBinding kb : MinecraftClient.getInstance().options.keysAll) {
-            if(!kb.isPressed()) continue;
-            if(kb.getTranslationKey().equals("key.forward")) {
+        for (KeyBinding kb : Minecraft.getInstance().gameSettings.keyBindings) {
+            if (!kb.isKeyDown()) continue;
+            if (kb.getKeyDescription().equals("key.forward")) {
                 forward = true;
                 speedup = true;
             }
 
-            if(kb.getTranslationKey().equals("key.back")) {
+            if (kb.getKeyDescription().equals("key.back")) {
                 backward = true;
                 speedup = true;
             }
 
-            if(kb.getTranslationKey().equals("key.jump")) {
+            if (kb.getKeyDescription().equals("key.jump")) {
                 up = true;
                 speedup = true;
             }
 
-            if(kb.getTranslationKey().equals("key.left")) {
+            if (kb.getKeyDescription().equals("key.left")) {
                 left = true;
                 speedup = true;
             }
 
-            if(kb.getTranslationKey().equals("key.right")) {
+            if (kb.getKeyDescription().equals("key.right")) {
                 right = true;
                 speedup = true;
             }
 
-            if(kb.getTranslationKey().equals("key.sneak")) {
+            if (kb.getKeyDescription().equals("key.sneak")) {
                 down = true;
                 speedup = true;
             }
@@ -82,28 +82,28 @@ public class ClassicCameraController implements CameraController {
     }
 
     private void setCameraMaximumSpeed(double maxSpeed) {
-        if(maxSpeed < LOWER_SPEED || maxSpeed > UPPER_SPEED) return;
+        if (maxSpeed < LOWER_SPEED || maxSpeed > UPPER_SPEED) return;
         MAX_SPEED = maxSpeed;
         THRESHOLD = MAX_SPEED / 20;
         DECAY = 5;
     }
 
     private void forwardCameraMovement(boolean forward, boolean backward, boolean left, boolean right, boolean up, boolean down) {
-        if(forward && !backward) {
+        if (forward && !backward) {
             setMovement(MoveDirection.FORWARD);
-        } else if(backward && !forward) {
+        } else if (backward && !forward) {
             setMovement(MoveDirection.BACKWARD);
         }
 
-        if(left && !right) {
+        if (left && !right) {
             setMovement(MoveDirection.LEFT);
-        } else if(right && !left) {
+        } else if (right && !left) {
             setMovement(MoveDirection.RIGHT);
         }
 
-        if(up && !down) {
+        if (up && !down) {
             setMovement(MoveDirection.UP);
-        } else if(down && !up) {
+        } else if (down && !up) {
             setMovement(MoveDirection.DOWN);
         }
     }
@@ -111,12 +111,12 @@ public class ClassicCameraController implements CameraController {
     private void updateMovement() {
         long frac = System.currentTimeMillis() - lastCall;
 
-        if(frac == 0) return;
+        if (frac == 0) return;
 
         double decFac = Math.max(0, 1 - (DECAY * (frac / 1000D)));
 
-        if(speedup) {
-            if(motion < THRESHOLD) motion = THRESHOLD;
+        if (speedup) {
+            if (motion < THRESHOLD) motion = THRESHOLD;
             motion /= decFac;
         } else {
             motion *= decFac;
@@ -126,7 +126,7 @@ public class ClassicCameraController implements CameraController {
 
         lastCall = System.currentTimeMillis();
 
-        if(direction == null || direction.lengthSquared() == 0 || motion < THRESHOLD) {
+        if (direction == null || direction.lengthSquared() == 0 || motion < THRESHOLD) {
             return;
         }
 
@@ -137,8 +137,8 @@ public class ClassicCameraController implements CameraController {
     }
 
     private void setMovement(MoveDirection dir) {
-        float rotationPitch = camera.pitch, rotationYaw = camera.yaw;
-        switch(dir) {
+        float rotationPitch = camera.rotationPitch, rotationYaw = camera.rotationYaw;
+        switch (dir) {
             case BACKWARD:
                 direction = this.getVectorForRotation(-rotationPitch, rotationYaw - 180);
                 break;
@@ -161,7 +161,7 @@ public class ClassicCameraController implements CameraController {
 
         Vector3f dbf = direction;
 
-        if(dirBefore != null) {
+        if (dirBefore != null) {
             dirBefore.normalise(dirBefore);
             Vector3f.add(direction, dirBefore, dirBefore);
             direction = dirBefore;
@@ -174,7 +174,7 @@ public class ClassicCameraController implements CameraController {
 
     private Vector3f getVectorForRotation(float pitch, float yaw) {
         float f2 = cos(-yaw * 0.017453292F - (float) Math.PI);
-        float f3 = sin(-yaw * 0.017453292F - (float)Math.PI);
+        float f3 = sin(-yaw * 0.017453292F - (float) Math.PI);
         float f4 = -cos(-pitch * 0.017453292F);
         float f5 = sin(-pitch * 0.017453292F);
         return new Vector3f(f3 * f4, f5, f2 * f4);

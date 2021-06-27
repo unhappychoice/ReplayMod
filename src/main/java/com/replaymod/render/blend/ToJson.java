@@ -102,8 +102,8 @@ public class ToJson {
     private static String toHexStr(byte[] buffer) {
         StringBuffer str = new StringBuffer();
         for (byte v : buffer) {
-            String s = Integer.toHexString(v&0xff);
-            if (s.length() == 1) s = "0"+s;
+            String s = Integer.toHexString(v & 0xff);
+            if (s.length() == 1) s = "0" + s;
             str.append(s);
         }
 
@@ -144,11 +144,11 @@ public class ToJson {
 
     private static Object toJson(Class<?> type, Object value) throws Throwable {
         try {
-            assert(value != null);
+            assert (value != null);
             if (isPrimitive(type)) {
                 return codec.encodeObjectJSON(value);
-            } else if (value instanceof CArrayFacade){
-                CArrayFacade<?> carray = ((CArrayFacade<?>)value);
+            } else if (value instanceof CArrayFacade) {
+                CArrayFacade<?> carray = ((CArrayFacade<?>) value);
                 JSONArray array = new JSONArray();
                 boolean hasString = false;
                 for (int i = 0; i < carray.length(); i++) {
@@ -167,7 +167,7 @@ public class ToJson {
                     return array;
                 }
             } else if (value instanceof CPointer) {
-                return ((CPointer<?>)value).getAddress();
+                return ((CPointer<?>) value).getAddress();
             } else if (value instanceof CFacade) {
                 JSONObject oStruct = new JSONObject();
                 try {
@@ -181,7 +181,7 @@ public class ToJson {
                 } catch (InvocationTargetException e) {
                     Throwable cause = e.getCause();
                     if (cause instanceof NullPointerException) {
-                        throw (NullPointerException)cause;
+                        throw (NullPointerException) cause;
                     } else {
                         throw e;
                     }

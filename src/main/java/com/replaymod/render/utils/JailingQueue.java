@@ -6,34 +6,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-//#if MC>=10904
-import java.util.concurrent.PriorityBlockingQueue;
-//#else
-//$$ import java.util.AbstractQueue;
-//#endif
-
 public class JailingQueue<T>
-        //#if MC>=10904
-        extends PriorityBlockingQueue<T>
-        //#else
-        //$$ extends AbstractQueue<T> implements BlockingQueue<T>
-        //#endif
-{
-    //#if MC>=10904
+        extends PriorityBlockingQueue<T> {
     private final PriorityBlockingQueue<T> delegate;
-    //#else
-    //$$ private final BlockingQueue<T> delegate;
-    //#endif
     private final Set<Thread> jailed = new HashSet<>();
 
-    //#if MC>=10904
     public JailingQueue(PriorityBlockingQueue<T> delegate) {
-    //#else
-    //$$ public JailingQueue(BlockingQueue<T> delegate) {
-    //#endif
         this.delegate = delegate;
     }
 
@@ -82,21 +63,13 @@ public class JailingQueue<T>
     }
 
     @Override
-    public void put(T t)
-            //#if MC<10904
-            //$$ throws InterruptedException
-            //#endif
-    {
+    public void put(T t) {
         tryAccess();
         delegate.put(t);
     }
 
     @Override
-    public boolean offer(T t, long timeout, TimeUnit unit)
-            //#if MC<10904
-            //$$ throws InterruptedException
-            //#endif
-    {
+    public boolean offer(T t, long timeout, TimeUnit unit) {
         tryAccess();
         return delegate.offer(t, timeout, unit);
     }

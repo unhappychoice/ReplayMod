@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetHandler.class)
 public abstract class MixinClientPlayNetHandler {
-    @Shadow @Final
+    @Shadow
+    @Final
     private NetworkManager netManager;
 
     @Shadow
@@ -24,7 +25,7 @@ public abstract class MixinClientPlayNetHandler {
     @Shadow
     private ITagCollectionSupplier networkTagManager;
 
-    @Inject(method = "handleTags", at=@At(value = "HEAD"), cancellable = true)
+    @Inject(method = "handleTags", at = @At(value = "HEAD"), cancellable = true)
     public void replayMod_ignoreHandshakeConnectionClose(STagsListPacket packetIn, CallbackInfo ci) {
         System.out.println("Injected ClientPlayNetHandler.handleTags");
         // PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);

@@ -24,41 +24,29 @@
  */
 package com.replaymod.gui.container;
 
-import com.replaymod.gui.element.GuiElement;
-import com.replaymod.gui.function.Scrollable;
-import com.replaymod.gui.versions.MCVer;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.MinecraftGuiRenderer;
 import com.replaymod.gui.OffsetGuiRenderer;
 import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.element.GuiElement;
+import com.replaymod.gui.function.Scrollable;
 import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.gui.utils.MouseUtils;
+import com.replaymod.gui.versions.MCVer;
+import com.replaymod.gui.versions.callbacks.PreTickCallback;
+import com.replaymod.gui.versions.callbacks.RenderHudCallback;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import com.replaymod.gui.versions.callbacks.PreTickCallback;
-import com.replaymod.gui.versions.callbacks.RenderHudCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.CrashException;
+import net.minecraft.client.MainWindow;
+import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ReportedException;
+import net.minecraft.util.text.StringTextComponent;
 
-//#if MC>=11400
-import net.minecraft.text.LiteralText;
-//#endif
-
-//#if MC>=11400
-import net.minecraft.client.util.Window;
-//#else
-//$$ import org.lwjgl.input.Mouse;
-//$$ import net.minecraft.client.gui.ScaledResolution;
-//#endif
-
-//#if MC>=10800 && MC<11400
-//$$ import java.io.IOException;
-//#endif
 
 public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extends AbstractGuiContainer<T> {
 
@@ -116,6 +104,7 @@ public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extend
      * User input are things like moving the player, attacking/interacting, key bindings but not input into the
      * GUI elements such as text fields.
      * Default for overlays is {@code true} whereas for normal GUI screens it is {@code false}.
+     *
      * @param allowUserInput {@code true} to allow user input, {@code false} to disallow it
      * @see net.minecraft.client.gui.screen.Screen#passEvents
      */
@@ -124,15 +113,15 @@ public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extend
     }
 
     private void updateUserInputGui() {
-        MinecraftClient mc = getMinecraft();
+        Minecraft mc = getMinecraft();
         if (visible) {
             if (mouseVisible) {
                 if (mc.currentScreen == null) {
-                    mc.openScreen(userInputGuiScreen);
+                    mc.displayGuiScreen(userInputGuiScreen);
                 }
             } else {
                 if (mc.currentScreen == userInputGuiScreen) {
-                    mc.openScreen(null);
+                    mc.displayGuiScreen(null);
                 }
             }
         }
@@ -175,17 +164,17 @@ public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extend
                     OffsetGuiRenderer eRenderer = new OffsetGuiRenderer(renderer, position, tooltipSize);
                     tooltip.draw(eRenderer, tooltipSize, renderInfo);
                 } catch (Exception ex) {
-                    CrashReport crashReport = CrashReport.create(ex, "Rendering Gui Tooltip");
+                    CrashReport crashReport = CrashReport.makeCrashReport(ex, "Rendering Gui Tooltip");
                     renderInfo.addTo(crashReport);
-                    CrashReportSection category = crashReport.addElement("Gui container details");
+                    CrashReportCategory category = crashReport.makeCategory("Gui container details");
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Container", this::toString);
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Width", () -> "" + size.getWidth());
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Height", () -> "" + size.getHeight());
-                    category = crashReport.addElement("Tooltip details");
+                    category = crashReport.makeCategory("Tooltip details");
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Element", tooltip::toString);
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Position", position::toString);
                     com.replaymod.gui.versions.MCVer.addDetail(category, "Size", tooltipSize::toString);
-                    throw new CrashException(crashReport);
+                    throw new ReportedException(crashReport);
                 }
             }
         }
@@ -202,9 +191,13 @@ public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extend
     }
 
     private class EventHandler extends EventRegistrations {
-        private EventHandler() {}
+        private EventHandler() {
+        }
 
-        { on(RenderHudCallback.EVENT, this::renderOverlay); }
+        {
+            on(RenderHudCallback.EVENT, this::renderOverlay);
+        }
+
         private void renderOverlay(MatrixStack stack, float partialTicks) {
             updateUserInputGui();
             updateRenderer();
@@ -225,15 +218,13 @@ public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extend
             }
         }
 
-        { on(PreTickCallback.EVENT, () -> invokeAll(com.replaymod.gui.function.Tickable.class, com.replaymod.gui.function.Tickable::tick)); }
+        {
+            on(PreTickCallback.EVENT, () -> invokeAll(com.replaymod.gui.function.Tickable.class, com.replaymod.gui.function.Tickable::tick));
+        }
 
         private void updateRenderer() {
-            MinecraftClient mc = getMinecraft();
-            //#if MC>=11400
-            Window
-            //#else
-            //$$ ScaledResolution
-            //#endif
+            Minecraft mc = getMinecraft();
+            MainWindow
                     res = MCVer.newScaledResolution(mc);
             if (screenSize == null
                     || screenSize.getWidth() != res.getScaledWidth()
@@ -245,17 +236,14 @@ public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extend
 
     protected class UserInputGuiScreen extends net.minecraft.client.gui.screen.Screen {
 
-        //#if MC>=11400
         UserInputGuiScreen() {
-            super(new LiteralText(""));
+            super(new StringTextComponent(""));
         }
-        //#endif
 
         {
             this.passEvents = true;
         }
 
-        //#if MC>=11400
         @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
             Point mousePos = MouseUtils.getMousePos();
@@ -277,118 +265,54 @@ public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extend
             }
             return true;
         }
-        //#else
-        //$$ @Override
-        //$$ protected void keyTyped(char typedChar, int keyCode)
-                //#if MC>=10800
-                //$$ throws IOException
-                //#endif
-        //$$ {
-        //$$     Point mousePos = MouseUtils.getMousePos();
-        //$$     boolean controlDown = isCtrlKeyDown();
-        //$$     boolean shiftDown = isShiftKeyDown();
-        //$$     invokeHandlers(Typeable.class, e -> e.typeKey(mousePos, keyCode, typedChar, controlDown, shiftDown));
-        //$$     if (closeable) {
-        //$$         super.keyTyped(typedChar, keyCode);
-        //$$     }
-        //$$ }
-        //#endif
 
         @Override
-        //#if MC>=11400
         public boolean mouseClicked(double mouseXD, double mouseYD, int mouseButton) {
             int mouseX = (int) Math.round(mouseXD), mouseY = (int) Math.round(mouseYD);
             return
-        //#else
-        //$$ protected void mouseClicked(int mouseX, int mouseY, int mouseButton)
-                //#if MC>=10800
-                //$$ throws IOException
-                //#endif
-        //$$ {
-        //#endif
-            invokeHandlers(com.replaymod.gui.function.Clickable.class, e -> e.mouseClick(new Point(mouseX, mouseY), mouseButton));
+                    invokeHandlers(com.replaymod.gui.function.Clickable.class, e -> e.mouseClick(new Point(mouseX, mouseY), mouseButton));
         }
 
         @Override
-        //#if MC>=11400
         public boolean mouseReleased(double mouseXD, double mouseYD, int mouseButton) {
             int mouseX = (int) Math.round(mouseXD), mouseY = (int) Math.round(mouseYD);
             return
-        //#else
-        //$$ protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
-        //#endif
-            invokeHandlers(com.replaymod.gui.function.Draggable.class, e -> e.mouseRelease(new Point(mouseX, mouseY), mouseButton));
+                    invokeHandlers(com.replaymod.gui.function.Draggable.class, e -> e.mouseRelease(new Point(mouseX, mouseY), mouseButton));
         }
 
         @Override
-        //#if MC>=11400
         public boolean mouseDragged(double mouseXD, double mouseYD, int mouseButton, double deltaX, double deltaY) {
             int mouseX = (int) Math.round(mouseXD), mouseY = (int) Math.round(mouseYD);
             long timeSinceLastClick = 0;
             return
-        //#else
-        //$$ protected void mouseClickMove(int mouseX, int mouseY, int mouseButton, long timeSinceLastClick) {
-        //#endif
-            invokeHandlers(com.replaymod.gui.function.Draggable.class, e -> e.mouseDrag(new Point(mouseX, mouseY), mouseButton, timeSinceLastClick));
+                    invokeHandlers(com.replaymod.gui.function.Draggable.class, e -> e.mouseDrag(new Point(mouseX, mouseY), mouseButton, timeSinceLastClick));
         }
 
         @Override
-        //#if MC>=11400
         public void tick() {
-        //#else
-        //$$ public void updateScreen() {
-        //#endif
             invokeAll(com.replaymod.gui.function.Tickable.class, com.replaymod.gui.function.Tickable::tick);
         }
 
-        //#if MC>=11400
         @Override
         public boolean mouseScrolled(
-                //#if MC>=11400
                 double mouseX,
                 double mouseY,
-                //#endif
                 double dWheel
         ) {
-            //#if MC>=11400
             Point mouse = new Point((int) mouseX, (int) mouseY);
-            //#else
-            //$$ Point mouse = MouseUtils.getMousePos();
-            //#endif
             int wheel = (int) (dWheel * 120);
             return invokeHandlers(Scrollable.class, e -> e.scroll(mouse, wheel));
         }
-        //#else
-        //$$ @Override
-        //$$ public void handleMouseInput()
-                //#if MC>=10800
-                //$$ throws IOException
-                //#endif
-        //$$ {
-        //$$     super.handleMouseInput();
-        //$$     if (Mouse.hasWheel() && Mouse.getEventDWheel() != 0) {
-        //$$         Point mouse = MouseUtils.getMousePos();
-        //$$         int wheel = Mouse.getEventDWheel();
-        //$$         invokeHandlers(Scrollable.class, e -> e.scroll(mouse, wheel));
-        //$$     }
-        //$$ }
-        //#endif
 
-        //#if MC>=11400
         @Override
-        public void onClose() {
+        public void closeScreen() {
             if (closeable) {
-                super.onClose();
+                super.closeScreen();
             }
         }
-        //#endif
 
         @Override
-        //#if MC>=11400
-        public void removed() {
-        //#else
-        //$$ public void onGuiClosed() {
-        //#endif
+        public void onClose() {
             if (closeable) {
                 mouseVisible = false;
             }

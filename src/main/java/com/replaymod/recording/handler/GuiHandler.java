@@ -3,9 +3,6 @@ package com.replaymod.recording.handler;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.SettingsRegistry;
 import com.replaymod.core.gui.GuiReplayButton;
-import com.replaymod.recording.ServerInfoExt;
-import com.replaymod.recording.Setting;
-import com.replaymod.mixin.AddServerScreenAccessor;
 import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.gui.container.VanillaGuiScreen;
 import com.replaymod.gui.element.GuiButton;
@@ -15,11 +12,14 @@ import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.popup.GuiInfoPopup;
 import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.gui.versions.callbacks.InitScreenCallback;
+import com.replaymod.mixin.AddServerScreenAccessor;
+import com.replaymod.recording.ServerInfoExt;
+import com.replaymod.recording.Setting;
 import net.minecraft.client.gui.screen.AddServerScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.world.SelectWorldScreen;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.gui.screen.MultiplayerScreen;
+import net.minecraft.client.gui.screen.WorldSelectionScreen;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.resources.I18n;
 
 public class GuiHandler extends EventRegistrations {
 
@@ -29,10 +29,13 @@ public class GuiHandler extends EventRegistrations {
         this.mod = mod;
     }
 
-    { on(InitScreenCallback.EVENT, (screen, buttons) -> onGuiInit(screen)); }
+    {
+        on(InitScreenCallback.EVENT, (screen, buttons) -> onGuiInit(screen));
+    }
+
     private void onGuiInit(net.minecraft.client.gui.screen.Screen gui) {
-        if (gui instanceof SelectWorldScreen || gui instanceof MultiplayerScreen) {
-            boolean sp = gui instanceof SelectWorldScreen;
+        if (gui instanceof WorldSelectionScreen || gui instanceof MultiplayerScreen) {
+            boolean sp = gui instanceof WorldSelectionScreen;
             SettingsRegistry settingsRegistry = mod.getSettingsRegistry();
             Setting<Boolean> setting = sp ? Setting.RECORD_SINGLEPLAYER : Setting.RECORD_SERVER;
 
@@ -57,15 +60,15 @@ public class GuiHandler extends EventRegistrations {
         if (gui instanceof AddServerScreen) {
             VanillaGuiScreen vanillaGui = VanillaGuiScreen.wrap(gui);
             GuiButton replayButton = new GuiReplayButton().onClick(() -> {
-                ServerInfo serverInfo = ((AddServerScreenAccessor) gui).getServer();
+                ServerData serverInfo = ((AddServerScreenAccessor) gui).getServer();
                 ServerInfoExt serverInfoExt = ServerInfoExt.from(serverInfo);
                 Boolean state = serverInfoExt.getAutoRecording();
                 GuiToggleButton<String> autoRecording = new GuiToggleButton<String>()
                         .setI18nLabel("replaymod.gui.settings.autostartrecording")
                         .setValues(
-                                I18n.translate("replaymod.gui.settings.default"),
-                                I18n.translate("options.off"),
-                                I18n.translate("options.on")
+                                I18n.format("replaymod.gui.settings.default"),
+                                I18n.format("options.off"),
+                                I18n.format("options.on")
                         )
                         .setSelected(state == null ? 0 : state ? 2 : 1);
                 autoRecording.onClick(() -> {

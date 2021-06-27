@@ -6,7 +6,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.replaymod.core.ReplayMod;
-import com.replaymod.replaystudio.us.myles.ViaVersion.api.protocol.ProtocolVersion;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.AbstractGuiScrollable;
@@ -20,31 +19,20 @@ import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.layout.VerticalLayout;
 import com.replaymod.gui.popup.GuiInfoPopup;
 import com.replaymod.gui.utils.Colors;
-import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import com.replaymod.gui.versions.Image;
 import com.replaymod.gui.versions.MCVer;
+import com.replaymod.replaystudio.us.myles.ViaVersion.api.protocol.ProtocolVersion;
+import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.network.play.NetworkPlayerInfo;
+import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-//#if MC>=11400
-//#else
-//$$ import org.lwjgl.input.Keyboard;
-//#endif
-
-//#if MC>=10800
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.DefaultSkinHelper;
-//#else
-//$$ import net.minecraft.client.Minecraft;
-//$$ import net.minecraft.client.entity.AbstractClientPlayer;
-//$$ import net.minecraft.entity.player.EntityPlayer;
-//#endif
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -98,6 +86,7 @@ public class Utils {
      * Java keystore prior to 8u101.
      * Therefore whenever a connection to the replaymod.com site is made, this SSLContext has to be used instead.
      * It has been constructed to include the necessary root certificates.
+     *
      * @see #SSL_SOCKET_FACTORY
      */
     public static final SSLContext SSL_CONTEXT;
@@ -109,7 +98,7 @@ public class Utils {
 
     static {
         // Largely from https://community.letsencrypt.org/t/134/37
-        try (InputStream in = getResourceAsStream("/dst_root_ca_x3.pem")){
+        try (InputStream in = getResourceAsStream("/dst_root_ca_x3.pem")) {
             Certificate certificate = CertificateFactory.getInstance("X.509").generateCertificate(in);
 
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -129,12 +118,12 @@ public class Utils {
     }
 
     public static String convertSecondsToShortString(int seconds) {
-        int hours = seconds/(60*60);
-        int min = seconds/60 - hours*60;
-        int sec = seconds - ((min*60) + (hours*60*60));
+        int hours = seconds / (60 * 60);
+        int min = seconds / 60 - hours * 60;
+        int sec = seconds - ((min * 60) + (hours * 60 * 60));
 
         StringBuilder builder = new StringBuilder();
-        if(hours > 0) builder.append(String.format("%02d", hours)).append(":");
+        if (hours > 0) builder.append(String.format("%02d", hours)).append(":");
         builder.append(String.format("%02d", min)).append(":");
         builder.append(String.format("%02d", sec));
 
@@ -180,40 +169,20 @@ public class Utils {
         }
     }
 
-    public static Identifier getResourceLocationForPlayerUUID(UUID uuid) {
-        //#if MC>=10800
-        PlayerListEntry info = getMinecraft().getNetworkHandler().getPlayerListEntry(uuid);
-        Identifier skinLocation;
+    public static ResourceLocation getResourceLocationForPlayerUUID(UUID uuid) {
+        NetworkPlayerInfo info = getMinecraft().getConnection().getPlayerInfo(uuid);
+        ResourceLocation skinLocation;
 
-        //#if FABRIC>=1
-        if (info != null && info.hasSkinTexture()) {
-            skinLocation = info.getSkinTexture();
+        if (info != null && info.hasLocationSkin()) {
+            skinLocation = info.getLocationSkin();
         } else {
-            skinLocation = DefaultSkinHelper.getTexture(uuid);
+            skinLocation = DefaultPlayerSkin.getDefaultSkin(uuid);
         }
-        //#else
-        //$$ if (info != null && info.hasLocationSkin()) {
-        //$$    skinLocation = info.getLocationSkin();
-        //$$ } else {
-        //$$    skinLocation = DefaultPlayerSkin.getDefaultSkin(uuid);
-        //$$ }
-        //#endif
         return skinLocation;
-        //#else
-        //$$ EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByUUID(uuid);
-        //$$ if (player != null || !(player instanceof AbstractClientPlayer)) {
-        //$$     return AbstractClientPlayer.locationStevePng;
-        //$$ }
-        //$$ return ((AbstractClientPlayer) player).getLocationSkin();
-        //#endif
     }
 
     public static boolean isCtrlDown() {
-        //#if MC>=11400
         return Screen.hasControlDown();
-        //#else
-        //$$ return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
-        //#endif
     }
 
     public static <T> void addCallback(ListenableFuture<T> future, Consumer<T> onSuccess, Consumer<Throwable> onFailure) {
@@ -232,7 +201,7 @@ public class Utils {
 
     public static GuiInfoPopup error(Logger logger, GuiContainer container, CrashReport crashReport, Runnable onClose) {
         // Convert crash report to string
-        String crashReportStr = crashReport.asString();
+        String crashReportStr = crashReport.getCompleteReport();
 
         // Log via logger
         logger.error(crashReportStr);
@@ -240,10 +209,10 @@ public class Utils {
         // Try to save the crash report
         if (crashReport.getFile() == null) {
             try {
-                File folder = new File(getMinecraft().runDirectory, "crash-reports");
+                File folder = new File(getMinecraft().gameDir, "crash-reports");
                 File file = new File(folder, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
                 logger.debug("Saving crash report to file: {}", file);
-                crashReport.writeToFile(file);
+                crashReport.saveToFile(file);
             } catch (Throwable t) {
                 logger.error("Saving crash report file:", t);
             }
@@ -274,7 +243,7 @@ public class Utils {
                     new GuiLabel().setColor(Colors.BLACK).setI18nText("replaymod.gui.unknownerror"),
                     scrollable = new GuiScrollable().setScrollDirection(AbstractGuiScrollable.Direction.VERTICAL)
                             .setLayout(new VerticalLayout().setSpacing(2))
-                            .addElements(null,Arrays.stream(crashReport.replace("\t", "    ").split("\n")).map(
+                            .addElements(null, Arrays.stream(crashReport.replace("\t", "    ").split("\n")).map(
                                     l -> new GuiLabel().setText(l).setColor(Colors.BLACK)).toArray(GuiElement[]::new)));
 
             // Replace close button with panel containing close and copy buttons
@@ -303,6 +272,7 @@ public class Utils {
             throw cls.cast(t);
         }
     }
+
     public static void throwIfUnchecked(Throwable t) {
         if (t instanceof RuntimeException) {
             throw (RuntimeException) t;

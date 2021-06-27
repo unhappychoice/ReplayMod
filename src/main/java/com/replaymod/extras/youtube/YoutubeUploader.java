@@ -24,10 +24,10 @@ import com.google.common.base.Suppliers;
 import com.google.common.io.Files;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.replaymod.gui.utils.NonNull;
 import com.replaymod.render.RenderSettings;
 import com.replaymod.render.metadata.MetadataInjector;
-import com.replaymod.gui.utils.NonNull;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FileUtils;
 
@@ -63,7 +63,7 @@ public class YoutubeUploader {
 
     private volatile boolean cancelled;
 
-    public YoutubeUploader(MinecraftClient minecraft, File videoFile, int videoFrames,
+    public YoutubeUploader(Minecraft minecraft, File videoFile, int videoFrames,
                            String thumbnailFormat, byte[] thumbnailImage,
                            RenderSettings settings, VideoVisibility videoVisibility, VideoSnippet videoSnippet)
             throws GeneralSecurityException, IOException {
@@ -75,7 +75,7 @@ public class YoutubeUploader {
         this.videoVisibility = videoVisibility;
         this.videoSnippet = videoSnippet;
         this.httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        this.dataStoreFactory = new FileDataStoreFactory(minecraft.runDirectory);
+        this.dataStoreFactory = new FileDataStoreFactory(minecraft.gameDir);
 
     }
 

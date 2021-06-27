@@ -1,7 +1,7 @@
 package com.replaymod.gui.versions.callbacks;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.replaymod.gui.utils.Event;
-import net.minecraft.client.util.math.MatrixStack;
 
 public interface PostRenderScreenCallback {
     Event<PostRenderScreenCallback> EVENT = Event.create((listeners) ->

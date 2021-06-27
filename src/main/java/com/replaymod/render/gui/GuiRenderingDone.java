@@ -2,9 +2,6 @@ package com.replaymod.render.gui;
 
 import com.replaymod.core.SettingsRegistry;
 import com.replaymod.core.versions.MCVer;
-import com.replaymod.render.RenderSettings;
-import com.replaymod.render.ReplayModRender;
-import com.replaymod.render.Setting;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.gui.element.GuiButton;
@@ -13,6 +10,9 @@ import com.replaymod.gui.element.GuiLabel;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.layout.VerticalLayout;
+import com.replaymod.render.RenderSettings;
+import com.replaymod.render.ReplayModRender;
+import com.replaymod.render.Setting;
 
 import java.io.File;
 
@@ -48,7 +48,7 @@ public class GuiRenderingDone extends GuiScreen {
                 settingsRegistry.set(Setting.SKIP_POST_RENDER_GUI, true);
                 settingsRegistry.save();
             }
-            getMinecraft().openScreen(null);
+            getMinecraft().displayGuiScreen(null);
         }
     }).setSize(100, 20).setI18nLabel("replaymod.gui.close");
 

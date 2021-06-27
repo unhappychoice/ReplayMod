@@ -24,26 +24,21 @@
  */
 package com.replaymod.gui.element.advanced;
 
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.OffsetGuiRenderer;
+import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.element.AbstractComposedGuiElement;
 import com.replaymod.gui.element.AbstractGuiClickable;
 import com.replaymod.gui.element.GuiElement;
 import com.replaymod.gui.element.IGuiClickable;
 import com.replaymod.gui.function.Clickable;
 import com.replaymod.gui.layout.VerticalLayout;
-import com.replaymod.gui.versions.MCVer;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.OffsetGuiRenderer;
-import com.replaymod.gui.RenderInfo;
-import com.replaymod.gui.container.GuiContainer;
-import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.utils.Consumer;
-import de.johni0702.minecraft.gui.utils.lwjgl.Color;
-import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import net.minecraft.client.font.TextRenderer;
+import com.replaymod.gui.versions.MCVer;
+import de.johni0702.minecraft.gui.utils.lwjgl.*;
+import net.minecraft.client.gui.FontRenderer;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -52,7 +47,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public abstract class AbstractGuiDropdownMenu<V, T extends AbstractGuiDropdownMenu<V, T>>
-        extends AbstractComposedGuiElement<T> implements IGuiDropdownMenu<V,T>, Clickable {
+        extends AbstractComposedGuiElement<T> implements IGuiDropdownMenu<V, T>, Clickable {
     private static final ReadableColor OUTLINE_COLOR = new Color(160, 160, 160);
 
     private int selected;
@@ -83,24 +78,24 @@ public abstract class AbstractGuiDropdownMenu<V, T extends AbstractGuiDropdownMe
 
     @Override
     protected ReadableDimension calcMinSize() {
-        TextRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
+        FontRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
         int maxWidth = 0;
         for (V value : values) {
-            int width = fontRenderer.getWidth(toString.apply(value));
+            int width = fontRenderer.getStringWidth(toString.apply(value));
             if (width > maxWidth) {
                 maxWidth = width;
             }
         }
-        return new Dimension(11 + maxWidth + fontRenderer.fontHeight, fontRenderer.fontHeight + 4);
+        return new Dimension(11 + maxWidth + fontRenderer.FONT_HEIGHT, fontRenderer.FONT_HEIGHT + 4);
     }
 
     @Override
     public void layout(ReadableDimension size, RenderInfo renderInfo) {
         super.layout(size, renderInfo);
-        TextRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
+        FontRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
         if (renderInfo.layer == 1) {
             ReadablePoint offsetPoint = new Point(0, size.getHeight());
-            ReadableDimension offsetSize = new Dimension(size.getWidth(), (fontRenderer.fontHeight + 5) *  values.length);
+            ReadableDimension offsetSize = new Dimension(size.getWidth(), (fontRenderer.FONT_HEIGHT + 5) * values.length);
             dropdown.layout(offsetSize, renderInfo.offsetMouse(0, offsetPoint.getY()).layer(0));
         }
     }
@@ -108,7 +103,7 @@ public abstract class AbstractGuiDropdownMenu<V, T extends AbstractGuiDropdownMe
     @Override
     public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
         super.draw(renderer, size, renderInfo);
-        TextRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
+        FontRenderer fontRenderer = com.replaymod.gui.versions.MCVer.getFontRenderer();
         if (renderInfo.layer == 0) {
             int width = size.getWidth();
             int height = size.getHeight();
@@ -127,10 +122,10 @@ public abstract class AbstractGuiDropdownMenu<V, T extends AbstractGuiDropdownMe
                 renderer.drawRect(x - layer, y + (tHeight - layer), layer * 2 - 1, 1, OUTLINE_COLOR);
             }
 
-            renderer.drawString(3, height / 2 - fontRenderer.fontHeight / 2, ReadableColor.WHITE, toString.apply(getSelectedValue()));
+            renderer.drawString(3, height / 2 - fontRenderer.FONT_HEIGHT / 2, ReadableColor.WHITE, toString.apply(getSelectedValue()));
         } else if (renderInfo.layer == 1) {
             ReadablePoint offsetPoint = new Point(0, size.getHeight());
-            ReadableDimension offsetSize = new Dimension(size.getWidth(), (fontRenderer.fontHeight + 5) *  values.length);
+            ReadableDimension offsetSize = new Dimension(size.getWidth(), (fontRenderer.FONT_HEIGHT + 5) * values.length);
             OffsetGuiRenderer offsetRenderer = new OffsetGuiRenderer(renderer, offsetPoint, offsetSize);
             offsetRenderer.startUsing();
             try {
@@ -144,7 +139,7 @@ public abstract class AbstractGuiDropdownMenu<V, T extends AbstractGuiDropdownMe
     @Override
     public T setValues(V... values) {
         this.values = values;
-        dropdown = new GuiPanel(){
+        dropdown = new GuiPanel() {
             @Override
             public void convertFor(com.replaymod.gui.element.GuiElement element, Point point, int relativeLayer) {
                 AbstractGuiDropdownMenu parent = AbstractGuiDropdownMenu.this;
@@ -268,7 +263,7 @@ public abstract class AbstractGuiDropdownMenu<V, T extends AbstractGuiDropdownMe
 
         @Override
         protected ReadableDimension calcMinSize() {
-            return new Dimension(0, MCVer.getFontRenderer().fontHeight + 5);
+            return new Dimension(0, MCVer.getFontRenderer().FONT_HEIGHT + 5);
         }
 
         @Override

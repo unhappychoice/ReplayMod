@@ -48,7 +48,10 @@ public interface MouseCallback {
     );
 
     boolean mouseDown(double x, double y, int button);
+
     boolean mouseDrag(double x, double y, int button, double dx, double dy);
+
     boolean mouseUp(double x, double y, int button);
+
     boolean mouseScroll(double x, double y, double scroll);
 }

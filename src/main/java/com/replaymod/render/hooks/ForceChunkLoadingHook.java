@@ -1,6 +1,6 @@
 package com.replaymod.render.hooks;
 
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.renderer.WorldRenderer;
 
 public class ForceChunkLoadingHook {
 

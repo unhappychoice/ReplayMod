@@ -10,11 +10,7 @@ import com.replaymod.pathing.properties.CameraProperties;
 import com.replaymod.pathing.properties.SpectatorProperty;
 import com.replaymod.pathing.properties.TimestampProperty;
 import com.replaymod.replaystudio.pathing.PathingRegistry;
-import com.replaymod.replaystudio.pathing.change.AddKeyframe;
-import com.replaymod.replaystudio.pathing.change.Change;
-import com.replaymod.replaystudio.pathing.change.CombinedChange;
-import com.replaymod.replaystudio.pathing.change.SetInterpolator;
-import com.replaymod.replaystudio.pathing.change.UpdateKeyframeProperties;
+import com.replaymod.replaystudio.pathing.change.*;
 import com.replaymod.replaystudio.pathing.impl.TimelineImpl;
 import com.replaymod.replaystudio.pathing.interpolation.CatmullRomSplineInterpolator;
 import com.replaymod.replaystudio.pathing.interpolation.CubicSplineInterpolator;
@@ -28,9 +24,9 @@ import com.replaymod.replaystudio.pathing.property.Property;
 import com.replaymod.replaystudio.util.EntityPositionTracker;
 import com.replaymod.replaystudio.util.Location;
 import com.replaymod.simplepathing.properties.ExplicitInterpolationProperty;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.CrashException;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ReportedException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Triple;
@@ -39,15 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static com.replaymod.replaystudio.pathing.change.RemoveKeyframe.create;
 import static com.replaymod.simplepathing.ReplayModSimplePathing.LOGGER;
@@ -201,7 +189,7 @@ public class SPTimeline implements PathingRegistry {
     }
 
     public Change updatePositionKeyframe(long time, double posX, double posY, double posZ,
-                                    float yaw, float pitch, float roll) {
+                                         float yaw, float pitch, float roll) {
         LOGGER.debug("Updating position keyframe at {} to pos {}/{}/{} rot {}/{}/{}",
                 time, posX, posY, posZ, yaw, pitch, roll);
 
@@ -403,7 +391,7 @@ public class SPTimeline implements PathingRegistry {
                         } else {
                             return SetInterpolator.create(segment, interpolator);
                         }
-            })).orElseGet(CombinedChange::create);
+                    })).orElseGet(CombinedChange::create);
         }
         restoreInterpolatorChange.apply(timeline);
 
@@ -646,6 +634,7 @@ public class SPTimeline implements PathingRegistry {
 
     /**
      * Clones an interpolator by de- and re-serializing it.
+     *
      * @param interpolator The interpolator to clone
      * @return The cloned interpolator
      */
@@ -658,6 +647,7 @@ public class SPTimeline implements PathingRegistry {
     /**
      * Serializes the specific interpolator to String.
      * Does <b>not</b> serialize the registered keyframe properties.
+     *
      * @param interpolator The interpolator to serialize.
      * @return The serialized interpolator
      */
@@ -671,10 +661,10 @@ public class SPTimeline implements PathingRegistry {
             jsonWriter.endArray();
             jsonWriter.flush();
         } catch (IOException e) {
-            CrashReport crash = CrashReport.create(e, "Serializing interpolator");
-            CrashReportSection category = crash.addElement("Serializing interpolator");
-            category.add("Interpolator", interpolator::toString);
-            throw new CrashException(crash);
+            CrashReport crash = CrashReport.makeCrashReport(e, "Serializing interpolator");
+            CrashReportCategory category = crash.makeCategory("Serializing interpolator");
+            category.addDetail("Interpolator", interpolator::toString);
+            throw new ReportedException(crash);
         }
 
         return baos.toString();
@@ -686,10 +676,10 @@ public class SPTimeline implements PathingRegistry {
             jsonReader.beginArray();
             return deserializeInterpolator(jsonReader);
         } catch (IOException e) {
-            CrashReport crash = CrashReport.create(e, "De-serializing interpolator");
-            CrashReportSection category = crash.addElement("De-serializing interpolator");
-            category.add("Interpolator", json::toString);
-            throw new CrashException(crash);
+            CrashReport crash = CrashReport.makeCrashReport(e, "De-serializing interpolator");
+            CrashReportCategory category = crash.makeCategory("De-serializing interpolator");
+            category.addDetail("Interpolator", json::toString);
+            throw new ReportedException(crash);
         }
     }
 }

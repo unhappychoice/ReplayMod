@@ -28,32 +28,19 @@ import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.function.Clickable;
-import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import de.johni0702.minecraft.gui.utils.lwjgl.WritableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.WritablePoint;
-import net.minecraft.util.Identifier;
+import de.johni0702.minecraft.gui.utils.lwjgl.*;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 
-//#if MC>=10904
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.sound.SoundEvent;
-//#endif
-
-//#if MC>=10800
 import static com.mojang.blaze3d.platform.GlStateManager.*;
-//#endif
-
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 
 public abstract class AbstractGuiTexturedButton<T extends AbstractGuiTexturedButton<T>> extends AbstractGuiClickable<T> implements Clickable, IGuiTexturedButton<T> {
-    private Identifier texture;
+    private ResourceLocation texture;
 
-    //#if MC>=10904
     private SoundEvent sound = SoundEvents.UI_BUTTON_CLICK;
-    //#endif
 
     private ReadableDimension textureSize = new ReadableDimension() {
         @Override
@@ -121,21 +108,17 @@ public abstract class AbstractGuiTexturedButton<T extends AbstractGuiTexturedBut
 
     @Override
     public void onClick() {
-        //#if MC>=10904
         AbstractGuiButton.playClickSound(getMinecraft(), sound);
-        //#else
-        //$$ AbstractGuiButton.playClickSound(getMinecraft());
-        //#endif
         super.onClick();
     }
 
     @Override
-    public T setTexture(Identifier resourceLocation, int size) {
+    public T setTexture(ResourceLocation resourceLocation, int size) {
         return setTexture(resourceLocation, size, size);
     }
 
     @Override
-    public T setTexture(Identifier resourceLocation, int width, int height) {
+    public T setTexture(ResourceLocation resourceLocation, int width, int height) {
         this.texture = resourceLocation;
         this.textureTotalSize = new Dimension(width, height);
         return getThis();
@@ -229,7 +212,6 @@ public abstract class AbstractGuiTexturedButton<T extends AbstractGuiTexturedBut
         return setTexturePos(normal, hover);
     }
 
-    //#if MC>=10904
     @Override
     public T setSound(SoundEvent sound) {
         this.sound = sound;
@@ -239,9 +221,8 @@ public abstract class AbstractGuiTexturedButton<T extends AbstractGuiTexturedBut
     public SoundEvent getSound() {
         return this.sound;
     }
-    //#endif
 
-    public Identifier getTexture() {
+    public ResourceLocation getTexture() {
         return this.texture;
     }
 

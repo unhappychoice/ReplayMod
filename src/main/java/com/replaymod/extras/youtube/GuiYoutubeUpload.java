@@ -7,28 +7,23 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
-import com.replaymod.gui.element.GuiTextField;
-import com.replaymod.render.RenderSettings;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.container.GuiScreen;
+import com.replaymod.gui.element.GuiTextField;
 import com.replaymod.gui.element.advanced.GuiDropdownMenu;
 import com.replaymod.gui.element.advanced.GuiProgressBar;
 import com.replaymod.gui.element.advanced.GuiTextArea;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.VerticalLayout;
 import com.replaymod.gui.popup.GuiFileChooserPopup;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import com.replaymod.gui.versions.Image;
+import com.replaymod.render.RenderSettings;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import joptsimple.internal.Strings;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.resources.I18n;
 import org.apache.commons.io.IOUtils;
-
-//#if MC>=11400
-//#else
-//$$ import org.lwjgl.Sys;
-//#endif
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -79,8 +74,9 @@ public class GuiYoutubeUpload extends GuiScreen {
 
     public final GuiTextArea descriptionField = new GuiTextArea().setMaxCharCount(Integer.MAX_VALUE)
             .setMaxTextWidth(Integer.MAX_VALUE).setMaxTextHeight(Integer.MAX_VALUE);
+
     {
-        descriptionField.setText(new String[]{I18n.translate("replaymod.gui.videodescription")});
+        descriptionField.setText(new String[]{I18n.format("replaymod.gui.videodescription")});
     }
 
     public final com.replaymod.gui.element.GuiTextField tagsField = new GuiTextField().setI18nHint("replaymod.gui.videotags");
@@ -188,7 +184,7 @@ public class GuiYoutubeUpload extends GuiScreen {
                 new Thread(() -> {
                     try {
                         upload.cancel();
-                    } catch(InterruptedException e) {
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }).start();
@@ -212,11 +208,11 @@ public class GuiYoutubeUpload extends GuiScreen {
                             String url = "https://youtu.be/" + result.getId();
                             try {
                                 MCVer.openURL(new URL(url).toURI());
-                            } catch(Throwable throwable) {
+                            } catch (Throwable throwable) {
                                 LOGGER.error("Failed to open video URL \"{}\":", url, throwable);
                             }
                             upload = null;
-                            progressBar.setLabel(I18n.translate("replaymod.gui.ytuploadprogress.done", url));
+                            progressBar.setLabel(I18n.format("replaymod.gui.ytuploadprogress.done", url));
                             setState(false);
                         }
 

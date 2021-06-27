@@ -1,4 +1,3 @@
-//#if MC>=11400
 package com.replaymod.render;
 
 import com.replaymod.core.versions.MCVer;
@@ -7,7 +6,7 @@ import com.replaymod.render.rendering.Channel;
 import com.replaymod.render.rendering.FrameConsumer;
 import com.replaymod.render.utils.ByteBufferPool;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import net.minecraft.util.crash.CrashReport;
+import net.minecraft.crash.CrashReport;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.util.tinyexr.EXRChannelInfo;
 import org.lwjgl.util.tinyexr.EXRHeader;
@@ -48,11 +47,13 @@ public class EXRWriter implements FrameConsumer<BitmapFrame> {
         int numChannels = 4 + (depthFrame != null ? 1 : 0);
 
         stackPush();
-        EXRHeader header = EXRHeader.mallocStack(); InitEXRHeader(header);
+        EXRHeader header = EXRHeader.mallocStack();
+        InitEXRHeader(header);
         EXRChannelInfo.Buffer channelInfos = EXRChannelInfo.mallocStack(numChannels);
         IntBuffer pixelTypes = stackMallocInt(numChannels);
         IntBuffer requestedPixelTypes = stackMallocInt(numChannels);
-        EXRImage image = EXRImage.mallocStack(); InitEXRImage(image);
+        EXRImage image = EXRImage.mallocStack();
+        InitEXRImage(image);
         PointerBuffer imagePointers = stackMallocPointer(numChannels);
         FloatBuffer images = memAllocFloat(width * height * numChannels);
         PointerBuffer err = stackMallocPointer(1);
@@ -110,7 +111,7 @@ public class EXRWriter implements FrameConsumer<BitmapFrame> {
                 throw new IOException(message);
             }
         } catch (Throwable t) {
-            MCVer.getMinecraft().setCrashReport(CrashReport.create(t, "Exporting EXR frame"));
+            MCVer.getMinecraft().crashed(CrashReport.makeCrashReport(t, "Exporting EXR frame"));
         } finally {
             memFree(images);
             stackPop();
@@ -122,4 +123,3 @@ public class EXRWriter implements FrameConsumer<BitmapFrame> {
     public void close() {
     }
 }
-//#endif

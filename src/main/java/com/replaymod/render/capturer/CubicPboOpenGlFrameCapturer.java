@@ -7,6 +7,7 @@ public class CubicPboOpenGlFrameCapturer extends
         PboOpenGlFrameCapturer<CubicOpenGlFrame, CubicOpenGlFrameCapturer.Data> {
 
     private final int frameSize;
+
     public CubicPboOpenGlFrameCapturer(WorldRenderer worldRenderer, RenderInfo renderInfo, int frameSize) {
         super(worldRenderer, renderInfo, CubicOpenGlFrameCapturer.Data.class, frameSize * frameSize);
         this.frameSize = frameSize;

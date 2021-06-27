@@ -1,23 +1,23 @@
 package com.replaymod.core.versions.scheduler;
 
 import com.replaymod.mixin.MinecraftAccessor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.thread.ReentrantThreadExecutor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.crash.ReportedException;
+import net.minecraft.util.concurrent.RecursiveEventLoop;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class SchedulerImpl implements  Scheduler {
-    private static final MinecraftClient mc = MinecraftClient.getInstance();
+public class SchedulerImpl implements Scheduler {
+    private static final Minecraft mc = Minecraft.getInstance();
 
     @Override
     public void runSync(Runnable runnable) throws InterruptedException, ExecutionException, TimeoutException {
-        if (mc.isOnThread()) {
+        if (mc.isOnExecutionThread()) {
             runnable.run();
         } else {
-            executor.submit(() -> {
+            executor.supplyAsync(() -> {
                 runnable.run();
                 return null;
             }).get(30, TimeUnit.SECONDS);
@@ -29,7 +29,7 @@ public class SchedulerImpl implements  Scheduler {
         runLater(new Runnable() {
             @Override
             public void run() {
-                if (mc.overlay != null) {
+                if (mc.loadingGui != null) {
                     // delay until after resources have been loaded
                     runLater(this);
                     return;
@@ -46,12 +46,13 @@ public class SchedulerImpl implements  Scheduler {
      */
     private boolean inRunLater = false;
     private boolean inRenderTaskQueue = false;
+
     // Starting 1.14 MC clears the queue of scheduled tasks on disconnect.
     // This works fine for MC since it uses the queue only for packet handling but breaks our assumption that
     // stuff submitted via runLater is actually always run (e.g. recording might not be fully stopped because parts
     // of that are run via runLater and stopping the recording happens right around the time MC clears the queue).
     // Luckily, that's also the version where MC pulled out the executor implementation, so we can just spin up our own.
-    public static class ReplayModExecutor extends ReentrantThreadExecutor<Runnable> {
+    public static class ReplayModExecutor extends RecursiveEventLoop<Runnable> {
         private final Thread mcThread = Thread.currentThread();
 
         private ReplayModExecutor(String string_1) {
@@ -59,30 +60,31 @@ public class SchedulerImpl implements  Scheduler {
         }
 
         @Override
-        protected Runnable createTask(Runnable runnable) {
+        protected Runnable wrapTask(Runnable runnable) {
             return runnable;
         }
 
         @Override
-        protected boolean canExecute(Runnable runnable) {
+        protected boolean canRun(Runnable runnable) {
             return true;
         }
 
         @Override
-        protected Thread getThread() {
+        protected Thread getExecutionThread() {
             return mcThread;
         }
 
         @Override
-        public void runTasks() {
-            super.runTasks();
+        public void drainTasks() {
+            super.drainTasks();
         }
     }
+
     public final ReplayModExecutor executor = new ReplayModExecutor("Client/ReplayMod");
 
     @Override
     public void runTasks() {
-        executor.runTasks();
+        executor.drainTasks();
     }
 
     @Override
@@ -97,7 +99,7 @@ public class SchedulerImpl implements  Scheduler {
     }
 
     private void runLater(Runnable runnable, Runnable defer) {
-        if (mc.isOnThread() && inRunLater && !inRenderTaskQueue) {
+        if (mc.isOnExecutionThread() && inRunLater && !inRenderTaskQueue) {
             ((MinecraftAccessor) mc).getRenderTaskQueue().offer(() -> {
                 inRenderTaskQueue = true;
                 try {
@@ -107,14 +109,14 @@ public class SchedulerImpl implements  Scheduler {
                 }
             });
         } else {
-            executor.send(() -> {
+            executor.enqueue(() -> {
                 inRunLater = true;
                 try {
                     runnable.run();
-                } catch (CrashException e) {
+                } catch (ReportedException e) {
                     e.printStackTrace();
-                    System.err.println(e.getReport().asString());
-                    mc.setCrashReport(e.getReport());
+                    System.err.println(e.getCrashReport().getCompleteReport());
+                    mc.crashed(e.getCrashReport());
                 } finally {
                     inRunLater = false;
                 }

@@ -5,37 +5,19 @@
   "mixins": [],
   "server": [],
   "client": [
-    //#if MC>=11600
-    "Mixin_MoveRealmsButton",
-    //#endif
-    //#if MC>=11400
-    "MixinCamera",
+        "Mixin_MoveRealmsButton",
+            "MixinCamera",
     "MixinInGameHud",
-    //#endif
-    "com.replaymod.mixin.Mixin_EntityLivingBaseAccessor",
-    //#if MC>=11400
-    "Mixin_ShowSpectatedHand_NoOF",
+        "com.replaymod.mixin.Mixin_EntityLivingBaseAccessor",
+        "Mixin_ShowSpectatedHand_NoOF",
     "Mixin_ShowSpectatedHand_OF",
-    //#else
-    //$$ "EntityOtherPlayerMPAccessor",
-    //#endif
-    "EntityPlayerAccessor",
+                "EntityPlayerAccessor",
     "FirstPersonRendererAccessor",
-    //#if MC>=10904
-    "com.replaymod.mixin.Mixin_ParticleManager",
-    //#endif
-    //#if MC>=10800
-    "MixinGuiSpectator",
+        "com.replaymod.mixin.Mixin_ParticleManager",
+            "MixinGuiSpectator",
     "MixinRenderArrow",
-    //#if MC<11400
-    //$$ "MixinRenderManager",
-    //#endif
-    "MixinViewFrustum",
-    //#else
-    //$$ "MixinEntityRenderer",
-    //$$ "MixinFMLClientHandler",
-    //#endif
-    "com.replaymod.mixin.Mixin_KeyboardListener",
+                "MixinViewFrustum",
+                    "com.replaymod.mixin.Mixin_KeyboardListener",
     "com.replaymod.mixin.Mixin_PlayerControllerMP",
     "com.replaymod.mixin.Mixin_RenderItem",
     "com.replaymod.mixin.Mixin_RenderLivingBase",

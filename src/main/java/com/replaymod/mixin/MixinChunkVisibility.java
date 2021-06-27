@@ -1,4 +1,3 @@
-//#if MC>=11500
 package com.replaymod.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,4 +28,3 @@ public abstract class MixinChunkVisibility {
         MixinChunkVisibility.counter = 0;
     }
 }
-//#endif

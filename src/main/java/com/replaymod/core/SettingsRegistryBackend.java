@@ -1,24 +1,14 @@
 package com.replaymod.core;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import com.replaymod.core.events.SettingsChangedCallback;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +18,7 @@ class SettingsRegistryBackend {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<SettingsRegistry.SettingKey<?>, Object> settings;
 
-    private final Path configFile = getMinecraft().runDirectory.toPath().resolve("config/replaymod.json");
+    private final Path configFile = getMinecraft().gameDir.toPath().resolve("config/replaymod.json");
 
     SettingsRegistryBackend(Map<SettingsRegistry.SettingKey<?>, Object> settings) {
         this.settings = settings;
@@ -116,7 +106,7 @@ class SettingsRegistryBackend {
                     }
                     Path fileName = ((Path) event.context());
                     if (fileName.equals(configFile.getFileName())) {
-                        MinecraftClient.getInstance().send(this::reload);
+                        Minecraft.getInstance().enqueue(this::reload);
                     }
                 }
                 if (!nextKey.reset()) {

@@ -24,17 +24,12 @@
  */
 package com.replaymod.gui.container;
 
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.function.Draggable;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.VerticalLayout;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.RenderInfo;
-import de.johni0702.minecraft.gui.utils.lwjgl.Color;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import de.johni0702.minecraft.gui.utils.lwjgl.WritableDimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.*;
 
 import static com.replaymod.gui.utils.Colors.TRANSPARENT;
 import static de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor.BLACK;

@@ -7,7 +7,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ReplayModEditor implements Module {
-    { instance = this; }
+    {
+        instance = this;
+    }
+
     public static ReplayModEditor instance;
 
     private ReplayMod core;

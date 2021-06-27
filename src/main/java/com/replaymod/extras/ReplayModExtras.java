@@ -8,14 +8,13 @@ import com.replaymod.extras.youtube.YoutubeUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ReplayModExtras implements Module {
-    { instance = this; }
+    {
+        instance = this;
+    }
+
     public static ReplayModExtras instance;
 
     private static final List<Class<? extends Extra>> builtin = Arrays.asList(

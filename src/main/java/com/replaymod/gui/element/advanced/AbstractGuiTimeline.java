@@ -24,19 +24,15 @@
  */
 package com.replaymod.gui.element.advanced;
 
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.element.AbstractGuiElement;
 import com.replaymod.gui.element.GuiTooltip;
 import com.replaymod.gui.function.Clickable;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.utils.Colors;
 import com.replaymod.gui.utils.Utils;
-import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
+import de.johni0702.minecraft.gui.utils.lwjgl.*;
 
 import static com.replaymod.gui.utils.Utils.clamp;
 
@@ -77,7 +73,7 @@ public abstract class AbstractGuiTimeline<T extends AbstractGuiTimeline<T>> exte
     }
 
     {
-        setTooltip(new GuiTooltip(){
+        setTooltip(new GuiTooltip() {
             @Override
             public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
                 setText(getTooltipText(renderInfo));
@@ -119,8 +115,9 @@ public abstract class AbstractGuiTimeline<T extends AbstractGuiTimeline<T>> exte
      * Draws the timeline cursor.
      * This is separate from the main draw method so subclasses can repaint the cursor
      * in case it got drawn over by other elements.
+     *
      * @param renderer Gui renderer used to draw the cursor
-     * @param size Size of the drawable area
+     * @param size     Size of the drawable area
      */
     protected void drawTimelineCursor(GuiRenderer renderer, ReadableDimension size) {
         if (!drawCursor) return;
@@ -167,6 +164,7 @@ public abstract class AbstractGuiTimeline<T extends AbstractGuiTimeline<T>> exte
 
     /**
      * Returns the time which the mouse is at.
+     *
      * @param mouseX X coordinate of the mouse
      * @param mouseY Y coordinate of the mouse
      * @return The time or -1 if the mouse isn't on the timeline
@@ -188,7 +186,7 @@ public abstract class AbstractGuiTimeline<T extends AbstractGuiTimeline<T>> exte
         int width = size.getWidth();
         int bodyWidth = width - BORDER_LEFT - BORDER_RIGHT;
         double segmentLength = length * zoom;
-        double segmentTime =  segmentLength * (mouseX - BORDER_LEFT) / bodyWidth;
+        double segmentTime = segmentLength * (mouseX - BORDER_LEFT) / bodyWidth;
         return Math.min(Math.max((int) Math.round(offset + segmentTime), 0), length);
     }
 
@@ -310,9 +308,9 @@ public abstract class AbstractGuiTimeline<T extends AbstractGuiTimeline<T>> exte
         int maxMarkers = width / markerMinDistance; // Max. amount of markers that can fit in the timeline
         int minInterval = (int) (segmentLength / maxMarkers); // Min. interval between those markers
         final int S = 1000;
-        final int M = 60*S;
-        final int H = 60*M;
-        final int[] snapTo = {S, 2*S, 5*S, 10*S, 15*S, 20*S, 30*S, M, 2*M, 5*M, 10*M, 15*M, 30*M, H, 2*H, 5*H, 10*H};
+        final int M = 60 * S;
+        final int H = 60 * M;
+        final int[] snapTo = {S, 2 * S, 5 * S, 10 * S, 15 * S, 20 * S, 30 * S, M, 2 * M, 5 * M, 10 * M, 15 * M, 30 * M, H, 2 * H, 5 * H, 10 * H};
         // Find next greater snap
         for (int snap : snapTo) {
             if (snap > minInterval) {

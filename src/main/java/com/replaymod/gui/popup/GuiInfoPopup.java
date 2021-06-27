@@ -36,14 +36,9 @@ import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 
-//#if MC>=11400
-
-//#else
-//$$ import org.lwjgl.input.Keyboard;
-//#endif
 
 public class GuiInfoPopup extends AbstractGuiPopup<GuiInfoPopup> implements Typeable {
-    public static GuiInfoPopup open(com.replaymod.gui.container.GuiContainer container, String...info) {
+    public static GuiInfoPopup open(com.replaymod.gui.container.GuiContainer container, String... info) {
         com.replaymod.gui.element.GuiElement[] labels = new com.replaymod.gui.element.GuiElement[info.length];
         for (int i = 0; i < info.length; i++) {
             labels[i] = new GuiLabel().setI18nText(info[i]).setColor(com.replaymod.gui.utils.Colors.BLACK);
@@ -58,7 +53,8 @@ public class GuiInfoPopup extends AbstractGuiPopup<GuiInfoPopup> implements Type
         return popup;
     }
 
-    private Runnable onClosed = () -> {};
+    private Runnable onClosed = () -> {
+    };
 
     private final com.replaymod.gui.element.GuiButton closeButton = new com.replaymod.gui.element.GuiButton().setSize(150, 20).onClick(() -> {
         close();
@@ -84,7 +80,7 @@ public class GuiInfoPopup extends AbstractGuiPopup<GuiInfoPopup> implements Type
         return this;
     }
 
-    public GuiInfoPopup setCloseI18nLabel(String label, Object...args) {
+    public GuiInfoPopup setCloseI18nLabel(String label, Object... args) {
         closeButton.setI18nLabel(label, args);
         return this;
     }

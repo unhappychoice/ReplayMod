@@ -4,21 +4,18 @@ import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.editor.gui.MarkerProcessor;
-import com.replaymod.gui.container.GuiScreen;
-import com.replaymod.recording.packet.PacketListener;
 import com.replaymod.gui.container.GuiPanel;
+import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.gui.container.VanillaGuiScreen;
 import com.replaymod.gui.element.GuiButton;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.gui.versions.callbacks.InitScreenCallback;
-import net.minecraft.client.gui.screen.GameMenuScreen;
+import com.replaymod.recording.packet.PacketListener;
+import net.minecraft.client.gui.screen.IngameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
-
-//#if MC>=11400
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-//#endif
+import net.minecraft.client.gui.widget.Widget;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +30,8 @@ public class GuiRecordingControls extends EventRegistrations {
     private GuiPanel panel = new GuiPanel().setLayout(new HorizontalLayout().setSpacing(4));
 
     private GuiButton buttonPauseResume = new GuiButton(panel).onClick(() -> {
-        if (Utils.ifMinimalModeDoPopup(panel, () -> {})) return;
+        if (Utils.ifMinimalModeDoPopup(panel, () -> {
+        })) return;
         if (paused) {
             packetListener.addMarker(MarkerProcessor.MARKER_NAME_END_CUT);
         } else {
@@ -44,7 +42,8 @@ public class GuiRecordingControls extends EventRegistrations {
     }).setSize(98, 20);
 
     private GuiButton buttonStartStop = new GuiButton(panel).onClick(() -> {
-        if (Utils.ifMinimalModeDoPopup(panel, () -> {})) return;
+        if (Utils.ifMinimalModeDoPopup(panel, () -> {
+        })) return;
         if (stopped) {
             paused = false;
             packetListener.addMarker(MarkerProcessor.MARKER_NAME_END_CUT);
@@ -76,15 +75,14 @@ public class GuiRecordingControls extends EventRegistrations {
         buttonPauseResume.setEnabled(!stopped);
     }
 
-    { on(InitScreenCallback.EVENT, this::injectIntoIngameMenu); }
+    {
+        on(InitScreenCallback.EVENT, this::injectIntoIngameMenu);
+    }
+
     private void injectIntoIngameMenu(Screen guiScreen,
-                                      //#if MC>=11400
-                                      List<AbstractButtonWidget> buttonList
-                                      //#else
-                                      //$$ List<net.minecraft.client.gui.GuiButton> buttonList
-                                      //#endif
+                                      List<Widget> buttonList
     ) {
-        if (!(guiScreen instanceof GameMenuScreen)) {
+        if (!(guiScreen instanceof IngameMenuScreen)) {
             return;
         }
         Function<Integer, Integer> yPos =

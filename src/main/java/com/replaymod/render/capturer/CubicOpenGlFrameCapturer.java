@@ -12,6 +12,7 @@ public class CubicOpenGlFrameCapturer extends OpenGlFrameCapturer<CubicOpenGlFra
     }
 
     private final int frameSize;
+
     public CubicOpenGlFrameCapturer(WorldRenderer worldRenderer, RenderInfo renderInfo, int frameSize) {
         super(worldRenderer, renderInfo);
         this.frameSize = frameSize;
@@ -32,7 +33,7 @@ public class CubicOpenGlFrameCapturer extends OpenGlFrameCapturer<CubicOpenGlFra
     public Map<Channel, CubicOpenGlFrame> process() {
         float partialTicks = renderInfo.updateForNextFrame();
         int frameId = framesDone++;
-        CubicOpenGlFrame frame =  new CubicOpenGlFrame(renderFrame(frameId, partialTicks, Data.LEFT),
+        CubicOpenGlFrame frame = new CubicOpenGlFrame(renderFrame(frameId, partialTicks, Data.LEFT),
                 renderFrame(frameId, partialTicks, Data.RIGHT),
                 renderFrame(frameId, partialTicks, Data.FRONT),
                 renderFrame(frameId, partialTicks, Data.BACK),

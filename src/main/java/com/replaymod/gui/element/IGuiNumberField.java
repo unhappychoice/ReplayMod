@@ -26,19 +26,27 @@ package com.replaymod.gui.element;
 
 public interface IGuiNumberField<T extends IGuiNumberField<T>> extends IGuiTextField<T> {
     byte getByte();
+
     short getShort();
+
     int getInteger();
+
     long getLong();
+
     float getFloat();
+
     double getDouble();
 
     T setValue(int value);
+
     T setValue(double value);
 
     T setMinValue(Double minValue);
+
     T setMaxValue(Double maxValue);
 
     T setMinValue(int minValue);
+
     T setMaxValue(int maxValue);
 
     T setValidateOnFocusChange(boolean validateOnFocusChange);
@@ -47,6 +55,7 @@ public interface IGuiNumberField<T extends IGuiNumberField<T>> extends IGuiTextF
      * Sets the amount of digits allowed after the decimal point.
      * A value of {@code 0} is equal to integer precision.
      * Negative values are not allowed.
+     *
      * @param precision Number of digits allowed
      */
     T setPrecision(int precision);

@@ -2,19 +2,7 @@ package com.replaymod.render.blend.data;
 
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector2f;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector3f;
-import org.blender.dna.CustomData;
-import org.blender.dna.CustomDataLayer;
-import org.blender.dna.Image;
-import org.blender.dna.MEdge;
-import org.blender.dna.MFace;
-import org.blender.dna.MLoop;
-import org.blender.dna.MLoopCol;
-import org.blender.dna.MLoopUV;
-import org.blender.dna.MPoly;
-import org.blender.dna.MTexPoly;
-import org.blender.dna.MVert;
-import org.blender.dna.Material;
-import org.blender.dna.Mesh;
+import org.blender.dna.*;
 import org.cakelab.blender.io.block.BlockCodes;
 import org.cakelab.blender.nio.CArrayFacade;
 import org.cakelab.blender.nio.CPointer;
@@ -158,10 +146,10 @@ public class DMesh {
         vertices.add(v1);
         vertices.add(v2);
         vertices.add(v3);
-        edges.add(new Edge(vOffset    , vOffset + 1));
+        edges.add(new Edge(vOffset, vOffset + 1));
         edges.add(new Edge(vOffset + 1, vOffset + 2));
-        edges.add(new Edge(vOffset + 2, vOffset    ));
-        loops.add(new Loop(vOffset    , eOffset    , uv1.x, uv1.y, c1));
+        edges.add(new Edge(vOffset + 2, vOffset));
+        loops.add(new Loop(vOffset, eOffset, uv1.x, uv1.y, c1));
         loops.add(new Loop(vOffset + 1, eOffset + 1, uv2.x, uv2.y, c2));
         loops.add(new Loop(vOffset + 2, eOffset + 2, uv3.x, uv3.y, c3));
         polys.add(new Poly(lOffset, 3, materialSlot));
@@ -178,11 +166,11 @@ public class DMesh {
         vertices.add(v2);
         vertices.add(v3);
         vertices.add(v4);
-        edges.add(new Edge(vOffset    , vOffset + 1));
+        edges.add(new Edge(vOffset, vOffset + 1));
         edges.add(new Edge(vOffset + 1, vOffset + 2));
         edges.add(new Edge(vOffset + 2, vOffset + 3));
-        edges.add(new Edge(vOffset + 3, vOffset    ));
-        loops.add(new Loop(vOffset    , eOffset    , uv1.x, uv1.y, c1));
+        edges.add(new Edge(vOffset + 3, vOffset));
+        loops.add(new Loop(vOffset, eOffset, uv1.x, uv1.y, c1));
         loops.add(new Loop(vOffset + 1, eOffset + 1, uv2.x, uv2.y, c2));
         loops.add(new Loop(vOffset + 2, eOffset + 2, uv3.x, uv3.y, c3));
         loops.add(new Loop(vOffset + 3, eOffset + 3, uv4.x, uv4.y, c4));
@@ -276,8 +264,8 @@ public class DMesh {
         }
 
         public void serialize(MLoopCol mLoop) throws IOException {
-            mLoop.setR((byte) ((col      ) & 0xff));
-            mLoop.setG((byte) ((col >>  8) & 0xff));
+            mLoop.setR((byte) ((col) & 0xff));
+            mLoop.setG((byte) ((col >> 8) & 0xff));
             mLoop.setB((byte) ((col >> 16) & 0xff));
             mLoop.setA((byte) ((col >> 24) & 0xff));
         }

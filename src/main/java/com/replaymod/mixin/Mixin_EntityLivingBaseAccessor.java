@@ -6,23 +6,24 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(LivingEntity.class)
 public interface Mixin_EntityLivingBaseAccessor {
-    //#if MC>=11400
-    @Accessor("serverX")
+    @Accessor
     double getInterpTargetX();
-    @Accessor("serverY")
-    double getInterpTargetY();
-    @Accessor("serverZ")
-    double getInterpTargetZ();
-    @Accessor("serverYaw")
-    double getInterpTargetYaw();
-    @Accessor("serverPitch")
-    double getInterpTargetPitch();
-    //#endif
 
-    //#if MC>=10904
-    @Accessor("itemUseTimeLeft")
+    @Accessor
+    double getInterpTargetY();
+
+    @Accessor
+    double getInterpTargetZ();
+
+    @Accessor
+    double getInterpTargetYaw();
+
+    @Accessor
+    double getInterpTargetPitch();
+
+    @Accessor
     int getActiveItemStackUseCount();
-    @Accessor("itemUseTimeLeft")
+
+    @Accessor
     void setActiveItemStackUseCount(int value);
-    //#endif
 }

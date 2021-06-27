@@ -5,10 +5,6 @@ import com.google.gson.Gson;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
-import com.replaymod.replaystudio.io.ReplayInputStream;
-import com.replaymod.replaystudio.io.ReplayOutputStream;
-import com.replaymod.replaystudio.replay.ReplayFile;
-import com.replaymod.replaystudio.replay.ReplayMetaData;
 import com.replaymod.gui.container.AbstractGuiScreen;
 import com.replaymod.gui.container.GuiPanel;
 import com.replaymod.gui.container.GuiScreen;
@@ -20,7 +16,11 @@ import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.layout.VerticalLayout;
 import com.replaymod.gui.utils.Colors;
-import net.minecraft.util.crash.CrashReport;
+import com.replaymod.replaystudio.io.ReplayInputStream;
+import com.replaymod.replaystudio.io.ReplayOutputStream;
+import com.replaymod.replaystudio.replay.ReplayFile;
+import com.replaymod.replaystudio.replay.ReplayMetaData;
+import net.minecraft.crash.CrashReport;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -53,9 +53,9 @@ public class RestoreReplayGui extends AbstractGuiScreen<RestoreReplayGui> {
         this.file = file;
 
         textPanel.addElements(new VerticalLayout.Data(0.5),
-                    new GuiLabel().setI18nText("replaymod.gui.restorereplay1"),
-                    new GuiLabel().setI18nText("replaymod.gui.restorereplay2", Files.getNameWithoutExtension(file.getName())),
-                    new GuiLabel().setI18nText("replaymod.gui.restorereplay3"));
+                new GuiLabel().setI18nText("replaymod.gui.restorereplay1"),
+                new GuiLabel().setI18nText("replaymod.gui.restorereplay2", Files.getNameWithoutExtension(file.getName())),
+                new GuiLabel().setI18nText("replaymod.gui.restorereplay3"));
         yesButton.onClick(() -> {
             recoverInBackground();
             parent.display();
@@ -99,8 +99,9 @@ public class RestoreReplayGui extends AbstractGuiScreen<RestoreReplayGui> {
                 tryRecover(progressBar::setProgress);
             } catch (IOException e) {
                 LOGGER.error("Recovering replay file:", e);
-                CrashReport crashReport = CrashReport.create(e, "Recovering replay file");
-                core.runLater(() -> Utils.error(LOGGER, VanillaGuiScreen.wrap(getMinecraft().currentScreen), crashReport, () -> {}));
+                CrashReport crashReport = CrashReport.makeCrashReport(e, "Recovering replay file");
+                core.runLater(() -> Utils.error(LOGGER, VanillaGuiScreen.wrap(getMinecraft().currentScreen), crashReport, () -> {
+                }));
             } finally {
                 core.runLater(() -> core.getBackgroundProcesses().removeProcess(savingProcess));
             }

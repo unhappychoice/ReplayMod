@@ -4,28 +4,13 @@
   "mixins": [],
   "server": [],
   "client": [
-    //#if MC>=10800
-    //#if MC<11500
-    //$$ "WorldRendererAccessor",
-    //$$ "MixinChunkRenderWorker",
-    //$$ "MixinEffectRenderer",
-    //$$ "MixinModelRenderer",
-    //$$ "MixinTileEntityRendererDispatcher",
-    //$$ "ContainerLocalRenderInformationAccessor",
-    //#endif
-    //#if MC<10904
-    //$$ "EntityAccessor",
-    //#endif
-    //#if MC>=10904
-    "ItemRendererAccessor",
-    //#endif
-    "ParticleAccessor",
+                                                        "ItemRendererAccessor",
+        "ParticleAccessor",
     "Mixin_RenderGlobal",
     "MixinRenderItem",
     "MixinRenderLivingBase",
     "Mixin_RenderManager"
-    //#endif
-  ],
+      ],
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.6.11",
   "refmap": "mixins.replaymod.refmap.json"

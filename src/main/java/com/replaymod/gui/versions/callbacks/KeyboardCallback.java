@@ -38,6 +38,8 @@ public interface KeyboardCallback {
     );
 
     boolean keyPressed(int keyCode, int scanCode, int modifiers);
+
     boolean keyReleased(int keyCode, int scanCode, int modifiers);
+
     boolean charTyped(char keyChar, int scanCode);
 }

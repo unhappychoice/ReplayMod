@@ -2,12 +2,12 @@ package com.replaymod.pathing.properties;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.replaymod.gui.utils.NonNull;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replay.ReplaySender;
 import com.replaymod.replaystudio.pathing.property.AbstractProperty;
 import com.replaymod.replaystudio.pathing.property.PropertyPart;
 import com.replaymod.replaystudio.pathing.property.PropertyParts;
-import com.replaymod.gui.utils.NonNull;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -19,6 +19,7 @@ import java.util.Collections;
 public class TimestampProperty extends AbstractProperty<Integer> {
     public static final TimestampProperty PROPERTY = new TimestampProperty();
     public final PropertyPart<Integer> TIME = new PropertyParts.ForInteger(this, true);
+
     private TimestampProperty() {
         super("timestamp", "replaymod.gui.editkeyframe.timestamp", null, 0);
     }

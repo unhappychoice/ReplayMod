@@ -2,13 +2,13 @@ package com.replaymod.extras;
 
 import com.replaymod.core.ReplayMod;
 import com.replaymod.core.versions.MCVer.Keyboard;
+import com.replaymod.gui.element.GuiImage;
+import com.replaymod.gui.layout.HorizontalLayout;
+import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.replay.events.ReplayOpenedCallback;
 import com.replaymod.replay.gui.overlay.GuiReplayOverlay;
-import com.replaymod.gui.element.GuiImage;
-import com.replaymod.gui.layout.HorizontalLayout;
-import com.replaymod.gui.utils.EventRegistrations;
 
 public class QuickMode extends EventRegistrations implements Extra {
     private ReplayModReplay module;

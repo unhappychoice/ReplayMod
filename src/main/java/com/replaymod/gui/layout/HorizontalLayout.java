@@ -60,7 +60,7 @@ public class HorizontalLayout implements Layout {
             x += spacing;
             spacing = this.spacing;
 
-            GuiElement element  = entry.getKey();
+            GuiElement element = entry.getKey();
             Data data = entry.getValue() instanceof Data ? (Data) entry.getValue() : DEFAULT_DATA;
             Dimension elementSize = new Dimension(element.getMinSize());
             ReadableDimension elementMaxSize = element.getMaxSize();

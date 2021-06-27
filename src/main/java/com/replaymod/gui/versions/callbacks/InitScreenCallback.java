@@ -2,7 +2,7 @@ package com.replaymod.gui.versions.callbacks;
 
 import com.replaymod.gui.utils.Event;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.Widget;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface InitScreenCallback {
             }
     );
 
-    void initScreen(Screen screen, List<AbstractButtonWidget> buttons);
+    void initScreen(Screen screen, List<Widget> buttons);
 
     interface Pre {
         Event<InitScreenCallback.Pre> EVENT = Event.create((listeners) ->

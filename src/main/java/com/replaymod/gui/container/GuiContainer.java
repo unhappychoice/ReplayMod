@@ -26,8 +26,8 @@ package com.replaymod.gui.container;
 
 import com.replaymod.gui.element.ComposedGuiElement;
 import com.replaymod.gui.element.GuiElement;
-import com.replaymod.gui.layout.LayoutData;
 import com.replaymod.gui.layout.Layout;
+import com.replaymod.gui.layout.LayoutData;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 
@@ -37,25 +37,32 @@ import java.util.Map;
 public interface GuiContainer<T extends GuiContainer<T>> extends ComposedGuiElement<T> {
 
     T setLayout(Layout layout);
+
     Layout getLayout();
 
     void convertFor(com.replaymod.gui.element.GuiElement element, Point point);
 
     /**
      * Converts the global coordinates of the point to ones relative to the element.
-     * @param element The element, must be part of this container
-     * @param point The point
+     *
+     * @param element       The element, must be part of this container
+     * @param point         The point
      * @param relativeLayer Layer at which the point is relative to this element,
      *                      positive values are above this element
      */
     void convertFor(com.replaymod.gui.element.GuiElement element, Point point, int relativeLayer);
 
     Map<com.replaymod.gui.element.GuiElement, com.replaymod.gui.layout.LayoutData> getElements();
+
     T addElements(LayoutData layoutData, com.replaymod.gui.element.GuiElement... elements);
+
     T removeElement(com.replaymod.gui.element.GuiElement element);
+
     T sortElements();
+
     T sortElements(Comparator<GuiElement> comparator);
 
     ReadableColor getBackgroundColor();
+
     T setBackgroundColor(ReadableColor backgroundColor);
 }

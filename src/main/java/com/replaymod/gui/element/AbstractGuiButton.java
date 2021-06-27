@@ -28,46 +28,33 @@ import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
 import com.replaymod.gui.function.Clickable;
+import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import com.replaymod.gui.versions.MCVer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 
-//#if MC>=11400
-import net.minecraft.client.sound.PositionedSoundInstance;
-//#else
-//$$ import net.minecraft.client.audio.PositionedSoundRecord;
-//#endif
-
-//#if MC>=10904
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.sound.SoundEvent;
-//#endif
-
-//#if MC>=10800
 import static com.mojang.blaze3d.platform.GlStateManager.*;
-//#endif
-
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 
 public abstract class AbstractGuiButton<T extends AbstractGuiButton<T>> extends AbstractGuiClickable<T> implements Clickable, IGuiButton<T> {
-    protected static final Identifier BUTTON_SOUND = new Identifier("gui.button.press");
-    protected static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+    protected static final ResourceLocation BUTTON_SOUND = new ResourceLocation("gui.button.press");
+    protected static final ResourceLocation WIDGETS_TEXTURE = new ResourceLocation("textures/gui/widgets.png");
 
-    //#if MC>=10904
     private SoundEvent sound = SoundEvents.UI_BUTTON_CLICK;
-    //#endif
 
     private int labelColor = 0xe0e0e0;
     private String label;
 
-    private Identifier texture;
+    private ResourceLocation texture;
     private ReadableDimension textureSize;
     private ReadablePoint spriteUV;
     private ReadableDimension spriteSize;
@@ -131,8 +118,8 @@ public abstract class AbstractGuiButton<T extends AbstractGuiButton<T>> extends 
     @Override
     public ReadableDimension calcMinSize() {
         if (label != null) {
-            TextRenderer fontRenderer = MCVer.getFontRenderer();
-            return new Dimension(fontRenderer.getWidth(label), 20);
+            FontRenderer fontRenderer = MCVer.getFontRenderer();
+            return new Dimension(fontRenderer.getStringWidth(label), 20);
         } else {
             return new Dimension(0, 0);
         }
@@ -144,25 +131,12 @@ public abstract class AbstractGuiButton<T extends AbstractGuiButton<T>> extends 
         super.onClick();
     }
 
-    public static void playClickSound(MinecraftClient mc) {
-    //#if MC>=10904
+    public static void playClickSound(Minecraft mc) {
         playClickSound(mc, SoundEvents.UI_BUTTON_CLICK);
     }
-    public static void playClickSound(MinecraftClient mc, SoundEvent sound) {
-    //#endif
-        //#if MC>=11400
-        mc.getSoundManager().play(PositionedSoundInstance.master(sound, 1.0F));
-        //#else
-        //#if MC>=10904
-        //$$ mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(sound, 1.0F));
-        //#else
-        //#if MC>=10800
-        //$$ mc.getSoundHandler().playSound(PositionedSoundRecord.create(BUTTON_SOUND, 1.0F));
-        //#else
-        //$$ mc.getSoundHandler().playSound(PositionedSoundRecord.createPositionedSoundRecord(BUTTON_SOUND, 1.0F));
-        //#endif
-        //#endif
-        //#endif
+
+    public static void playClickSound(Minecraft mc, SoundEvent sound) {
+        mc.getSoundHandler().play(SimpleSound.master(sound, 1.0F));
     }
 
     @Override
@@ -171,7 +145,6 @@ public abstract class AbstractGuiButton<T extends AbstractGuiButton<T>> extends 
         return getThis();
     }
 
-    //#if MC>=10904
     @Override
     public T setSound(SoundEvent sound) {
         this.sound = sound;
@@ -181,11 +154,10 @@ public abstract class AbstractGuiButton<T extends AbstractGuiButton<T>> extends 
     public SoundEvent getSound() {
         return this.sound;
     }
-    //#endif
 
     @Override
     public T setI18nLabel(String label, Object... args) {
-        return setLabel(I18n.translate(label, args));
+        return setLabel(I18n.format(label, args));
     }
 
     public String getLabel() {
@@ -197,12 +169,12 @@ public abstract class AbstractGuiButton<T extends AbstractGuiButton<T>> extends 
     }
 
     @Override
-    public Identifier getTexture() {
+    public ResourceLocation getTexture() {
         return texture;
     }
 
     @Override
-    public T setTexture(Identifier texture) {
+    public T setTexture(ResourceLocation texture) {
         this.texture = texture;
         return getThis();
     }

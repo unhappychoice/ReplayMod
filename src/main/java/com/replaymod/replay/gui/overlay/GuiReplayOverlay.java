@@ -4,9 +4,6 @@ import com.replaymod.core.ReplayMod;
 import com.replaymod.core.events.KeyBindingEventCallback;
 import com.replaymod.core.events.KeyEventCallback;
 import com.replaymod.core.versions.MCVer.Keyboard;
-import com.replaymod.replay.ReplayHandler;
-import com.replaymod.replay.ReplayModReplay;
-import com.replaymod.replay.ReplaySender;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.AbstractGuiOverlay;
@@ -19,11 +16,14 @@ import com.replaymod.gui.element.advanced.IGuiTimeline;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.layout.HorizontalLayout;
 import com.replaymod.gui.utils.EventRegistrations;
+import com.replaymod.replay.ReplayHandler;
+import com.replaymod.replay.ReplayModReplay;
+import com.replaymod.replay.ReplaySender;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import de.johni0702.minecraft.gui.utils.lwjgl.WritablePoint;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.GameSettings;
+import net.minecraft.client.resources.I18n;
 
 import static com.replaymod.core.ReplayMod.TEXTURE_SIZE;
 
@@ -44,7 +44,7 @@ public class GuiReplayOverlay extends AbstractGuiOverlay<GuiReplayOverlay> {
                 } else { // Pause button
                     label = "replaymod.gui.ingame.menu.pause";
                 }
-                tooltip.setText(I18n.translate(label) + " (" + mod.keyPlayPause.getBoundKey() + ")");
+                tooltip.setText(I18n.format(label) + " (" + mod.keyPlayPause.getBoundKey() + ")");
             }
             return tooltip;
         }
@@ -63,7 +63,7 @@ public class GuiReplayOverlay extends AbstractGuiOverlay<GuiReplayOverlay> {
     private boolean hidden;
 
     public GuiReplayOverlay(final ReplayHandler replayHandler) {
-        timeline = new GuiMarkerTimeline(replayHandler){
+        timeline = new GuiMarkerTimeline(replayHandler) {
             @Override
             public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
                 setCursorPosition(replayHandler.getReplaySender().currentTimeStamp());
@@ -117,7 +117,7 @@ public class GuiReplayOverlay extends AbstractGuiOverlay<GuiReplayOverlay> {
             @Override
             public void run() {
                 double speed = getSpeedSliderValue();
-                speedSlider.setText(I18n.translate("replaymod.gui.speed") + ": " + speed + "x");
+                speedSlider.setText(I18n.format("replaymod.gui.speed") + ": " + speed + "x");
                 ReplaySender replaySender = replayHandler.getReplaySender();
                 if (!replaySender.paused()) {
                     replaySender.setReplaySpeed(speed);
@@ -157,7 +157,7 @@ public class GuiReplayOverlay extends AbstractGuiOverlay<GuiReplayOverlay> {
     @Override
     public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
         // Do not render overlay if all hud, or this one specifically, is hidden and we're not in some popup
-        if ((getMinecraft().options.hudHidden || hidden) && isAllowUserInput()) {
+        if ((getMinecraft().gameSettings.hideGUI || hidden) && isAllowUserInput()) {
             // Note that this only applies to when the mouse is visible, otherwise
             // the draw method isn't called in the first place
             return;
@@ -171,17 +171,26 @@ public class GuiReplayOverlay extends AbstractGuiOverlay<GuiReplayOverlay> {
     }
 
     private class EventHandler extends EventRegistrations {
-        { on(KeyBindingEventCallback.EVENT, this::onKeyBindingEvent); }
+        {
+            on(KeyBindingEventCallback.EVENT, this::onKeyBindingEvent);
+        }
+
         private void onKeyBindingEvent() {
-            GameOptions gameSettings = getMinecraft().options;
-            while (gameSettings.keyChat.wasPressed() || gameSettings.keyCommand.wasPressed()) {
+            GameSettings gameSettings = getMinecraft().gameSettings;
+            while (gameSettings.keyBindChat.isPressed() || gameSettings.keyBindCommand.isPressed()) {
                 if (!isMouseVisible()) {
                     setMouseVisible(true);
                 }
             }
         }
 
-        { on(KeyEventCallback.EVENT, (int key, int scanCode, int action, int modifiers) -> { onKeyInput(key, action); return false; }); }
+        {
+            on(KeyEventCallback.EVENT, (int key, int scanCode, int action, int modifiers) -> {
+                onKeyInput(key, action);
+                return false;
+            });
+        }
+
         private void onKeyInput(int key, int action) {
             if (action != KeyEventCallback.ACTION_PRESS) return;
             // Allow F1 to be used to hide the replay gui (e.g. for recording with OBS)

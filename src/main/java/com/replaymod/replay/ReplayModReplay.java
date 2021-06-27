@@ -7,26 +7,22 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.replaymod.core.KeyBindingRegistry;
 import com.replaymod.core.Module;
 import com.replaymod.core.ReplayMod;
-import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.core.utils.ModCompat;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.core.versions.MCVer.Keyboard;
-import com.replaymod.replay.camera.CameraController;
-import com.replaymod.replay.camera.CameraControllerRegistry;
-import com.replaymod.replay.camera.CameraEntity;
-import com.replaymod.replay.camera.ClassicCameraController;
-import com.replaymod.replay.camera.VanillaCameraController;
+import com.replaymod.mixin.MinecraftAccessor;
+import com.replaymod.replay.camera.*;
 import com.replaymod.replay.gui.screen.GuiModCompatWarning;
 import com.replaymod.replay.handler.GuiHandler;
 import com.replaymod.replaystudio.data.Marker;
 import com.replaymod.replaystudio.replay.ReplayFile;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +30,10 @@ import java.util.Optional;
 
 public class ReplayModReplay implements Module {
 
-    { instance = this; }
+    {
+        instance = this;
+    }
+
     public static ReplayModReplay instance;
 
     private ReplayMod core;
@@ -61,16 +60,16 @@ public class ReplayModReplay implements Module {
         registry.registerKeyBinding("replaymod.input.marker", Keyboard.KEY_M, new Runnable() {
             @Override
             public void run() {
-                if (replayHandler != null ) {
+                if (replayHandler != null) {
                     CameraEntity camera = replayHandler.getCameraEntity();
                     if (camera != null) {
                         Marker marker = new Marker();
                         marker.setTime(replayHandler.getReplaySender().currentTimeStamp());
-                        marker.setX(camera.getX());
-                        marker.setY(camera.getY());
-                        marker.setZ(camera.getZ());
-                        marker.setYaw(camera.yaw);
-                        marker.setPitch(camera.pitch);
+                        marker.setX(camera.getPosX());
+                        marker.setY(camera.getPosY());
+                        marker.setZ(camera.getPosZ());
+                        marker.setYaw(camera.rotationYaw);
+                        marker.setPitch(camera.rotationPitch);
                         marker.setRoll(camera.roll);
                         replayHandler.getOverlay().timeline.addMarker(marker);
                     }
@@ -82,7 +81,7 @@ public class ReplayModReplay implements Module {
             @Override
             public void run() {
                 if (replayHandler != null) {
-                    MinecraftClient mc = MCVer.getMinecraft();
+                    Minecraft mc = MCVer.getMinecraft();
                     ListenableFuture<NoGuiScreenshot> future = NoGuiScreenshot.take(mc, 1280, 720);
                     Futures.addCallback(future, new FutureCallback<NoGuiScreenshot>() {
                         @Override
@@ -186,14 +185,14 @@ public class ReplayModReplay implements Module {
             }
         }
         replayHandler = new ReplayHandler(replayFile, asyncMode);
-        KeyBinding.updateKeysByCode(); // see Mixin_ContextualKeyBindings
+        KeyBinding.resetKeyBindingArrayAndHash(); // see Mixin_ContextualKeyBindings
 
         return replayHandler;
     }
 
     public void forcefullyStopReplay() {
         replayHandler = null;
-        KeyBinding.updateKeysByCode(); // see Mixin_ContextualKeyBindings
+        KeyBinding.resetKeyBindingArrayAndHash(); // see Mixin_ContextualKeyBindings
     }
 
     public ReplayMod getCore() {

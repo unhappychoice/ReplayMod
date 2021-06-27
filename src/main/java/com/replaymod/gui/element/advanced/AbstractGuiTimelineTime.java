@@ -24,12 +24,12 @@
  */
 package com.replaymod.gui.element.advanced;
 
-import com.replaymod.gui.container.GuiContainer;
-import com.replaymod.gui.element.AbstractGuiElement;
-import com.replaymod.gui.versions.MCVer;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.element.AbstractGuiElement;
 import com.replaymod.gui.utils.Colors;
+import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 
@@ -76,7 +76,7 @@ public abstract class AbstractGuiTimelineTime<T extends AbstractGuiTimelineTime<
         } else {
             str = String.format("%02d:%02d", time / 1000 / 60, time / 1000 % 60);
         }
-        int stringWidth = MCVer.getFontRenderer().getWidth(str);
+        int stringWidth = MCVer.getFontRenderer().getStringWidth(str);
         positionX = Math.max(stringWidth / 2, Math.min(size.getWidth() - stringWidth / 2, positionX));
         renderer.drawCenteredString(positionX, 0, Colors.WHITE, str, true);
     }

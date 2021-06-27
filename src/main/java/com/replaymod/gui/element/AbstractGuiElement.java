@@ -27,18 +27,18 @@ package com.replaymod.gui.element;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.container.GuiContainer;
+import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.gui.versions.MCVer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 
 public abstract class AbstractGuiElement<T extends AbstractGuiElement<T>> implements com.replaymod.gui.element.GuiElement<T> {
-    protected static final Identifier TEXTURE = new Identifier("jgui", "gui.png");
+    protected static final ResourceLocation TEXTURE = new ResourceLocation("jgui", "gui.png");
 
 
-    private final MinecraftClient minecraft = MCVer.getMinecraft();
+    private final Minecraft minecraft = MCVer.getMinecraft();
 
     private GuiContainer container;
 
@@ -201,7 +201,7 @@ public abstract class AbstractGuiElement<T extends AbstractGuiElement<T>> implem
         return maxSize == null ? new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE) : maxSize;
     }
 
-    public MinecraftClient getMinecraft() {
+    public Minecraft getMinecraft() {
         return this.minecraft;
     }
 

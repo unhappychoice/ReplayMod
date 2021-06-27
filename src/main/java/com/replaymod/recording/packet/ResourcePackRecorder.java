@@ -2,57 +2,28 @@ package com.replaymod.recording.packet;
 
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
+import com.replaymod.gui.utils.Consumer;
 import com.replaymod.replaystudio.replay.ReplayFile;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.options.ServerList;
-import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.multiplayer.ServerList;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
+import net.minecraft.client.resources.DownloadingPackFinder;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.client.CResourcePackStatusPacket;
+import net.minecraft.network.play.client.CResourcePackStatusPacket.Action;
+import net.minecraft.network.play.server.SSendResourcePackPacket;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-//#if MC>=11400
-import net.minecraft.text.TranslatableText;
-//#else
-//$$ import net.minecraft.client.gui.GuiYesNoCallback;
-//$$ import net.minecraft.client.resources.I18n;
-//#endif
-
-//#if MC>=10800
-import com.replaymod.gui.utils.Consumer;
-//#else
-//$$ import net.minecraft.client.gui.GuiScreenWorking;
-//$$ import net.minecraft.util.HttpUtil;
-//#endif
-
-//#if MC>=10800
-import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket.Status;
-import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
-//#endif
-
-//#if MC>=10800
-//#if MC>=11400
-import java.util.concurrent.CompletableFuture;
-//#else
-//$$ import com.google.common.util.concurrent.ListenableFuture;
-//#endif
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.ClientConnection;
-//#else
-//$$ import com.replaymod.core.mixin.ResourcePackRepositoryAccessor;
-//$$ import net.minecraft.client.multiplayer.ServerData.ServerResourceMode;
-//$$ import net.minecraft.client.multiplayer.ServerList;
-//$$ import net.minecraft.client.resources.FileResourcePack;
-//$$ import net.minecraft.network.play.server.S3FPacketCustomPayload;
-//$$ import org.apache.commons.io.Charsets;
-//#endif
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static com.replaymod.core.versions.MCVer.*;
 
@@ -61,7 +32,7 @@ import static com.replaymod.core.versions.MCVer.*;
  */
 public class ResourcePackRecorder {
     private static final Logger logger = LogManager.getLogger();
-    private static final MinecraftClient mc = getMinecraft();
+    private static final Minecraft mc = getMinecraft();
 
     private final ReplayFile replayFile;
 
@@ -101,174 +72,79 @@ public class ResourcePackRecorder {
         }
     }
 
-    //#if MC>=10800
-    public ResourcePackStatusC2SPacket makeStatusPacket(String hash, Status action) {
-        //#if MC>=11002
-        return new ResourcePackStatusC2SPacket(action);
-        //#else
-        //$$ return new CPacketResourcePackStatus(hash, action);
-        //#endif
+    public CResourcePackStatusPacket makeStatusPacket(String hash, Action action) {
+        return new CResourcePackStatusPacket(action);
     }
 
 
-    public synchronized ResourcePackSendS2CPacket handleResourcePack(ResourcePackSendS2CPacket packet) {
+    public synchronized SSendResourcePackPacket handleResourcePack(SSendResourcePackPacket packet) {
         final int requestId = nextRequestId++;
-        final ClientPlayNetworkHandler netHandler = mc.getNetworkHandler();
-        final ClientConnection netManager = netHandler.getConnection();
+        final ClientPlayNetHandler netHandler = mc.getConnection();
+        final NetworkManager netManager = netHandler.getNetworkManager();
         final String url = packet.getURL();
-        final String hash = packet.getSHA1();
+        final String hash = packet.getHash();
 
         if (url.startsWith("level://")) {
             String levelName = url.substring("level://".length());
-            File savesDir = new File(mc.runDirectory, "saves");
+            File savesDir = new File(mc.gameDir, "saves");
             final File levelDir = new File(savesDir, levelName);
 
             if (levelDir.isFile()) {
-                netManager.send(makeStatusPacket(hash, Status.ACCEPTED));
+                netManager.sendPacket(makeStatusPacket(hash, Action.ACCEPTED));
                 addCallback(setServerResourcePack(levelDir), result -> {
                     recordResourcePack(levelDir, requestId);
-                    netManager.send(makeStatusPacket(hash, Status.SUCCESSFULLY_LOADED));
+                    netManager.sendPacket(makeStatusPacket(hash, Action.SUCCESSFULLY_LOADED));
                 }, throwable -> {
-                    netManager.send(makeStatusPacket(hash, Status.FAILED_DOWNLOAD));
+                    netManager.sendPacket(makeStatusPacket(hash, Action.FAILED_DOWNLOAD));
                 });
             } else {
-                netManager.send(makeStatusPacket(hash, Status.FAILED_DOWNLOAD));
+                netManager.sendPacket(makeStatusPacket(hash, Action.FAILED_DOWNLOAD));
             }
         } else {
-            final ServerInfo serverData = mc.getCurrentServerEntry();
-            if (serverData != null && serverData.getResourcePack() == ServerInfo.ResourcePackState.ENABLED) {
-                netManager.send(makeStatusPacket(hash, Status.ACCEPTED));
+            final ServerData serverData = mc.getCurrentServerData();
+            if (serverData != null && serverData.getResourceMode() == ServerData.ServerResourceMode.ENABLED) {
+                netManager.sendPacket(makeStatusPacket(hash, Action.ACCEPTED));
                 downloadResourcePackFuture(requestId, url, hash);
-            } else if (serverData != null && serverData.getResourcePack() != ServerInfo.ResourcePackState.PROMPT) {
-                netManager.send(makeStatusPacket(hash, Status.DECLINED));
+            } else if (serverData != null && serverData.getResourceMode() != ServerData.ServerResourceMode.PROMPT) {
+                netManager.sendPacket(makeStatusPacket(hash, Action.DECLINED));
             } else {
                 // Lambdas MUST NOT be used with methods that need re-obfuscation in FG prior to 2.2 (will result in AbstractMethodError)
-                //#if MC>=11400
-                mc.execute(() -> mc.openScreen(new ConfirmScreen(result -> {
-                //#else
-                //$$ //noinspection Convert2Lambda
-                //$$ mc.addScheduledTask(() -> mc.displayGuiScreen(new GuiYesNo(new GuiYesNoCallback() {
-                //$$     @Override
-                //$$     public void confirmClicked(boolean result, int id) {
-                //#endif
-                        if (serverData != null) {
-                            serverData.setResourcePackState(result ? ServerInfo.ResourcePackState.ENABLED : ServerInfo.ResourcePackState.DISABLED);
-                        }
-                        if (result) {
-                            netManager.send(makeStatusPacket(hash, Status.ACCEPTED));
-                            downloadResourcePackFuture(requestId, url, hash);
-                        } else {
-                            netManager.send(makeStatusPacket(hash, Status.DECLINED));
-                        }
-
-                        ServerList.updateServerListEntry(serverData);
-                        mc.openScreen(null);
+                mc.execute(() -> mc.displayGuiScreen(new ConfirmScreen(result -> {
+                    if (serverData != null) {
+                        serverData.setResourceMode(result ? ServerData.ServerResourceMode.ENABLED : ServerData.ServerResourceMode.DISABLED);
                     }
-                //#if MC>=11400
-                , new TranslatableText("multiplayer.texturePrompt.line1"), new TranslatableText("multiplayer.texturePrompt.line2"))));
-                //#else
-                //$$ }, I18n.format("multiplayer.texturePrompt.line1"), I18n.format("multiplayer.texturePrompt.line2"), 0)));
-                //#endif
+                    if (result) {
+                        netManager.sendPacket(makeStatusPacket(hash, Action.ACCEPTED));
+                        downloadResourcePackFuture(requestId, url, hash);
+                    } else {
+                        netManager.sendPacket(makeStatusPacket(hash, Action.DECLINED));
+                    }
+
+                    ServerList.saveSingleServer(serverData);
+                    mc.displayGuiScreen(null);
+                }
+                        , new TranslationTextComponent("multiplayer.texturePrompt.line1"), new TranslationTextComponent("multiplayer.texturePrompt.line2"))));
             }
         }
 
-        return new ResourcePackSendS2CPacket("replay://" + requestId, "");
+        return new SSendResourcePackPacket("replay://" + requestId, "");
     }
 
     private void downloadResourcePackFuture(int requestId, String url, final String hash) {
         addCallback(downloadResourcePack(requestId, url, hash),
-                result -> mc.getNetworkHandler().sendPacket(makeStatusPacket(hash, Status.SUCCESSFULLY_LOADED)),
-                throwable -> mc.getNetworkHandler().sendPacket(makeStatusPacket(hash, Status.FAILED_DOWNLOAD)));
+                result -> mc.getConnection().sendPacket(makeStatusPacket(hash, Action.SUCCESSFULLY_LOADED)),
+                throwable -> mc.getConnection().sendPacket(makeStatusPacket(hash, Action.FAILED_DOWNLOAD)));
     }
 
-    private
-    //#if MC>=11400
-    CompletableFuture<?>
-    //#else
-    //$$ ListenableFuture<?>
-    //#endif
+    private CompletableFuture<?>
     downloadResourcePack(final int requestId, String url, String hash) {
-        ClientBuiltinResourcePackProvider packFinder = mc.getResourcePackDownloader();
+        DownloadingPackFinder packFinder = mc.getPackFinder();
         ((IDownloadingPackFinder) packFinder).setRequestCallback(file -> recordResourcePack(file, requestId));
-        return packFinder.download(url, hash);
+        return packFinder.downloadResourcePack(url, hash);
     }
 
     public interface IDownloadingPackFinder {
         void setRequestCallback(Consumer<File> callback);
     }
-    //#else
-    //$$ public synchronized S3FPacketCustomPayload handleResourcePack(S3FPacketCustomPayload packet) {
-    //$$     final int requestId = nextRequestId++;
-    //$$     final String url = new String(packet.func_149168_d(), Charsets.UTF_8);
-    //$$
-    //$$     ServerData serverData = mc.getCurrentServerData();
-    //$$     ServerResourceMode resourceMode = serverData == null ? ServerResourceMode.PROMPT : serverData.getResourceMode();
-    //$$     if (resourceMode == ServerResourceMode.ENABLED) {
-    //$$         downloadResourcePack(requestId, url);
-    //$$         mc.getResourcePackRepository().obtainResourcePack(url);
-    //$$     } else if (resourceMode == ServerResourceMode.PROMPT) {
-    //$$         // Lambdas MUST NOT be used with methods that need re-obfuscation in FG prior to 2.2 (will result in AbstractMethodError)
-    //$$         //noinspection Convert2Lambda
-    //$$         mc.displayGuiScreen(new GuiYesNo(new GuiYesNoCallback() {
-    //$$             @Override
-    //$$             public void confirmClicked(boolean result, int id) {
-    //$$                 if (serverData != null) {
-    //$$                     serverData.setResourceMode(ServerResourceMode.ENABLED);
-    //$$                     ServerList.func_147414_b(serverData);
-    //$$                 }
-    //$$
-    //$$                 mc.displayGuiScreen(null);
-    //$$
-    //$$                 if (result) {
-    //$$                     downloadResourcePack(requestId, url);
-    //$$                 }
-    //$$             }
-    //$$         }, I18n.format("multiplayer.texturePrompt.line1"), I18n.format("multiplayer.texturePrompt.line2"), 0));
-    //$$     }
-    //$$
-    //$$     return new S3FPacketCustomPayload(packet.func_149169_c(), ("replay://" + requestId).getBytes(Charsets.UTF_8));
-    //$$ }
-    //$$
-    //$$ private void downloadResourcePack(final int requestId, String url) {
-    //$$     final ResourcePackRepository repo = mc.getResourcePackRepository();
-    //$$     final ResourcePackRepositoryAccessor acc = (ResourcePackRepositoryAccessor) repo;
-    //$$
-    //$$     String fileName = url.substring(url.lastIndexOf("/") + 1);
-    //$$
-    //$$     if (fileName.contains("?")) {
-    //$$         fileName = fileName.substring(0, fileName.indexOf("?"));
-    //$$     }
-    //$$
-    //$$     if (!fileName.endsWith(".zip")) {
-    //$$         return;
-    //$$     }
-    //$$
-    //$$     fileName = fileName.replaceAll("\\W", "");
-    //$$
-    //$$     File file = new File(acc.getCacheDir(), fileName);
-    //$$
-    //$$     HashMap<String, String> hashmap = new HashMap<>();
-    //$$     hashmap.put("X-Minecraft-Username", mc.getSession().getUsername());
-    //$$     hashmap.put("X-Minecraft-UUID", mc.getSession().getPlayerID());
-    //$$     hashmap.put("X-Minecraft-Version", "1.7.10");
-    //$$
-    //$$     GuiScreenWorking guiScreen = new GuiScreenWorking();
-    //$$     Minecraft.getMinecraft().displayGuiScreen(guiScreen);
-    //$$     repo.func_148529_f();
-    //$$     acc.setActive(true);
-    //$$     // Lambdas MUST NOT be used with methods that need re-obfuscation in FG prior to 2.2 (will result in AbstractMethodError)
-    //$$     //noinspection Convert2Lambda
-    //$$     HttpUtil.downloadResourcePack(file, url, new HttpUtil.DownloadListener() {
-    //$$         public void onDownloadComplete(File file) {
-    //$$             if (acc.isActive()) {
-    //$$                 acc.setActive(false);
-    //$$                 acc.setPack(new FileResourcePack(file));
-    //$$                 Minecraft.getMinecraft().scheduleResourcesRefresh();
-    //$$                 recordResourcePack(file, requestId);
-    //$$             }
-    //$$         }
-    //$$     }, hashmap, 50*1024*1024, guiScreen, Minecraft.getMinecraft().getProxy());
-    //$$ }
-    //#endif
 
 }

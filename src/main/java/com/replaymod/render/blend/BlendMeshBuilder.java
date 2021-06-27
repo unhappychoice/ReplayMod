@@ -1,48 +1,26 @@
-//#if MC>=10800
 package com.replaymod.render.blend;
 
+import com.mojang.datafixers.util.Pair;
 import com.replaymod.render.blend.data.DMaterial;
 import com.replaymod.render.blend.data.DMesh;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.ReadableVector3f;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector2f;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector3f;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormatElement;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import org.lwjgl.opengl.GL11;
-
-//#if MC>=11500
-import com.mojang.datafixers.util.Pair;
-//#endif
-
-//#if MC>=10904
-//#if MC>=11200
-import net.minecraft.client.render.BufferBuilder;
-//#else
-//$$ import net.minecraft.client.renderer.VertexBuffer;
-//#endif
-//#else
-//$$ import net.minecraft.client.renderer.WorldRenderer;
-//#endif
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.replaymod.core.versions.MCVer.*;
+import static com.replaymod.core.versions.MCVer.getElements;
 
 public class BlendMeshBuilder
-        //#if MC>=10904
-        //#if MC>=11200
-        extends BufferBuilder
-        //#else
-        //$$ extends VertexBuffer
-        //#endif
-        //#else
-        //$$ extends WorldRenderer
-        //#endif
-{
+        extends BufferBuilder {
     private static final ReadableVector3f VEC3F_ZERO = new Vector3f(0, 0, 0);
     private final DMesh mesh;
     private Vector3f offset;
@@ -63,17 +41,13 @@ public class BlendMeshBuilder
     }
 
     @Override
-    //#if MC>=10809
     public void begin(int mode, VertexFormat vertexFormat) {
-    //#else
-    //$$ public void startDrawing(int mode) {
-    //#endif
         if (isDrawing) {
             if (!wellBehaved) {
                 // Someone probably finished drawing with the global instance instead of this one,
                 // let's just assume that what's happened and finish our last draw by ourselves
                 // (might miss correct texture though)
-                super.end();
+                super.finishDrawing();
                 addBufferToMesh();
             } else {
                 throw new IllegalStateException("Already drawing!");
@@ -83,47 +57,33 @@ public class BlendMeshBuilder
 
         if (!wellBehaved) {
             // In case the calling code finishes with Tessellator.getInstance().draw()
-            Tessellator.getInstance().getBuffer().begin(mode, VertexFormats.POSITION_TEXTURE_COLOR);
+            Tessellator.getInstance().getBuffer().begin(mode, DefaultVertexFormats.POSITION_TEX_COLOR);
         }
 
-        //#if MC>=10809
         super.begin(mode, vertexFormat);
-        //#else
-        //$$ super.startDrawing(mode);
-        //#endif
     }
 
     public void maybeFinishDrawing() {
         if (isDrawing) {
             isDrawing = false;
-            super.end();
+            super.finishDrawing();
             addBufferToMesh();
         }
     }
 
     @Override
-    //#if MC>=10809
-    public void end() {
-    //#else
-    //$$ public int finishDrawing() {
-    //#endif
+    public void finishDrawing() {
         if (!isDrawing) {
             throw new IllegalStateException("Not building!");
         } else {
             if (!wellBehaved) {
-                Tessellator.getInstance().getBuffer().end();
+                Tessellator.getInstance().getBuffer().finishDrawing();
             }
 
-            //#if MC<10809
-            //$$ int ret =
-            //#endif
-            super.end();
+            super.finishDrawing();
 
             addBufferToMesh();
 
-            //#if MC<10809
-            //$$ return ret;
-            //#endif
         }
     }
 
@@ -131,29 +91,13 @@ public class BlendMeshBuilder
         addBufferToMesh(this, mesh, offset);
     }
 
-    //#if MC>=10904
-    //#if MC>=11200
     public static DMesh addBufferToMesh(BufferBuilder bufferBuilder, DMesh mesh, ReadableVector3f vertOffset) {
-    //#else
-    //$$ public static DMesh addBufferToMesh(VertexBuffer bufferBuilder, DMesh mesh, Vector3f vertOffset) {
-    //#endif
-    //#else
-    //$$ public static DMesh addBufferToMesh(WorldRenderer bufferBuilder, DMesh mesh, Vector3f vertOffset) {
-    //#endif
-        //#if MC>=11500
-        Pair<DrawArrayParameters, ByteBuffer> data = bufferBuilder.popData();
-        return addBufferToMesh(data.getSecond(), data.getFirst().getMode(), data.getFirst().getVertexFormat(), mesh, vertOffset);
-        //#else
-        //$$ return addBufferToMesh(bufferBuilder.getByteBuffer(), bufferBuilder.getDrawMode(), bufferBuilder.getVertexFormat(), mesh, vertOffset);
-        //#endif
+        Pair<DrawState, ByteBuffer> data = bufferBuilder.getNextBuffer();
+        return addBufferToMesh(data.getSecond(), data.getFirst().getDrawMode(), data.getFirst().getFormat(), mesh, vertOffset);
     }
 
     public static DMesh addBufferToMesh(ByteBuffer buffer, int mode, VertexFormat vertexFormat, DMesh mesh, ReadableVector3f vertOffset) {
-        //#if MC>=11400
-        int vertexCount = buffer.remaining() / vertexFormat.getVertexSize();
-        //#else
-        //$$ int vertexCount = buffer.remaining() / vertexFormat.getNextOffset();
-        //#endif
+        int vertexCount = buffer.remaining() / vertexFormat.getSize();
         return addBufferToMesh(buffer, vertexCount, mode, vertexFormat, mesh, vertOffset);
     }
 
@@ -168,48 +112,26 @@ public class BlendMeshBuilder
         // Determine offset of vertex components
         int posOffset = -1, colorOffset = -1, uvOffset = -1;
         int index = 0;
-        //#if MC>=11500
         int elementOffset = 0;
-        //#endif
         for (VertexFormatElement element : getElements(vertexFormat)) {
-            //#if MC>=11500
             int offset = elementOffset;
             elementOffset += element.getSize();
-            //#else
-            //#if MC>=10809
-            //$$ int offset = vertexFormat.getElementOffset(index);
-            //#else
-            //$$ int offset = element.getOffset();
-            //#endif
-            //#endif
-            switch (element.getType()) {
+            switch (element.getUsage()) {
                 case POSITION:
-                    //#if MC>=11400
-                    if (element.getFormat() != VertexFormatElement.Format.FLOAT) {
-                    //#else
-                    //$$ if (element.getType() != VertexFormatElement.EnumType.FLOAT) {
-                    //#endif
+                    if (element.getType() != VertexFormatElement.Type.FLOAT) {
                         throw new UnsupportedOperationException("Only float is supported for position elements!");
                     }
                     posOffset = offset;
                     break;
                 case COLOR:
-                    //#if MC>=11400
-                    if (element.getFormat() != VertexFormatElement.Format.UBYTE) {
-                    //#else
-                    //$$ if (element.getType() != VertexFormatElement.EnumType.UBYTE) {
-                    //#endif
+                    if (element.getType() != VertexFormatElement.Type.UBYTE) {
                         throw new UnsupportedOperationException("Only unsigned byte is supported for color elements!");
                     }
                     colorOffset = offset;
                     break;
                 case UV:
                     if (element.getIndex() != 0) break;
-                    //#if MC>=11400
-                    if (element.getFormat() != VertexFormatElement.Format.FLOAT) {
-                    //#else
-                    //$$ if (element.getType() != VertexFormatElement.EnumType.UBYTE) {
-                    //#endif
+                    if (element.getType() != VertexFormatElement.Type.FLOAT) {
                         throw new UnsupportedOperationException("Only float is supported for UV elements!");
                     }
                     uvOffset = offset;
@@ -223,16 +145,12 @@ public class BlendMeshBuilder
         List<DMesh.Vertex> vertices = new ArrayList<>(vertexCount);
         List<Vector2f> uvs = new ArrayList<>(vertexCount);
         List<Integer> colors = new ArrayList<>(vertexCount);
-        //#if MC>=11400
-        int step = vertexFormat.getVertexSize();
-        //#else
-        //$$ int step = vertexFormat.getNextOffset();
-        //#endif
+        int step = vertexFormat.getSize();
         for (int offset = 0; offset < vertexCount * step; offset += step) {
             vertices.add(new DMesh.Vertex(
-                     buffer.getFloat(offset      ) - vertOffset.getX(),
+                    buffer.getFloat(offset) - vertOffset.getX(),
                     -buffer.getFloat(offset + 8) + vertOffset.getZ(),
-                     buffer.getFloat(offset + 4) - vertOffset.getY()
+                    buffer.getFloat(offset + 4) - vertOffset.getY()
             ));
 
             if (colorOffset != -1) {
@@ -262,15 +180,15 @@ public class BlendMeshBuilder
         // Bundle vertices into shapes and add them to the mesh
         switch (mode) {
             case GL11.GL_TRIANGLES:
-                for (int i = 0; i < vertices.size(); i+=3) {
+                for (int i = 0; i < vertices.size(); i += 3) {
                     mesh.addTriangle(
-                            vertices.get(i    ),
+                            vertices.get(i),
                             vertices.get(i + 1),
                             vertices.get(i + 2),
-                            uvs.get(i    ),
+                            uvs.get(i),
                             uvs.get(i + 1),
                             uvs.get(i + 2),
-                            colors.get(i    ),
+                            colors.get(i),
                             colors.get(i + 1),
                             colors.get(i + 2),
                             materialSlot
@@ -278,17 +196,17 @@ public class BlendMeshBuilder
                 }
                 break;
             case GL11.GL_QUADS:
-                for (int i = 0; i < vertices.size(); i+=4) {
+                for (int i = 0; i < vertices.size(); i += 4) {
                     mesh.addQuad(
-                            vertices.get(i    ),
+                            vertices.get(i),
                             vertices.get(i + 1),
                             vertices.get(i + 2),
                             vertices.get(i + 3),
-                            uvs.get(i    ),
+                            uvs.get(i),
                             uvs.get(i + 1),
                             uvs.get(i + 2),
                             uvs.get(i + 3),
-                            colors.get(i    ),
+                            colors.get(i),
                             colors.get(i + 1),
                             colors.get(i + 2),
                             colors.get(i + 3),
@@ -303,4 +221,3 @@ public class BlendMeshBuilder
         return mesh;
     }
 }
-//#endif

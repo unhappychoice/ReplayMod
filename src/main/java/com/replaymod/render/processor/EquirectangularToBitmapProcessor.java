@@ -1,7 +1,7 @@
 package com.replaymod.render.processor;
 
-import com.replaymod.render.frame.CubicOpenGlFrame;
 import com.replaymod.render.frame.BitmapFrame;
+import com.replaymod.render.frame.CubicOpenGlFrame;
 import com.replaymod.render.utils.ByteBufferPool;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import org.apache.commons.lang3.Validate;
@@ -81,13 +81,13 @@ public class EquirectangularToBitmapProcessor extends AbstractFrameProcessor<Cub
                 double cYN = (Math.tan(pitch) * d + 1) / 2;
 
                 if (cYN >= 1) {
-                    double pd = Math.tan(PI/2 - pitch);
+                    double pd = Math.tan(PI / 2 - pitch);
                     cXN = (-Math.sin(yaw) * pd + 1) / 2;
                     cYN = (Math.cos(yaw) * pd + 1) / 2;
                     pt = IMAGE_BOTTOM;
                 }
                 if (cYN < 0) {
-                    double pd = Math.tan(PI/2 - pitch);
+                    double pd = Math.tan(PI / 2 - pitch);
                     cXN = (Math.sin(yaw) * pd + 1) / 2;
                     cYN = (Math.cos(yaw) * pd + 1) / 2;
                     pt = IMAGE_TOP;

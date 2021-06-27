@@ -1,4 +1,3 @@
-//#if MC>=10800
 package com.replaymod.render.blend.exporters;
 
 import com.replaymod.core.versions.MCVer;
@@ -7,7 +6,7 @@ import com.replaymod.render.blend.Exporter;
 import com.replaymod.render.blend.data.DObject;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Matrix4f;
 import de.johni0702.minecraft.gui.utils.lwjgl.vector.Vector3f;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
@@ -18,7 +17,7 @@ import static com.replaymod.render.blend.Util.getCameraPos;
 import static com.replaymod.render.blend.Util.getGlModelViewMatrix;
 
 public class EntityExporter implements Exporter {
-    private final MinecraftClient mc = MCVer.getMinecraft();
+    private final Minecraft mc = MCVer.getMinecraft();
     private final RenderState renderState;
     private DObject entitiesObject;
     private Map<Entity, DObject> entityObjects;
@@ -55,11 +54,7 @@ public class EntityExporter implements Exporter {
         if (entityObject == null) {
             entityObject = new DObject(DObject.Type.OB_EMPTY);
             entityObject.setParent(renderState.peekObject());
-            //#if MC>=11400
             entityObject.id.name = entity.getName().getString();
-            //#else
-            //$$ entityObject.id.name = entity.getName();
-            //#endif
             entityObjects.put(entity, entityObject);
         }
         renderState.pushObject(entityObject);
@@ -93,4 +88,3 @@ public class EntityExporter implements Exporter {
         renderState.pop();
     }
 }
-//#endif

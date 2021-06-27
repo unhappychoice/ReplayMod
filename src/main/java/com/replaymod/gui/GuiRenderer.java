@@ -24,11 +24,11 @@
  */
 package com.replaymod.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 public interface GuiRenderer {
 
@@ -40,7 +40,7 @@ public interface GuiRenderer {
 
     void setDrawingArea(int x, int y, int width, int height);
 
-    void bindTexture(Identifier location);
+    void bindTexture(ResourceLocation location);
 
     void bindTexture(int glId);
 
@@ -74,10 +74,11 @@ public interface GuiRenderer {
 
     /**
      * Inverts all colors on the screen.
-     * @param right Right border of the inverted rectangle
+     *
+     * @param right  Right border of the inverted rectangle
      * @param bottom Bottom border of the inverted rectangle
-     * @param left Left border of the inverted rectangle
-     * @param top Top border of the inverted rectangle
+     * @param left   Left border of the inverted rectangle
+     * @param top    Top border of the inverted rectangle
      */
     void invertColors(int right, int bottom, int left, int top);
 

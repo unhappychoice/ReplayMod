@@ -8,15 +8,15 @@ import com.replaymod.render.hooks.ForceChunkLoadingHook;
 import com.replaymod.render.rendering.Pipelines;
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.Window;
-import net.minecraft.util.crash.CrashReport;
+import net.minecraft.client.MainWindow;
+import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
 
 import static com.replaymod.core.versions.MCVer.resizeMainWindow;
 
 public class ScreenshotRenderer implements RenderInfo {
 
-    private final MinecraftClient mc = MCVer.getMinecraft();
+    private final Minecraft mc = MCVer.getMinecraft();
 
     private final RenderSettings settings;
 
@@ -28,11 +28,11 @@ public class ScreenshotRenderer implements RenderInfo {
 
     public boolean renderScreenshot() throws Throwable {
         try {
-            Window window = mc.getWindow();
+            MainWindow window = mc.getMainWindow();
             int widthBefore = window.getFramebufferWidth();
             int heightBefore = window.getFramebufferHeight();
-            boolean hideGUIBefore = mc.options.hudHidden;
-            mc.options.hudHidden = true;
+            boolean hideGUIBefore = mc.gameSettings.hideGUI;
+            mc.gameSettings.hideGUI = true;
 
             ForceChunkLoadingHook clrg = new ForceChunkLoadingHook(mc.worldRenderer);
 
@@ -46,13 +46,13 @@ public class ScreenshotRenderer implements RenderInfo {
 
             clrg.uninstall();
 
-            mc.options.hudHidden = hideGUIBefore;
+            mc.gameSettings.hideGUI = hideGUIBefore;
             resizeMainWindow(mc, widthBefore, heightBefore);
             return true;
         } catch (OutOfMemoryError e) {
             e.printStackTrace();
-            CrashReport report = CrashReport.create(e, "Creating Equirectangular Screenshot");
-            MCVer.getMinecraft().setCrashReport(report);
+            CrashReport report = CrashReport.makeCrashReport(e, "Creating Equirectangular Screenshot");
+            MCVer.getMinecraft().crashed(report);
         }
         return false;
     }
@@ -76,7 +76,7 @@ public class ScreenshotRenderer implements RenderInfo {
     @Override
     public float updateForNextFrame() {
         framesDone++;
-        return mc.getTickDelta();
+        return mc.getRenderPartialTicks();
     }
 
     @Override

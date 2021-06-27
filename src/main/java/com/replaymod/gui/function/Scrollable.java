@@ -29,10 +29,11 @@ import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 public interface Scrollable {
     /**
      * Called when the user scrolled.
+     *
      * @param mousePosition Global position of the mouse.
-     * @param dWheel Wheel movement (positive is upwards, negative is downwards)
+     * @param dWheel        Wheel movement (positive is upwards, negative is downwards)
      * @return {@code true} if this event should be consumed,
-     *          {@code false} if it should be delivered to other elements as well
+     * {@code false} if it should be delivered to other elements as well
      */
     boolean scroll(ReadablePoint mousePosition, int dWheel);
 }

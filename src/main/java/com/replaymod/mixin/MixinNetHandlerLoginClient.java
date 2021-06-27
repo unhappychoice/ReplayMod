@@ -2,12 +2,10 @@ package com.replaymod.mixin;
 
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.recording.ReplayModRecording;
-import com.replaymod.recording.handler.RecordingEventHandler.RecordingEventSender;
-import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
-import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
+import com.replaymod.recording.handler.RecordingEventHandler;
+import net.minecraft.client.network.login.ClientLoginNetHandler;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.login.server.SCustomPayloadLoginPacket;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,29 +13,35 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ClientLoginNetworkHandler.class)
+@Mixin(ClientLoginNetHandler.class)
 public abstract class MixinNetHandlerLoginClient {
 
-    @Final @Shadow
-    private ClientConnection connection;
+    @Final
+    @Shadow
+    private NetworkManager networkManager;
 
-    @Inject(method = "onQueryRequest", at=@At("HEAD"))
-    private void earlyInitiateRecording(LoginQueryRequestS2CPacket packet, CallbackInfo ci) {
-        initiateRecording(packet);
+    @Inject(method = "handleLoginSuccess", at = @At("HEAD"))
+    public void replayModRecording_initiateRecording(CallbackInfo cb) {
+        initiateRecording(null);
     }
 
-    @Inject(method = "onLoginSuccess", at=@At("HEAD"))
-    private void lateInitiateRecording(LoginSuccessS2CPacket packet, CallbackInfo ci) {
-        initiateRecording(packet);
+    /**
+     * Starts the recording right before switching into PLAY state.
+     * We cannot use the {@link FMLNetworkEvent.ClientConnectedToServerEvent}
+     * as it only fires after the forge handshake.
+     */
+    @Inject(method = "handleCustomPayloadLogin", at = @At("HEAD"))
+    public void replayModRecording_initiateRecording(SCustomPayloadLoginPacket packetIn, CallbackInfo cb) {
+        initiateRecording(packetIn);
     }
 
-    private void initiateRecording(Packet<?> packet) {
-        RecordingEventSender eventSender = (RecordingEventSender) MCVer.getMinecraft().worldRenderer;
+    private void initiateRecording(SCustomPayloadLoginPacket packet) {
+        RecordingEventHandler.RecordingEventSender eventSender = (RecordingEventHandler.RecordingEventSender) MCVer.getMinecraft().worldRenderer;
         if (eventSender.getRecordingEventHandler() != null) {
             return; // already recording
         }
-        ReplayModRecording.instance.initiateRecording(this.connection);
-        if (eventSender.getRecordingEventHandler() != null) {
+        ReplayModRecording.instance.initiateRecording(this.networkManager);
+        if (eventSender.getRecordingEventHandler() != null && packet != null) {
             eventSender.getRecordingEventHandler().onPacket(packet);
         }
     }

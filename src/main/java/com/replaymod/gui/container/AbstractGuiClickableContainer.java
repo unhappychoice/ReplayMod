@@ -24,10 +24,10 @@
  */
 package com.replaymod.gui.container;
 
-import com.replaymod.gui.element.IGuiClickable;
-import com.replaymod.gui.function.Clickable;
 import com.replaymod.gui.GuiRenderer;
 import com.replaymod.gui.RenderInfo;
+import com.replaymod.gui.element.IGuiClickable;
+import com.replaymod.gui.function.Clickable;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;

@@ -24,23 +24,23 @@
  */
 package com.replaymod.gui.container;
 
+import com.replaymod.gui.GuiRenderer;
+import com.replaymod.gui.OffsetGuiRenderer;
+import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.element.AbstractComposedGuiElement;
 import com.replaymod.gui.element.ComposedGuiElement;
 import com.replaymod.gui.element.GuiElement;
 import com.replaymod.gui.layout.HorizontalLayout;
-import com.replaymod.gui.layout.LayoutData;
-import com.replaymod.gui.GuiRenderer;
-import com.replaymod.gui.OffsetGuiRenderer;
-import com.replaymod.gui.RenderInfo;
 import com.replaymod.gui.layout.Layout;
+import com.replaymod.gui.layout.LayoutData;
+import com.replaymod.gui.versions.MCVer;
 import de.johni0702.minecraft.gui.utils.lwjgl.Point;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
-import com.replaymod.gui.versions.MCVer;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.CrashException;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ReportedException;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -139,12 +139,12 @@ public abstract class AbstractGuiContainer<T extends AbstractGuiContainer<T>>
         try {
             layedOutElements = layout.layOut(this, size);
         } catch (Exception ex) {
-            CrashReport crashReport = CrashReport.create(ex, "Gui Layout");
+            CrashReport crashReport = CrashReport.makeCrashReport(ex, "Gui Layout");
             renderInfo.addTo(crashReport);
-            CrashReportSection category = crashReport.addElement("Gui container details");
+            CrashReportCategory category = crashReport.makeCategory("Gui container details");
             MCVer.addDetail(category, "Container", this::toString);
             MCVer.addDetail(category, "Layout", layout::toString);
-            throw new CrashException(crashReport);
+            throw new ReportedException(crashReport);
         }
         for (final Map.Entry<com.replaymod.gui.element.GuiElement, Pair<ReadablePoint, ReadableDimension>> e : layedOutElements.entrySet()) {
             com.replaymod.gui.element.GuiElement element = e.getKey();
@@ -193,21 +193,21 @@ public abstract class AbstractGuiContainer<T extends AbstractGuiContainer<T>>
                         .layer(renderInfo.getLayer() - e.getKey().getLayer()));
                 eRenderer.stopUsing();
             } catch (Exception ex) {
-                CrashReport crashReport = CrashReport.create(ex, "Rendering Gui");
+                CrashReport crashReport = CrashReport.makeCrashReport(ex, "Rendering Gui");
                 renderInfo.addTo(crashReport);
-                CrashReportSection category = crashReport.addElement("Gui container details");
+                CrashReportCategory category = crashReport.makeCategory("Gui container details");
                 MCVer.addDetail(category, "Container", this::toString);
                 MCVer.addDetail(category, "Width", () -> "" + size.getWidth());
                 MCVer.addDetail(category, "Height", () -> "" + size.getHeight());
                 MCVer.addDetail(category, "Layout", layout::toString);
-                category = crashReport.addElement("Gui element details");
+                category = crashReport.makeCategory("Gui element details");
                 MCVer.addDetail(category, "Element", () -> e.getKey().toString());
                 MCVer.addDetail(category, "Position", ePosition::toString);
                 MCVer.addDetail(category, "Size", eSize::toString);
                 if (e.getKey() instanceof com.replaymod.gui.container.GuiContainer) {
                     MCVer.addDetail(category, "Layout", () -> ((GuiContainer) e.getKey()).getLayout().toString());
                 }
-                throw new CrashException(crashReport);
+                throw new ReportedException(crashReport);
             }
         }
     }

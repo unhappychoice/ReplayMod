@@ -29,14 +29,17 @@ import com.replaymod.gui.utils.Consumer;
 public interface Focusable<T extends Focusable<T>> {
 
     boolean isFocused();
+
     T setFocused(boolean focused);
 
     T onFocusChange(Consumer<Boolean> consumer);
 
     Focusable getNext();
+
     T setNext(Focusable next);
 
     Focusable getPrevious();
+
     T setPrevious(Focusable previous);
 
 }
