@@ -1,4 +1,4 @@
-package com.replaymod.replay;
+package com.replaymod.replay.sender;
 
 import com.github.steveice10.packetlib.io.NetOutput;
 import com.github.steveice10.packetlib.tcp.io.ByteBufNetOutput;
@@ -11,6 +11,10 @@ import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.gui.versions.callbacks.PreTickCallback;
 import com.replaymod.mixin.MinecraftAccessor;
 import com.replaymod.mixin.TimerAccessor;
+import com.replaymod.replay.ReplayHandler;
+import com.replaymod.replay.ReplayModReplay;
+import com.replaymod.replay.ReplaySender;
+import com.replaymod.replay.Setting;
 import com.replaymod.replay.camera.CameraEntity;
 import com.replaymod.replaystudio.io.ReplayInputStream;
 import com.replaymod.replaystudio.replay.ReplayFile;

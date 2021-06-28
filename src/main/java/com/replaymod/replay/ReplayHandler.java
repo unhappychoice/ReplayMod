@@ -26,6 +26,8 @@ import com.replaymod.replay.events.ReplayClosedCallback;
 import com.replaymod.replay.events.ReplayClosingCallback;
 import com.replaymod.replay.events.ReplayOpenedCallback;
 import com.replaymod.replay.gui.overlay.GuiReplayOverlay;
+import com.replaymod.replay.sender.FullReplaySender;
+import com.replaymod.replay.sender.QuickReplaySender;
 import com.replaymod.replaystudio.data.Marker;
 import com.replaymod.replaystudio.replay.ReplayFile;
 import com.replaymod.replaystudio.util.Location;
@@ -119,7 +121,7 @@ public class ReplayHandler {
         fullReplaySender.setAsyncMode(asyncMode);
     }
 
-    void restartedReplay() {
+    public void restartedReplay() {
         Preconditions.checkState(mc.isOnExecutionThread(), "Must be called from Minecraft thread.");
 
         channel.close();
@@ -187,7 +189,6 @@ public class ReplayHandler {
                 , it -> {
         }
         ));
-
 
         channel = new EmbeddedChannel();
         channel.pipeline().addLast("ReplayModReplay_quickReplaySender", quickReplaySender);
