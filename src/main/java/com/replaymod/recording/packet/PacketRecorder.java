@@ -14,6 +14,7 @@ import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.PacketDirection;
 import net.minecraft.network.ProtocolType;
+import net.minecraft.network.login.server.SCustomPayloadLoginPacket;
 import net.minecraft.network.play.server.SCustomPayloadPlayPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -106,17 +107,22 @@ public class PacketRecorder {
             }
         }
 
-        ByteBuf byteBuf = Unpooled.buffer();
+        ByteBuf byteBuf = Unpooled.buffer(256, 1048576);
+        PacketBuffer buf = new PacketBuffer(byteBuf);
 
         try {
-            packet.writePacketData(new PacketBuffer(byteBuf));
+            if (packet instanceof SCustomPayloadLoginPacket) {
+                ((SCustomPayloadLoginPacket) packet).getInternalData().resetReaderIndex();
+            }
+
+            packet.writePacketData(buf);
             return new PacketData(timestamp, new com.replaymod.replaystudio.protocol.Packet(
                     MCVer.getPacketTypeRegistry(loginPhase),
                     packetId,
                     com.github.steveice10.netty.buffer.Unpooled.wrappedBuffer(
-                            byteBuf.array(),
-                            byteBuf.arrayOffset(),
-                            byteBuf.readableBytes()
+                            buf.array(),
+                            buf.arrayOffset(),
+                            buf.readableBytes()
                     )
             ));
         } finally {
