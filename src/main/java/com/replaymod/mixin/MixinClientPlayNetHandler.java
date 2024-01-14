@@ -27,8 +27,7 @@ public abstract class MixinClientPlayNetHandler {
 
     @Inject(method = "handleTags", at = @At(value = "HEAD"), cancellable = true)
     public void replayMod_ignoreHandshakeConnectionClose(STagsListPacket packetIn, CallbackInfo ci) {
-        System.out.println("Injected ClientPlayNetHandler.handleTags");
-        // PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
+        PacketThreadUtil.checkThreadAndEnqueue(packetIn, (ClientPlayNetHandler) (Object) this, this.client);
         ITagCollectionSupplier itagcollectionsupplier = packetIn.getTags();
         // boolean vanillaConnection = net.minecraftforge.fml.network.NetworkHooks.isVanillaConnection(netManager);
         boolean vanillaConnection = false;
